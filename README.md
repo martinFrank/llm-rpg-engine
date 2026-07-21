@@ -1,2 +1,7 @@
 # llm-rpg-engine
-engine for text based rpg games
+
+A text-based RPG **game engine driven by LLM agents**, built with Spring Boot
+and Spring AI (Ollama / local LLMs).
+
+## Architecture
+<tbd>
