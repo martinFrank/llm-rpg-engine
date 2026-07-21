@@ -1,14 +1,19 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Intro;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
+
+import java.util.List;
 
 public class Session {
 
     private final Adventure adventure;
     private final Player player;
-    private final ChatHistory chatHistory = new ChatHistory();
+    public final ChatHistory chatHistory = new ChatHistory();
+
+    private Location currentLocation;
+    private Chapter currentChapter;
+    private GameTime currentTime = GameTime.AFTERNOON;
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
@@ -19,5 +24,23 @@ public class Session {
         chatHistory.narrator(adventure.getIntro().title());
         chatHistory.narrator(adventure.getIntro().author());
         chatHistory.narrator(adventure.getIntro().intro());
+        currentLocation = adventure.getIntro().startLocation();
+        currentTime = adventure.getIntro().startTime();
+        currentChapter = adventure.getChapters().getFirst();
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public List<Person> getPersons(Location location, GameTime gameTime) {
+        return currentChapter.getPersons(location, gameTime);
+    }
+
+    public GameTime getCurrentTime() {
+        return currentTime;
     }
 }

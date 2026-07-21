@@ -24,9 +24,14 @@ public class ChatHistory {
 
     private void add(String actor, String statement) {
         String normalized = StringNormalizer.normalize(statement);
-        LOGGER.debug("{}: {}", actor, normalized);
-        chatEntries.add(new ChatEntry(actor, normalized));
+        ChatEntry entry = new ChatEntry(actor, normalized);
+        LOGGER.debug(entry.toString());
+        chatEntries.add(entry);
     }
 
 
+    public List<ChatEntry> getLatestEntries(int length) {
+        int from = Math.max(0, chatEntries.size() - length);
+        return new ArrayList<>(chatEntries.subList(from, chatEntries.size()));
+    }
 }

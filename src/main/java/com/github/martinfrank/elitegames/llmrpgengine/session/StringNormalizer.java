@@ -7,18 +7,18 @@ public class StringNormalizer {
      * become spaces), while keeping blank lines that separate paragraphs. Leading
      * and trailing blank lines are dropped.
      */
-    static String normalize(String statement) {
+    public static String normalize(String statement) {
         if (statement == null) {
             return null;
         }
         StringBuilder result = new StringBuilder();
         StringBuilder paragraph = new StringBuilder();
         for (String line : statement.split("\n", -1)) {
-            if (line.strip().isEmpty()) {
+            if (line.isBlank()) {
                 flush(paragraph, result);
                 result.append('\n');
             } else {
-                if (paragraph.length() > 0) {
+                if (!paragraph.isEmpty()) {
                     paragraph.append(' ');
                 }
                 paragraph.append(line.strip());
@@ -29,7 +29,7 @@ public class StringNormalizer {
     }
 
     private static void flush(StringBuilder paragraph, StringBuilder result) {
-        if (paragraph.length() > 0) {
+        if (!paragraph.isEmpty()) {
             result.append(paragraph).append('\n');
             paragraph.setLength(0);
         }

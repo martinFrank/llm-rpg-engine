@@ -19,6 +19,6 @@ public class GameEngine {
 
     public void handleUserInput(String userInput, Session session) {
         VerdictContext verdictContext = VerdictContext.generate(session);
-        Verdict verdict = verdictAgent.evaluate(verdictContext, userInput);
+//        Verdict verdict = verdictAgent.evaluate(verdictContext, userInput);
     }
 }

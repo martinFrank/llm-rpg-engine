@@ -7,16 +7,21 @@ spring:
       base-url: ${OLLAMA_BASE_URL:http://192.168.0.251:11434}
       chat:
         options:
-          model: ${OLLAMA_MODEL:llama3.1}
+          model: "${OLLAMA_MODEL:qwen2.5:14b}"
           temperature: 0.8
 
 # Application-specific tuning for the two agents.
+# Available models on the server can be listed via: GET {base-url}/api/tags
 rpg:
   verdict:
-    model: ${VERDICT_MODEL:llama3.1}
+    # Rules engine: must return reliable structured JSON (Verdict). Strong instruction
+    # following, low temperature. Alternatives: qwen2.5:7b-instruct, qwen3:14b.
+    model: "${VERDICT_MODEL:qwen2.5:14b}"
     temperature: 0.3
   narrator:
-    model: ${NARRATOR_MODEL:llama3.1}
+    # Creative German prose, higher temperature.
+    # Alternatives: gemma4:26b, qwen3.5:27b, llama4:latest.
+    model: "${NARRATOR_MODEL:Mistral-Small:latest}"
     temperature: 0.9
 
 server:

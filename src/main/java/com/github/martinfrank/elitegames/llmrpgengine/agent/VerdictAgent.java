@@ -44,7 +44,7 @@ public class VerdictAgent {
                                 {action}
                                 """)
 //                        .param("scenario", session.getScenario())
-//                        .param("location", session.getWorldState().getLocation())
+//                        .param("where", session.getWorldState().getLocation())
 //                        .param("playerName", session.getWorldState().getPlayer().getName())
 //                        .param("playerClass", session.getWorldState().getPlayer().getCharacterClass())
 //                        .param("level", session.getWorldState().getPlayer().getLevel())
