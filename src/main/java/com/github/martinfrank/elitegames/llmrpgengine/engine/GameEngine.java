@@ -43,7 +43,7 @@ public class GameEngine {
     public Verdict handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);
         Verdict verdict = verdictAgent.evaluate(context, userInput);
-//        LOGGER.debug("Verdict: {}", verdict);
+        LOGGER.debug("Verdict: {}", verdict);
 
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
