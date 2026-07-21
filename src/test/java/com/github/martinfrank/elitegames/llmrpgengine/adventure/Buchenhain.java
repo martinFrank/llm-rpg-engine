@@ -15,6 +15,9 @@ public class Buchenhain implements Adventure {
                         betretet, werdet ihr vom Ortsvorsteher begrüsst. Er bittet
                         euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm
                         ein heikles Thema zu besprechen.
+                        
+                        Ihr versichert ihm, dass ihr ihm später einen Beusch abstatten
+                        werdet
                         """
         );
     }

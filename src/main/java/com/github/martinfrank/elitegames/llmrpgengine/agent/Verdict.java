@@ -1,6 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
-public record GameMasterVerdict(
+public record Verdict(
         String reasoning,
         String outcome
 ) {

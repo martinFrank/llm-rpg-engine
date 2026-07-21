@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
  * happens. It deliberately does NOT write prose; that is the Narrator's job.
  */
 @Component
-public class GameMasterAgent {
+public class VerdictAgent {
 
     private final ChatClient chatClient;
     private final Resource systemPrompt;
 
-    public GameMasterAgent(@Qualifier("gameMasterChatClient") ChatClient chatClient,
-                           @Value("classpath:prompts/gamemaster-system.st") Resource systemPrompt) {
+    public VerdictAgent(@Qualifier("verdictChatClient") ChatClient chatClient,
+                        @Value("classpath:prompts/verdict-system.st") Resource systemPrompt) {
         this.chatClient = chatClient;
         this.systemPrompt = systemPrompt;
     }
 
-    public GameMasterVerdict evaluate(VerdictContext context, String userInput) {
+    public Verdict evaluate(VerdictContext context, String userInput) {
         return chatClient.prompt()
                 .system(systemPrompt)
                 .user(u -> u
@@ -56,6 +56,6 @@ public class GameMasterAgent {
 //                        .param("action", playerAction)
                 )
                 .call()
-                .entity(GameMasterVerdict.class);
+                .entity(Verdict.class);
     }
 }

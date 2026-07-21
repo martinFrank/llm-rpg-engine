@@ -4,7 +4,7 @@ spring:
 
   ai:
     ollama:
-      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      base-url: ${OLLAMA_BASE_URL:http://192.168.0.251:11434}
       chat:
         options:
           model: ${OLLAMA_MODEL:llama3.1}
@@ -12,8 +12,8 @@ spring:
 
 # Application-specific tuning for the two agents.
 rpg:
-  gamemaster:
-    model: ${GAMEMASTER_MODEL:llama3.1}
+  verdict:
+    model: ${VERDICT_MODEL:llama3.1}
     temperature: 0.3
   narrator:
     model: ${NARRATOR_MODEL:llama3.1}
@@ -27,3 +27,9 @@ management:
     web:
       exposure:
         include: health,info
+
+logging:
+  level:
+    # Logs every prompt sent to Ollama and every response received (SimpleLoggerAdvisor).
+    # Set to INFO to silence the LLM traffic, DEBUG to see it.
+    org.springframework.ai.chat.client.advisor: DEBUG
