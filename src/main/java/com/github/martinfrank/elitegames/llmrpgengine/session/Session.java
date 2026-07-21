@@ -4,6 +4,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Session {
 
@@ -42,5 +43,23 @@ public class Session {
 
     public GameTime getCurrentTime() {
         return currentTime;
+    }
+
+    public Chapter getCurrentChapter() {
+        return currentChapter;
+    }
+
+    /**
+     * Looks up a location of the adventure by its name (case-insensitive).
+     * Used by scripted tasks such as GEHEZU to resolve a destination.
+     */
+    public Optional<Location> findLocation(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+        String needle = name.strip();
+        return adventure.getLocations().stream()
+                .filter(location -> location.name().equalsIgnoreCase(needle))
+                .findFirst();
     }
 }

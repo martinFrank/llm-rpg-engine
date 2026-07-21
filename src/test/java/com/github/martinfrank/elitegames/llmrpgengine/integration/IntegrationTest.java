@@ -35,6 +35,6 @@ class IntegrationTest {
         Session session = new Session(adventure, player);
 
         session.start();
-        engine.handleUserInput("beschreibe mir den marktplatz", session);
+        engine.handleUserInput("wir gehen zum Haus des Ortsvorstehers", session);
     }
 }

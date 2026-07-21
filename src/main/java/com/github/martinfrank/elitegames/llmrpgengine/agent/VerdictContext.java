@@ -6,25 +6,25 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VerdictContext {
+public record VerdictContext (String chapterSummary, String location, String persons, String items, String chatHistory) {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerdictContext.class);
-
-    public VerdictContext(String chatHistory, String location, String persons, String items) {
-    }
 
     public static VerdictContext generate(Session session) {
-        String chatHistory = extractChatHistory(session);
+//        String adventurePlot = extractAdventurePlot(session);
+        String chapterSummary = extractChapter(session);
         String location = extractLocation(session);
         String persons = extractPersons(session);
         String items = extractItems(session);
-        return new VerdictContext(chatHistory, location, persons, items);
+        String chatHistory = extractChatHistory(session);
+        return new VerdictContext(chapterSummary, location, persons, items, chatHistory);
+    }
+
+    private static String extractChapter(Session session) {
+        return session.getCurrentChapter().summary();
     }
 
 

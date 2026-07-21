@@ -8,13 +8,15 @@ public class Chapter implements Identifiable {
 
     private final UUID id;
     private final String name;
+    private final String summary;
     private final List<Location> locations;
     private final List<PersonTimetable> timeTables;
 
 
-    public Chapter(UUID id, String name, List<Location> locations,  List<PersonTimetable> timeTables) {
+    public Chapter(UUID id, String name, String summary, List<Location> locations,  List<PersonTimetable> timeTables) {
         this.id = id;
         this.name = name;
+        this.summary = summary;
         this.locations = locations;
         this.timeTables = timeTables;
     }
@@ -30,10 +32,19 @@ public class Chapter implements Identifiable {
         return id;
     }
 
+    public String name() {
+        return name;
+    }
+
+    public String summary() {
+        return summary;
+    }
+
     public static class Builder {
 
         private UUID id = UUID.randomUUID();
         private String name;
+        private String summary;
         private List<Location> locations;
         private List<PersonTimetable> timeTables;
 
@@ -44,6 +55,11 @@ public class Chapter implements Identifiable {
 
         public Builder name(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder summary(String summary) {
+            this.summary = summary;
             return this;
         }
 
@@ -58,7 +74,7 @@ public class Chapter implements Identifiable {
         }
 
         public Chapter build() {
-            return new Chapter(id, name, locations, timeTables);
+            return new Chapter(id, name, summary, locations, timeTables);
         }
 
     }
