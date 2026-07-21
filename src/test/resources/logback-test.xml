@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Logging configuration for tests.
+
+    Plain JUnit tests do NOT boot a Spring context, so the logging.level entries in
+    application.yml are never applied. Logback then falls back to root level INFO and
+    DEBUG messages (e.g. from ChatHistory) are swallowed. This file makes the desired
+    DEBUG levels take effect for every test, with or without a Spring context.
+-->
+<configuration>
+    <!-- Reuse Spring Boot's console formatting so test output matches runtime output. -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Our own game code: show DEBUG (ChatHistory narrator/player traffic). -->
+    <logger name="com.github.martinfrank.elitegames.llmrpgengine" level="DEBUG"/>
+
+    <!-- Spring AI advisor: logs every prompt/response to/from Ollama. -->
+    <logger name="org.springframework.ai.chat.client.advisor" level="DEBUG"/>
+</configuration>

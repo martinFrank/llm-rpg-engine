@@ -18,7 +18,7 @@ public class GameEngine {
     private NarratorAgent narratorAgent;
 
     public void handleUserInput(String userInput, Session session) {
-        VerdictContext verdictContext = new VerdictContext();
+        VerdictContext verdictContext = VerdictContext.generate(session);
         Verdict verdict = verdictAgent.evaluate(verdictContext, userInput);
     }
 }
