@@ -37,4 +37,4 @@ logging:
   level:
     # Logs every prompt sent to Ollama and every response received (SimpleLoggerAdvisor).
     # Set to INFO to silence the LLM traffic, DEBUG to see it.
-    org.springframework.ai.chat.client.advisor: INFO
+    org.springframework.ai.chat.client.advisor: DEBUG

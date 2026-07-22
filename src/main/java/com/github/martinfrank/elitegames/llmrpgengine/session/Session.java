@@ -74,4 +74,14 @@ public class Session {
     public void setFlag(UUID id, Object value) {
         sessionFlags.setFlagValue(id, value);
     }
+
+    /** Looks up a location of the adventure by its id. Used to resolve a verdict's targetId. */
+    public Optional<Location> getLocation(UUID id) {
+        return Optional.ofNullable(adventure.getLocation(id));
+    }
+
+    /** Looks up a person of the adventure by its id. Used to resolve a verdict's targetId. */
+    public Optional<Person> getPerson(UUID id) {
+        return Optional.ofNullable(adventure.getPerson(id));
+    }
 }

@@ -28,9 +28,9 @@ public record VerdictContext (String chapterSummary,
         String persons = extractPersons(session);
         String items = extractItems(session);
         String chatHistory = extractChatHistory(session);
-        String chapterPersons = extractAvailablePersons(session);
-        String chapterLocations = extractAvailableLocations(session);
-        return new VerdictContext(chapterSummary, location, persons, items, chatHistory, chapterPersons, chapterLocations);
+        String availablePersons = extractAvailablePersons(session);
+        String availableLocations = extractAvailableLocations(session);
+        return new VerdictContext(chapterSummary, location, persons, items, chatHistory, availablePersons, availableLocations);
     }
 
     private static String extractChapter(Session session) {
@@ -56,18 +56,22 @@ public record VerdictContext (String chapterSummary,
                 .collect(Collectors.joining("\n"));
     }
 
-    private static String extractAvailableLocations(Session session) {
+    private static String extractAvailablePersons(Session session) {
         List<Person> availablePersons = session.getCurrentChapter().personConditions().stream()
                 .map(PersonCondition::who)
                 .distinct().toList();
-        return  availablePersons.stream().map(p -> p.name()+"(id:"+p.id()+")").collect(Collectors.joining("\n"));
+        return availablePersons.stream()
+                .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: "+StringNormalizer.normalize(p.description())+")")
+                .collect(Collectors.joining("\n"));
     }
 
-    private static String extractAvailablePersons(Session session) {
+    private static String extractAvailableLocations(Session session) {
         List<Location> availableLocations = session.getCurrentChapter().locationConditions().stream()
                 .map(LocationCondition::location)
                 .distinct().toList();
-        return  availableLocations.stream().map(l -> l.name()+"(id:"+l.id()+")").collect(Collectors.joining("\n"));
+        return availableLocations.stream()
+                .map(l -> l.name() + " (id: " + l.id() + ", Beschreibung: "+StringNormalizer.normalize(l.description())+")")
+                .collect(Collectors.joining("\n"));
     }
 
     private static String extractItems(Session session) {

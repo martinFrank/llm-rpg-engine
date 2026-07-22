@@ -10,15 +10,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
- * Resolves what the player wants to investigate ({@link Verdict#target()}) against the
- * session: first a location, then a person present at the current location. Investigating
- * does not change the session state – the resolved subject is what the Narrator later
- * describes to the player. If the target cannot be resolved, nothing happens.
+ * Resolves what the player wants to investigate from {@link Verdict#targetUuid()} against
+ * the session: first a location, then a person. Investigating does not change the session
+ * state – the resolved subject is what the Narrator later describes to the player. If the
+ * target cannot be resolved, nothing happens.
  * <p>
- * Items are covered by the task conceptually, but are not yet modelled with names, so they
- * cannot be resolved here yet.
+ * Items are covered by the task conceptually, but are not yet modelled, so they cannot be
+ * resolved here yet.
  */
 @Component
 public class UntersuchenTaskHandler implements TaskHandler {
@@ -32,19 +33,20 @@ public class UntersuchenTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<Location> location = Optional.empty(); //FIXME aus verdict holen
+        Optional<UUID> targetId = verdict.targetUuid();
+
+        Optional<Location> location = targetId.flatMap(session::getLocation);
         if (location.isPresent()) {
             LOGGER.debug("Spieler untersucht den Ort: {}", location.get().name());
             return;
         }
 
-
-        Optional<Person> person = Optional.empty(); //FIXME aus verdict ziehen
+        Optional<Person> person = targetId.flatMap(session::getPerson);
         if (person.isPresent()) {
             LOGGER.debug("Spieler untersucht die Person: {}", person.get().name());
             return;
         }
 
-        LOGGER.info("Kein bekanntes Untersuchungsziel für UNTERSUCHEN: '{}'", verdict.target());
+        LOGGER.info("Kein bekanntes Untersuchungsziel für UNTERSUCHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
     }
 }

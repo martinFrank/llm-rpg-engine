@@ -4,6 +4,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.Location
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.BaseCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.EqualsCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
 
@@ -113,6 +114,10 @@ public class Buchenhain implements Adventure {
                                 new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
                                         getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.getId())
+                                ),
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
+                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44")) //nachdem mit dem Dorfvorsteher geredet wurde
                                 )
                         ))
                         .personConditions(List.of(
@@ -135,6 +140,11 @@ public class Buchenhain implements Adventure {
                                         getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //marktplatz
                                         getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8")) //evening time condition
+                                ),
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.getId()) //always there
                                 )
                         ))
                         .build()
@@ -194,7 +204,8 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61"))
                         .name("Kalgeria Mondläufer")
                         .description("""
-                                Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain.
+                                Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
+                                ihre Präsenz eine angenehme Atmosphäre aus.
                                 """)
                         .role("""
                                 Kalgeria Mondläufer ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
@@ -267,6 +278,16 @@ public class Buchenhain implements Adventure {
                                 Eingangsbereich durch eine reich verzierte Holztür geschützt wird. Vor
                                 dem Gasthaus führt ein breiter, leicht abschüssiger Weg bis zum Marktplatz.
                                 """)
+                        .build(),
+                new Location.Builder()
+                        .id(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471"))
+                        .name("Blumental")
+                        .description("""
+                                Dier Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich
+                                könnte man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf,
+                                dass es sich nicht rentiert, dort Landwirtschaft zu betreiben. Der Weg führt hier
+                                vom Dorf weiter in den Buchenwald hinein.
+                                """)
                         .build()
         );
     }
@@ -285,7 +306,12 @@ public class Buchenhain implements Adventure {
                         UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"),
                         "nightTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.getId())),
-                        GameTime.IN_THE_EVENING)
+                        GameTime.IN_THE_EVENING),
+                new IsCondition(
+                        UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"),
+                        "prüft ob mit dem dorfvorsteher schon geredet wurde",
+                        List.of( (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"))) // hat mit dorf-vorsteher geredet
+                )
 
         );
     }

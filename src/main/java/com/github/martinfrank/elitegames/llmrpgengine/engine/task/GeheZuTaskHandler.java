@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * Moves the player to the location named in {@link Verdict#target()}. If no such
- * location exists in the adventure, the current location is left unchanged.
+ * Moves the player to the location resolved from {@link Verdict#targetUuid()}. If the
+ * verdict carries no resolvable location id, the current location is left unchanged.
  */
 @Component
 public class GeheZuTaskHandler implements TaskHandler {
@@ -26,12 +26,12 @@ public class GeheZuTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<Location> target = Optional.empty();//FIXME aus verdict holen! session.findLocation(verdict.target());
+        Optional<Location> target = verdict.targetUuid().flatMap(session::getLocation);
         if (target.isPresent()) {
             session.setCurrentLocation(target.get());
             LOGGER.debug("Spieler bewegt sich nach: {}", target.get().name());
         } else {
-            LOGGER.info("Kein bekannter Zielort für GEHEZU: '{}'", verdict.target());
+            LOGGER.info("Kein bekannter Zielort für GEHEZU: '{}' (id: {})", verdict.target(), verdict.targetId());
         }
     }
 }

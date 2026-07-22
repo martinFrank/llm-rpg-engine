@@ -43,6 +43,12 @@ public class VerdictAgent {
                                 GEGENSTÄNDE:
                                 {items}
 
+                                VERFÜGBARE ORTE (Name, id und Beschreibung):
+                                {availableLocations}
+
+                                VERFÜGBARE PERSONEN (Name, id und Beschreibung):
+                                {availablePersons}
+
                                 BISHERIGER VERLAUF:
                                 {chatHistory}
 
@@ -53,6 +59,8 @@ public class VerdictAgent {
                         .param("location", orEmpty(context.location()))
                         .param("persons", orEmpty(context.persons()))
                         .param("items", orEmpty(context.items()))
+                        .param("availableLocations", orEmpty(context.availableLocations()))
+                        .param("availablePersons", orEmpty(context.availablePersons()))
                         .param("chatHistory", orEmpty(context.chatHistory()))
                         .param("input", orEmpty(userInput))
                 )
