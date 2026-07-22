@@ -40,14 +40,13 @@ public class GameEngine {
      *
      * @return the verdict that was produced and applied
      */
-    public Verdict handleUserInput(String userInput, Session session) {
+    public void handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);
+        LOGGER.debug("Context: {}", context);
         Verdict verdict = verdictAgent.evaluate(context, userInput);
         LOGGER.debug("Verdict: {}", verdict);
-
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
-        return verdict;
     }
 
     private void applyTask(Verdict verdict, Session session) {

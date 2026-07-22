@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class BaseFlag<R> implements Flag<R> {
 
-    public static final Flag<GameTime> GAME_TIME_FLAG = new BaseFlag<GameTime>(
+    public static final Flag<GameTime> GAME_TIME_FLAG = new BaseFlag<>(
             UUID.fromString("ab9ee3e8-04df-493b-a408-dc93e738eaa3"), "game time flag", GameTime.AFTERNOON);
 
     private final UUID id;

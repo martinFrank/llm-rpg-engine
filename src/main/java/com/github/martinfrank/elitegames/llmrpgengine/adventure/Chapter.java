@@ -1,27 +1,27 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Chapter implements Identifiable {
 
     private final UUID id;
     private final String name;
     private final String summary;
-    private final List<Location> locations;
+    private final List<LocationCondition> locationConditions;
     private final List<PersonCondition> personConditions;
     private final List<Item> items = new ArrayList<>();
 
 
-    public Chapter(UUID id, String name, String summary, List<Location> locations,  List<PersonCondition> personConditions) {
+    public Chapter(UUID id, String name, String summary, List<LocationCondition> locationConditions, List<PersonCondition> personConditions) {
         this.id = id;
         this.name = name;
         this.summary = summary;
-        this.locations = locations;
+        this.locationConditions = locationConditions;
         this.personConditions = personConditions;
     }
 
@@ -41,13 +41,16 @@ public class Chapter implements Identifiable {
     public List<PersonCondition> personConditions() {
         return personConditions;
     }
+    public List<LocationCondition> locationConditions() {
+        return locationConditions;
+    }
 
     public static class Builder {
 
         private UUID id = UUID.randomUUID();
         private String name;
         private String summary;
-        private List<Location> locations;
+        private List<LocationCondition> locations;
         private List<PersonCondition> personConditions;
 
         public Builder id(UUID id) {
@@ -65,7 +68,7 @@ public class Chapter implements Identifiable {
             return this;
         }
 
-        public Builder locations(List<Location> locations) {
+        public Builder locationConditions(List<LocationCondition> locations) {
             this.locations = locations;
             return this;
         }

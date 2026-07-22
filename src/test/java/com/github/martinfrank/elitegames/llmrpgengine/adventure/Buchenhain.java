@@ -1,10 +1,11 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.BaseCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.EqualsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.GameTimeFlag;
 
 import java.util.List;
 import java.util.UUID;
@@ -96,11 +97,23 @@ public class Buchenhain implements Adventure {
                                 sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das
                                 nächste Kapitel.
                                 """)
-                        .locations(List.of(
-                                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
-                                getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
-                                getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //dorf schmiede
-                                getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")) //wirtshaus zum kl. Adler
+                        .locationConditions(List.of(
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.getId())
+                                ),
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
+                                ),
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //dorf schmiede
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
+                                ),
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.getId())
+                                )
                         ))
                         .personConditions(List.of(
                                 new PersonCondition(
@@ -136,69 +149,69 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4"))
                         .name("Ulf Stetten")
                         .description("""
-                            Ulf Stetten ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
-                            in der Bevölkerung geniesst. Er ist gütig und weise.
-                            """)
+                                Ulf Stetten ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
+                                in der Bevölkerung geniesst. Er ist gütig und weise.
+                                """)
                         .role("""
-                            Ulf Stetten ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
-                            um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden
-                            bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er
-                            verfügbar hat, falls er danach gefragt wird.
-                            """)
+                                Ulf Stetten ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
+                                um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden
+                                bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er
+                                verfügbar hat, falls er danach gefragt wird.
+                                """)
                         .appearance("""
-                            Er ist ein älterer Mann mit wachen Augen. Er trägt schöne traditionelle Kleidung.
-                            Er ist 1.80, gross und sieht noch sportlich & fit aus. Er lächelt oft und gerne.
-                            """)
+                                Er ist ein älterer Mann mit wachen Augen. Er trägt schöne traditionelle Kleidung.
+                                Er ist 1.80, gross und sieht noch sportlich & fit aus. Er lächelt oft und gerne.
+                                """)
                         .background("""
-                            Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
-                            """)
+                                Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
+                                """)
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636"))
                         .name("Rangolf Klingbeil")
                         .description("""
-                            Rangolf Klingbeil ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
-                            schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die
-                            Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
-                            """)
+                                Rangolf Klingbeil ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
+                                schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die
+                                Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
+                                """)
                         .role("""
-                            Rangolf Klingbeil ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
-                            Spieler Waffen, Rüstungen und Gegenstände zu verkaufen.
-                            """)
+                                Rangolf Klingbeil ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
+                                Spieler Waffen, Rüstungen und Gegenstände zu verkaufen.
+                                """)
                         .appearance("""
-                            Er ist ein Mann im mittleren Alter, mit längeren strähnigen blonden Haaren. Er ist
-                            nur von durchschnittlicher Grösse und für einen Schmied nicht sehr stark gebaut.
-                            Er schafft es nicht, Augenkontakt mit Gesprächspartner aufzubauen, sondern sieht
-                            immer wieder auf den Boden. Er trägt gewöhnliche Kleidung, blaue Hosen, ein weisses
-                            Hemd und einen Armreif aus Metall.
-                            """)
+                                Er ist ein Mann im mittleren Alter, mit längeren strähnigen blonden Haaren. Er ist
+                                nur von durchschnittlicher Grösse und für einen Schmied nicht sehr stark gebaut.
+                                Er schafft es nicht, Augenkontakt mit Gesprächspartner aufzubauen, sondern sieht
+                                immer wieder auf den Boden. Er trägt gewöhnliche Kleidung, blaue Hosen, ein weisses
+                                Hemd und einen Armreif aus Metall.
+                                """)
                         .background("""
-                            Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain. Er hat die
-                            Schmiede seines Vaters übernommen.
-                            """)
+                                Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain. Er hat die
+                                Schmiede seines Vaters übernommen.
+                                """)
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61"))
                         .name("Kalgeria Mondläufer")
                         .description("""
-                            Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain.
-                            """)
+                                Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain.
+                                """)
                         .role("""
-                            Kalgeria Mondläufer ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
-                            Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus
-                            für die Spieler eine Übernachtungsmöglichkeit.
-                            """)
+                                Kalgeria Mondläufer ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
+                                Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus
+                                für die Spieler eine Übernachtungsmöglichkeit.
+                                """)
                         .appearance("""
-                            Die Wirtin ist eine dicke, freundliche Frau mit roten Wangen und einem Lächeln,
-                            das ihre Grübchen hervorhebt. Sie hat ihr Haar in einen dicken Zopf geflochten
-                            und trägt ein blau-gestreiftes Leinenkleid, das mit weißen Spitzen besetzt ist.
-                            Mit ihrer warmen Stimme begrüßt sie jeden Gast bei der Tür und fragt nach seinem
-                            Wunsch, während sie mit geschickten Händen Bierkrüge füllt oder Suppen serviert.
-                            """)
+                                Die Wirtin ist eine dicke, freundliche Frau mit roten Wangen und einem Lächeln,
+                                das ihre Grübchen hervorhebt. Sie hat ihr Haar in einen dicken Zopf geflochten
+                                und trägt ein blau-gestreiftes Leinenkleid, das mit weißen Spitzen besetzt ist.
+                                Mit ihrer warmen Stimme begrüßt sie jeden Gast bei der Tür und fragt nach seinem
+                                Wunsch, während sie mit geschickten Händen Bierkrüge füllt oder Suppen serviert.
+                                """)
                         .background("""
-                            Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf Buchenhain
-                            gezogen und führt seit dem die Kneipe.
-                            """)
+                                Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf Buchenhain
+                                gezogen und führt seit dem die Kneipe.
+                                """)
                         .build()
         );
     }
@@ -215,45 +228,45 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))
                         .name("Buchenhain Dorfplatz")
                         .description("""
-                            Der Dorfplatz von Buchenhain. Hier findet man einen kleinen Laden
-                            und der Schmied hat hier seine Schmiede. Es spielen einige Kinder
-                            auf dem Dorfplatz aber ansonsten ist es ein ruhiger Ort
-                            """)
+                                Der Dorfplatz von Buchenhain. Hier findet man einen kleinen Laden
+                                und der Schmied hat hier seine Schmiede. Es spielen einige Kinder
+                                auf dem Dorfplatz aber ansonsten ist es ein ruhiger Ort
+                                """)
                         .build(),
                 new Location.Builder()
                         .id(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"))
                         .name("Haus des Dorfvorstehers")
                         .description("""
-                            Dieses Haus ist ein klein wenig grösser als die anderen Häuser
-                            im Dorf. Das Dach ist mit Reed gedeckt, es ist ein zweistöckiges
-                            Fachwerkhaus mit weiss verputzten Wänden. Innen ist es sehr
-                            gemütlich, durch die offenen Fenster dringt viel Licht. Ihr werdet
-                            ins Arbeitszimmer geführt, könnt dabei aber auch noch einen Blick
-                            in die Küche werfen. Es duftet von dort nach deftigem Essen.
-                            """)
+                                Dieses Haus ist ein klein wenig grösser als die anderen Häuser
+                                im Dorf. Das Dach ist mit Reed gedeckt, es ist ein zweistöckiges
+                                Fachwerkhaus mit weiss verputzten Wänden. Innen ist es sehr
+                                gemütlich, durch die offenen Fenster dringt viel Licht. Ihr werdet
+                                ins Arbeitszimmer geführt, könnt dabei aber auch noch einen Blick
+                                in die Küche werfen. Es duftet von dort nach deftigem Essen.
+                                """)
                         .build(),
                 new Location.Builder()
                         .id(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3"))
                         .name("Die Dorf Schmiede")
                         .description("""
-                            Das kleine Gebäude mit schrägem Dach und weißem Fachwerk ist von
-                            aussen nicht besonders beeindruckend, aber die Gerüche nach heißem
-                            Metall und Kohle verraten den tatsächlichen Inhalt. Durch das offene
-                            Tor gelangt man in eine kleine Vorhalle mit einem Tisch und zwei
-                            Bänken, hinter dem sich ein weiteres Tor öffnet, durch das man direkt
-                            in die Schmiede hineinkommt.
-                            """)
+                                Das kleine Gebäude mit schrägem Dach und weißem Fachwerk ist von
+                                aussen nicht besonders beeindruckend, aber die Gerüche nach heißem
+                                Metall und Kohle verraten den tatsächlichen Inhalt. Durch das offene
+                                Tor gelangt man in eine kleine Vorhalle mit einem Tisch und zwei
+                                Bänken, hinter dem sich ein weiteres Tor öffnet, durch das man direkt
+                                in die Schmiede hineinkommt.
+                                """)
                         .build(),
                 new Location.Builder()
                         .id(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"))
                         .name("Wirtshaus zum kleinen Adler")
                         .description("""
-                            Das Gasthaus Zum kleinen Ader liegt mitten im Herzen von Buchenhain,
-                            umgeben von einer steinernen Stadtmauer und einigen alten Bäumen.
-                            Die Fassade ist warm und hell beleuchtet, während der schmale
-                            Eingangsbereich durch eine reich verzierte Holztür geschützt wird. Vor
-                            dem Gasthaus führt ein breiter, leicht abschüssiger Weg bis zum Marktplatz.
-                            """)
+                                Das Gasthaus Zum kleinen Ader liegt mitten im Herzen von Buchenhain,
+                                umgeben von einer steinernen Stadtmauer und einigen alten Bäumen.
+                                Die Fassade ist warm und hell beleuchtet, während der schmale
+                                Eingangsbereich durch eine reich verzierte Holztür geschützt wird. Vor
+                                dem Gasthaus führt ein breiter, leicht abschüssiger Weg bis zum Marktplatz.
+                                """)
                         .build()
         );
     }
@@ -262,6 +275,7 @@ public class Buchenhain implements Adventure {
     @SuppressWarnings("unchecked")
     public List<Condition<?>> getConditions() {
         return List.of(
+                BaseCondition.ALWAYS_TRUE_CONDITION,
                 new RangeCondition<>(
                         UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"),
                         "dayTimeCondition",
@@ -272,6 +286,7 @@ public class Buchenhain implements Adventure {
                         "nightTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.getId())),
                         GameTime.IN_THE_EVENING)
+
         );
     }
 
