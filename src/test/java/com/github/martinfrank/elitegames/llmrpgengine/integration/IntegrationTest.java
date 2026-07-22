@@ -29,7 +29,7 @@ class IntegrationTest {
     private GameEngine engine;
 
     @Test
-    void handlesUserInputAgainstRealLlm() {
+    void testWalkToInput() {
         Adventure adventure = new Buchenhain();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
@@ -37,4 +37,16 @@ class IntegrationTest {
         session.start();
         engine.handleUserInput("wir gehen zum Haus des Ortsvorstehers", session);
     }
+
+    @Test
+    void testInvestigateInput() {
+        Adventure adventure = new Buchenhain();
+        Player player = new Player("Thorsten");
+        Session session = new Session(adventure, player);
+
+        session.start();
+        engine.handleUserInput("sehen uns den markt genauer an", session);
+    }
+
+
 }
