@@ -31,7 +31,7 @@ public record VerdictContext (String chapterSummary, String location, String per
     private static String extractPersons(Session session) {
         Location location = session.getCurrentLocation();
         GameTime time = session.getCurrentTime();
-        List<Person> persons = session.getPersons(location, time);
+        List<Person> persons = session.getCurrentPersons(location);
         return persons.stream()
                 .map(p -> "Name: "+p.name()+", Rolle: "+ StringNormalizer.normalize(p.role()))
                 .collect(Collectors.joining("\n"));

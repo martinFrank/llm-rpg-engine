@@ -26,7 +26,7 @@ public class GeheZuTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<Location> target = session.findLocation(verdict.target());
+        Optional<Location> target = Optional.empty();//FIXME aus verdict holen! session.findLocation(verdict.target());
         if (target.isPresent()) {
             session.setCurrentLocation(target.get());
             LOGGER.debug("Spieler bewegt sich nach: {}", target.get().name());

@@ -1,5 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -10,21 +13,16 @@ public class Chapter implements Identifiable {
     private final String name;
     private final String summary;
     private final List<Location> locations;
-    private final List<PersonTimetable> timeTables;
+    private final List<PersonCondition> personConditions;
+    private final List<Item> items = new ArrayList<>();
 
 
-    public Chapter(UUID id, String name, String summary, List<Location> locations,  List<PersonTimetable> timeTables) {
+    public Chapter(UUID id, String name, String summary, List<Location> locations,  List<PersonCondition> personConditions) {
         this.id = id;
         this.name = name;
         this.summary = summary;
         this.locations = locations;
-        this.timeTables = timeTables;
-    }
-
-    public List<Person> getPersons(Location location, GameTime currentTime) {
-        return timeTables.stream()
-                .filter(tt -> tt.where().getId().equals(location.getId()) && tt.when().contains(currentTime))
-                .map(PersonTimetable::who).distinct().collect(Collectors.toList());
+        this.personConditions = personConditions;
     }
 
     @Override
@@ -40,13 +38,17 @@ public class Chapter implements Identifiable {
         return summary;
     }
 
+    public List<PersonCondition> personConditions() {
+        return personConditions;
+    }
+
     public static class Builder {
 
         private UUID id = UUID.randomUUID();
         private String name;
         private String summary;
         private List<Location> locations;
-        private List<PersonTimetable> timeTables;
+        private List<PersonCondition> personConditions;
 
         public Builder id(UUID id) {
             this.id = id;
@@ -68,13 +70,13 @@ public class Chapter implements Identifiable {
             return this;
         }
 
-        public Builder timeTables(List<PersonTimetable> timeTables) {
-            this.timeTables = timeTables;
+        public Builder personConditions(List<PersonCondition> personConditions) {
+            this.personConditions = personConditions;
             return this;
         }
 
         public Chapter build() {
-            return new Chapter(id, name, summary, locations, timeTables);
+            return new Chapter(id, name, summary, locations, personConditions);
         }
 
     }

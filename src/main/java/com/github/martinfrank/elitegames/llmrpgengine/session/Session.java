@@ -1,10 +1,13 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Session {
 
@@ -15,10 +18,12 @@ public class Session {
     private Location currentLocation;
     private Chapter currentChapter;
     private GameTime currentTime = GameTime.AFTERNOON;
+    private final SessionFlags sessionFlags = new SessionFlags();
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
         this.player = player;
+        sessionFlags.init(adventure.getFlags());
     }
 
     public void start() {
@@ -37,29 +42,36 @@ public class Session {
         this.currentLocation = currentLocation;
     }
 
-    public List<Person> getPersons(Location location, GameTime gameTime) {
-        return currentChapter.getPersons(location, gameTime);
-    }
 
     public GameTime getCurrentTime() {
         return currentTime;
+    }
+    public void setCurrentTime(GameTime currentTime) {
+        this.currentTime = currentTime;
     }
 
     public Chapter getCurrentChapter() {
         return currentChapter;
     }
 
-    /**
-     * Looks up a location of the adventure by its name (case-insensitive).
-     * Used by scripted tasks such as GEHEZU to resolve a destination.
-     */
-    public Optional<Location> findLocation(String name) {
-        if (name == null) {
-            return Optional.empty();
+    @SuppressWarnings("unchecked")
+    public List<Person> getCurrentPersons(Location location) {
+        List<Person> result = new ArrayList<>();
+        for (PersonCondition personCondition: currentChapter.personConditions()){
+            if (personCondition.where().getId().equals(location.getId())) {
+                List<Flag<?>> flags = personCondition.condition().getConsideredFlags();
+                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                Condition condition = personCondition.condition();
+                boolean evaluated = condition.evaluate(currentValues);
+                if (evaluated) {
+                    result.add(personCondition.who());
+                }
+            }
         }
-        String needle = name.strip();
-        return adventure.getLocations().stream()
-                .filter(location -> location.name().equalsIgnoreCase(needle))
-                .findFirst();
+        return result;
+    }
+
+    public void setFlag(UUID id, Object value) {
+        sessionFlags.setFlagValue(id, value);
     }
 }
