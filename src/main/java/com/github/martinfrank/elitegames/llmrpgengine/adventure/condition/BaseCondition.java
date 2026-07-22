@@ -31,7 +31,7 @@ public abstract class BaseCondition <R> implements Condition<R> {
     }
 
     @Override
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 

@@ -23,7 +23,7 @@ public class AdventureTest {
         Person rangolf = buchenhain.getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636"));
 
         //when
-        session.setFlag(BaseFlag.GAME_TIME_FLAG.getId(), GameTime.IN_THE_EVENING);
+        session.setFlag(BaseFlag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
 
 
         //then
@@ -42,7 +42,7 @@ public class AdventureTest {
         Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
 
         //when
-        session.setFlag(BaseFlag.GAME_TIME_FLAG.getId(), GameTime.AFTERNOON);
+        session.setFlag(BaseFlag.GAME_TIME_FLAG.id(), GameTime.AFTERNOON);
 
         //then
         List<Person> persons = session.getCurrentPersons(gasthaus);

@@ -10,12 +10,16 @@ public interface Adventure {
     List<Chapter> getChapters();
     List<Person> getPersons();
     List<Item> getItems();
+    List<Dialog> getDialogs();
     List<Location> getLocations();
     List<Condition<?>> getConditions();
     List<Flag<?>> getFlags();
+    List<Knowledge> getKnowledges();
 
     Condition<?> getCondition(UUID id);
     Location getLocation(UUID id);
     Person getPerson(UUID id);
     Flag<?> getFlag(UUID id);
+    Dialog getDialog(UUID id);
+    Knowledge getKnowledge(UUID id);
 }

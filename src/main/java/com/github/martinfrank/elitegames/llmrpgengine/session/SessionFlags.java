@@ -11,7 +11,7 @@ public class SessionFlags {
 
     public void init(List<Flag<?>> flags) {
         for (Flag<?> flag : flags) {
-            currentFlags.put(flag.getId(), flag.getValue());
+            currentFlags.put(flag.id(), flag.getValue());
         }
     }
 
@@ -26,7 +26,7 @@ public class SessionFlags {
     public List<Flag<?>> getFlags(List<Flag<?>> flags) {
         List<Flag<?>> result = new ArrayList<>();
         for (Flag<?> flag : flags) {
-            result.add(new BaseFlag(flag.getId(), "sessionFlag", currentFlags.get(flag.getId())));
+            result.add(new BaseFlag(flag.id(), "sessionFlag", currentFlags.get(flag.id())));
         }
         return result;
     }

@@ -4,7 +4,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.BaseCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BaseFlag;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -62,7 +61,7 @@ class IntegrationTest {
         session.start();
 
         //zeit auf abends setzen
-        session.setFlag(BaseFlag.GAME_TIME_FLAG.getId(), GameTime.IN_THE_EVENING);
+        session.setFlag(BaseFlag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
 
         //zum gasthaus gehen
         Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
@@ -72,6 +71,25 @@ class IntegrationTest {
 
         engine.handleUserInput("was ist hier aktuell los?", session);
     }
+
+//    @Test
+//    void testTalkToMajornInput() {
+//        Adventure buchenhain = new Buchenhain();
+//        Player player = new Player("Thorsten");
+//        Session session = new Session(buchenhain, player);
+//        session.start();
+//
+//        //zeit auf abends setzen
+//        session.setFlag(BaseFlag.GAME_TIME_FLAG.getId(), GameTime.IN_THE_EVENING);
+//
+//        //zum gasthaus gehen
+//        Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
+//        session.chatHistory.player("wir gehen zum Wirtshaus");
+//        session.chatHistory.narrator(gasthaus.description());
+//        session.setCurrentLocation(gasthaus);
+//
+//        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte?", session);
+//    }
 
 
 }

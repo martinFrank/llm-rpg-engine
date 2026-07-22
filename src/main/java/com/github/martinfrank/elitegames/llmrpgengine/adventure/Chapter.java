@@ -26,7 +26,7 @@ public class Chapter implements Identifiable {
     }
 
     @Override
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 

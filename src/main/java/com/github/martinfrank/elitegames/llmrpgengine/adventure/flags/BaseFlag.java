@@ -30,7 +30,7 @@ public class BaseFlag<R> implements Flag<R> {
     }
 
     @Override
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 

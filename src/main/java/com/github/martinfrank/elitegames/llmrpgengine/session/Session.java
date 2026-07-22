@@ -58,7 +58,7 @@ public class Session {
     public List<Person> getCurrentPersons(Location location) {
         List<Person> result = new ArrayList<>();
         for (PersonCondition personCondition: currentChapter.personConditions()){
-            if (personCondition.where().getId().equals(location.getId())) {
+            if (personCondition.where().id().equals(location.id())) {
                 List<Flag<?>> flags = personCondition.condition().getConsideredFlags();
                 List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
                 Condition condition = personCondition.condition();
