@@ -243,11 +243,9 @@ public class Buchenhain implements Adventure {
                         List.of(
                                 new KnowhowTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                                         "Bedrohung oder Gefahr für das Dorf",
-                                        UUID.fromString("xxx")) //Knowhow id
-
+                                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"))) //"wissen über die Bedrohung im Dorf"
                         )
                 )
-
         );
     }
 
@@ -347,7 +345,14 @@ public class Buchenhain implements Adventure {
 
     @Override
     public List<Knowledge> getKnowledges() {
-        return List.of();
+        return List.of(
+                new Knowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"),
+                        "wissen über die Bedrohung im Dorf",
+                        """
+                                die Spieler wissen jetzt, dass Monster das Dorf angreifen.
+                                """
+                        )
+        );
     }
 
     @Override
