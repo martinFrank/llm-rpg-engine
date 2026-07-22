@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
- * The rules engine of the game. Given the current world state, the scenario and
- * the player's action, it decides — as structured data — what mechanically
- * happens. It deliberately does NOT write prose; that is the Narrator's job.
+ * Figures out what the player's input actually means and maps it onto one of the
+ * scripted {@link TaskType}s. It produces structured data ({@link Verdict}) only;
+ * the resulting changes to the session are applied by the engine, and prose is the
+ * Narrator's job.
  */
 @Component
 public class VerdictAgent {
@@ -28,34 +31,44 @@ public class VerdictAgent {
                 .system(systemPrompt)
                 .user(u -> u
                         .text("""
-                                SCENARIO:
-                                {scenario}
+                                KAPITEL:
+                                {chapter}
 
-                                CURRENT WORLD STATE:
-                                Location: {location}
-                                Player: {playerName} ({playerClass}), Level {level}, HP {hp}/{maxHp}
-                                Inventory: {inventory}
-                                Quest log: {quests}
+                                AKTUELLER ORT:
+                                {location}
 
-                                RECENT STORY:
-                                {transcript}
+                                ANWESENDE PERSONEN:
+                                {persons}
 
-                                PLAYER ACTION:
-                                {action}
+                                GEGENSTÄNDE:
+                                {items}
+
+                                VERFÜGBARE ORTE (Name, id und Beschreibung):
+                                {availableLocations}
+
+                                VERFÜGBARE PERSONEN (Name, id und Beschreibung):
+                                {availablePersons}
+
+                                BISHERIGER VERLAUF:
+                                {chatHistory}
+
+                                EINGABE DES SPIELERS:
+                                {input}
                                 """)
-//                        .param("scenario", session.getScenario())
-//                        .param("where", session.getWorldState().getLocation())
-//                        .param("playerName", session.getWorldState().getPlayer().getName())
-//                        .param("playerClass", session.getWorldState().getPlayer().getCharacterClass())
-//                        .param("level", session.getWorldState().getPlayer().getLevel())
-//                        .param("hp", session.getWorldState().getPlayer().getHp())
-//                        .param("maxHp", session.getWorldState().getPlayer().getMaxHp())
-//                        .param("inventory", String.join(", ", session.getWorldState().getPlayer().getInventory()))
-//                        .param("quests", String.join(", ", session.getWorldState().getQuestLog()))
-//                        .param("transcript", recentTranscript)
-//                        .param("action", playerAction)
+                        .param("chapter", orEmpty(context.chapterSummary()))
+                        .param("location", orEmpty(context.location()))
+                        .param("persons", orEmpty(context.persons()))
+                        .param("items", orEmpty(context.items()))
+                        .param("availableLocations", orEmpty(context.availableLocations()))
+                        .param("availablePersons", orEmpty(context.availablePersons()))
+                        .param("chatHistory", orEmpty(context.chatHistory()))
+                        .param("input", orEmpty(userInput))
                 )
                 .call()
                 .entity(Verdict.class);
+    }
+
+    private static String orEmpty(String value) {
+        return Objects.requireNonNullElse(value, "");
     }
 }
