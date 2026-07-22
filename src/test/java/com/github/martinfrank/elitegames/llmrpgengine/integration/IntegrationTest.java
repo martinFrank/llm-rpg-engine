@@ -88,7 +88,7 @@ class IntegrationTest {
         session.chatHistory.narrator(vorsteherhaus.description());
         session.setCurrentLocation(vorsteherhaus);
 
-        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte?", session);
+        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte", session);
     }
 
 
