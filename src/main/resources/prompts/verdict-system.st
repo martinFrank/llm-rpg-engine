@@ -30,6 +30,10 @@ BEKANNTE AUFGABEN (task):
   drücken, eine magische Kugel berühren oder einen Brief öffnen.
   target = der Name des Objekts, mit dem interagiert wird. targetId = "unbekannt"
   (Objekte stehen in keiner Liste).
+- SPRECHEN: Der Spieler möchte eine Person ansprechen und mit ihr kommunizieren – z. B.
+  sie begrüßen, ihr eine Frage stellen, ihr antworten oder ein Gespräch beginnen.
+  target = der Name der angesprochenen Person. targetId = die id der passenden Person
+  aus VERFÜGBARE PERSONEN, sonst "unbekannt".
 - UNBEKANNT: Die Eingabe passt zu keiner bekannten Aufgabe.
   target = leer. targetId = "unbekannt".
 
@@ -44,6 +48,11 @@ Regeln:
   "öffne die Tür", "drück den Knopf", "leg den Schalter um", "berühr die Kugel",
   "öffne den Brief"). Unterscheide INTERAGIEREN klar von UNTERSUCHEN: Beim Untersuchen
   betrachtet der Spieler etwas nur, beim Interagieren verändert oder bedient er es.
+- Wähle SPRECHEN, wenn der Spieler eine Person anspricht oder mit ihr kommuniziert
+  (z. B. "rede mit dem Vorsteher", "frag den Schmied nach dem Horn", "begrüße die Wirtin",
+  "ich sage ihm, dass wir helfen"). Unterscheide SPRECHEN klar von UNTERSUCHEN: Beim
+  Untersuchen betrachtet der Spieler eine Person nur, beim Sprechen wendet er sich an sie
+  und tauscht sich mit ihr aus.
 - Wenn keine Aufgabe passt, wähle UNBEKANNT statt zu raten.
 - interpretation: eine kurze, sachliche Beschreibung dessen, was der Spieler will.
   Sie ist nur für interne Zwecke und wird dem Spieler nie gezeigt.

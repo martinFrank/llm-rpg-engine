@@ -26,6 +26,13 @@ public enum TaskType {
      */
     INTERAGIEREN,
 
+    /**
+     * The player wants to address a person and communicate with them – talk to, greet,
+     * ask, or answer someone. Parameter {@code target}: the person's name; {@code targetId}:
+     * the person's id from the available-persons list, or {@value Verdict#UNKNOWN}.
+     */
+    SPRECHEN,
+
     /** Fallback: the input could not be mapped to any known task. */
     UNBEKANNT
 }
