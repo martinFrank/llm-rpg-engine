@@ -6,6 +6,7 @@ public enum GameTime {
     HIGH_NOON,
     AFTERNOON,
     IN_THE_EVENING,
+    AT_NIGHT,
     DUSK,
     MIDNIGHT,
 }

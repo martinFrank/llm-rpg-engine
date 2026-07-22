@@ -3,10 +3,10 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.BaseCondition;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.EqualsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 
 import java.util.List;
 import java.util.UUID;
@@ -233,17 +233,43 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Dialog> getDialogs() {
         return List.of(
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
                         """
+                                Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht
+                                grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr
+                                herausfindet, wieso die Monster das Dorf angreifen und bittet euch, die Bedrohung zu
+                                beenden.
+                                
+                                Wenn die Helden fragen, welche Monster das Dorf bedrohen, erfahren die Helden, dass
+                                Wölfe, gross wie Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den
+                                Adern gefrieren lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot
+                                leuchtenden Augen das Dorf bedrohen. hier darf auch noch ähnliches dazu erfunden werden.
+                                
+                                Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend
+                                beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das
+                                machen.
                                 """,
                         List.of(
                                 new KnowhowTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                                         "Bedrohung oder Gefahr für das Dorf",
-                                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"))) //"wissen über die Bedrohung im Dorf"
+                                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
+                                        List.of()), //"wissen über die Bedrohung im Dorf"
+                                new KnowhowTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                                        "Auftrag oder heikles Thema",
+                                        getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
+                                        List.of(
+                                                new FlagChange<>(
+                                                        UUID.randomUUID(),
+                                                        (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
+                                                        true
+                                                )
+                                        )) //"wissen über Auftrag"
+
                         )
                 )
         );
@@ -318,12 +344,12 @@ public class Buchenhain implements Adventure {
                         UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"),
                         "dayTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
-                        List.of(GameTime.MORNING, GameTime.HIGH_NOON, GameTime.AFTERNOON)),
-                new EqualsCondition<>(
+                        List.of(GameTime.MORNING, GameTime.HIGH_NOON, GameTime.AFTERNOON)), //bedingung: es ist tagsüber
+                new RangeCondition<>(
                         UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"),
                         "nightTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
-                        GameTime.IN_THE_EVENING),
+                        List.of(GameTime.IN_THE_EVENING, GameTime.AT_NIGHT, GameTime.MIDNIGHT)), //bedingung: es ist abends/nachts
                 new IsCondition(
                         UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"),
                         "prüft ob mit dem dorfvorsteher schon geredet wurde",
@@ -349,9 +375,17 @@ public class Buchenhain implements Adventure {
                 new Knowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"),
                         "wissen über die Bedrohung im Dorf",
                         """
-                                die Spieler wissen jetzt, dass Monster das Dorf angreifen.
+                                die Spieler wissen jetzt, dass Monster das Dorf angreifen. Es handelt sich um mutierte
+                                Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
                                 """
-                        )
+                ),
+                new Knowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa"),
+                        "Auftrag des Ortsvorstehers",
+                        """
+                                die Spieler wissen jetzt, dass ihr Auftrag ist, dass sie die Ursache der Bedrohung des
+                                Dorf herausfinden sollen und die Bedrohung abwenden.
+                                """
+                )
         );
     }
 

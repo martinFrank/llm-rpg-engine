@@ -72,24 +72,24 @@ class IntegrationTest {
         engine.handleUserInput("was ist hier aktuell los?", session);
     }
 
-//    @Test
-//    void testTalkToMajornInput() {
-//        Adventure buchenhain = new Buchenhain();
-//        Player player = new Player("Thorsten");
-//        Session session = new Session(buchenhain, player);
-//        session.start();
-//
-//        //zeit auf abends setzen
-//        session.setFlag(BaseFlag.GAME_TIME_FLAG.getId(), GameTime.IN_THE_EVENING);
-//
-//        //zum gasthaus gehen
-//        Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
-//        session.chatHistory.player("wir gehen zum Wirtshaus");
-//        session.chatHistory.narrator(gasthaus.description());
-//        session.setCurrentLocation(gasthaus);
-//
-//        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte?", session);
-//    }
+    @Test
+    void testTalkToMajornInput() {
+        Adventure buchenhain = new Buchenhain();
+        Player player = new Player("Thorsten");
+        Session session = new Session(buchenhain, player);
+        session.start();
+
+        //zeit auf abends setzen
+        session.setFlag(BaseFlag.GAME_TIME_FLAG.id(), GameTime.AFTERNOON);
+
+        //zum gasthaus gehen
+        Location vorsteherhaus = buchenhain.getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"));
+        session.chatHistory.player("wir gehen zum Haus des Ortsvorstehers");
+        session.chatHistory.narrator(vorsteherhaus.description());
+        session.setCurrentLocation(vorsteherhaus);
+
+        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte?", session);
+    }
 
 
 }
