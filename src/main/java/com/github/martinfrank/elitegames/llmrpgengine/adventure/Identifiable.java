@@ -5,11 +5,11 @@ import java.util.UUID;
 
 public interface Identifiable {
 
-    UUID getId();
+    UUID id();
 
     static Identifiable find(UUID id, List<? extends Identifiable> identifiables) {
         for (Identifiable identifiable : identifiables) {
-            if (identifiable.getId().equals(id)) {
+            if (identifiable.id().equals(id)) {
                 return identifiable;
             }
         }

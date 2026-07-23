@@ -6,6 +6,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
+/**
+ * Turns a {@link NarratorContext} into immersive prose that the player reads.
+ * <p>
+ * The agent is deliberately generic: it does not know <em>which</em> task it is
+ * narrating. The {@link NarratorContext#purpose()} field describes what the player
+ * is doing (e.g. investigating a location), so the same {@link #narrate(NarratorContext)}
+ * call serves every task type. To support a new kind of narration – investigating a
+ * person, moving to a location, etc. – add a factory method to {@link NarratorContext}
+ * instead of changing this agent.
+ */
 @Component
 public class NarratorAgent {
 
@@ -23,35 +35,36 @@ public class NarratorAgent {
                 .system(systemPrompt)
                 .user(u -> u
                         .text("""
-                                SCENARIO:
-                                {scenario}
+                                AUFGABE:
+                                {purpose}
 
-                                LOCATION: {location}
+                                ORT:
+                                {location}
 
-                                RECENT STORY:
-                                {transcript}
+                                ANWESENDE PERSONEN:
+                                {persons}
 
-                                THE PLAYER ATTEMPTS:
-                                {action}
+                                TAGESZEIT:
+                                {time}
 
-                                WHAT MECHANICALLY HAPPENS (from the GameMaster, dramatize this faithfully):
-                                {outcome}
-                                HP change: {hpDelta}
-                                Items gained: {itemsGained}
-                                Items lost: {itemsLost}
-                                Game over: {gameOver}
+                                BESONDERE DETAILS:
+                                {interestingDetails}
+
+                                BISHERIGER VERLAUF:
+                                {conversationHistory}
                                 """)
-//                        .param("scenario", session.getScenario())
-//                        .param("where", session.getWorldState().getLocation())
-//                        .param("transcript", recentTranscript)
-//                        .param("action", playerAction)
-//                        .param("outcome", verdict.outcome())
-//                        .param("hpDelta", verdict.hpDelta())
-//                        .param("itemsGained", String.join(", ", verdict.itemsGained()))
-//                        .param("itemsLost", String.join(", ", verdict.itemsLost()))
-//                        .param("gameOver", verdict.gameOver())
+                        .param("purpose", orEmpty(context.purpose()))
+                        .param("location", orEmpty(context.location()))
+                        .param("persons", orEmpty(context.persons()))
+                        .param("time", orEmpty(context.time()))
+                        .param("interestingDetails", orEmpty(context.interestingDetails()))
+                        .param("conversationHistory", orEmpty(context.conversationHistory()))
                 )
                 .call()
                 .content();
+    }
+
+    private static String orEmpty(String value) {
+        return Objects.requireNonNullElse(value, "");
     }
 }

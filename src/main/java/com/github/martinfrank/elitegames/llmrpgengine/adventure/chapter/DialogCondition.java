@@ -1,8 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 
-public record PersonCondition(Person person, Location location, Condition<?> condition) {
+public record DialogCondition(Person person, Dialog dialog, Condition<?> condition) {
 }

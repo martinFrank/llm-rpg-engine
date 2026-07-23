@@ -1,6 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
@@ -58,7 +57,7 @@ public record VerdictContext (String chapterSummary,
 
     private static String extractAvailablePersons(Session session) {
         List<Person> availablePersons = session.getCurrentChapter().personConditions().stream()
-                .map(PersonCondition::who)
+                .map(PersonCondition::person)
                 .distinct().toList();
         return availablePersons.stream()
                 .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: "+StringNormalizer.normalize(p.description())+")")

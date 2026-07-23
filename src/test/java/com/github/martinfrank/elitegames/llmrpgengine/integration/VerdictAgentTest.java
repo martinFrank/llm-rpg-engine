@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.integration;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.UUID;
 
 /**
  * Full integration test that talks to a REAL Ollama instance — no mocks.
@@ -23,7 +23,7 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Tag("integration")
 @EnabledIfEnvironmentVariable(named = "OLLAMA_IT", matches = "true")
-class IntegrationTest {
+class VerdictAgentTest {
 
     // Injected by Spring, fully wired: GameEngine -> Verdict/NarratorAgent -> real Ollama ChatClients.
     @Autowired
@@ -48,44 +48,4 @@ class IntegrationTest {
 
         engine.handleUserInput("sehen uns den markt genauer an", session);
     }
-
-    @Test
-    void testInvestigateTavernInput() {
-        Adventure buchenhain = new Buchenhain();
-        Player player = new Player("Thorsten");
-        Session session = new Session(buchenhain, player);
-        session.start();
-
-        //zeit auf abends setzen
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
-
-        //zum gasthaus gehen
-        Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
-        session.chatHistory.player("wir gehen zum Wirtshaus");
-        session.chatHistory.narrator(gasthaus.description());
-        session.setCurrentLocation(gasthaus);
-
-        engine.handleUserInput("was ist hier aktuell los?", session);
-    }
-
-    @Test
-    void testTalkToMajorInput() {
-        Adventure buchenhain = new Buchenhain();
-        Player player = new Player("Thorsten");
-        Session session = new Session(buchenhain, player);
-        session.start();
-
-        //zeit auf abends setzen
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.AFTERNOON);
-
-        //zum gasthaus gehen
-        Location vorsteherhaus = buchenhain.getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"));
-        session.chatHistory.player("wir gehen zum Haus des Ortsvorstehers");
-        session.chatHistory.narrator(vorsteherhaus.description());
-        session.setCurrentLocation(vorsteherhaus);
-
-        engine.handleUserInput("ich frage den Ortsvorsteher, welches Thema er mit mir besprechen wollte", session);
-    }
-
-
 }

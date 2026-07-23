@@ -5,25 +5,6 @@ import java.util.UUID;
 
 public record Person (UUID id, String name, String description, String role, String appearance, String background) implements Identifiable {
 
-//    private final UUID id;
-//    private String name;
-//    private String appearance;
-//    private String description;
-//    private String background;
-//
-//    public Person(UUID id, String name, String description, String appearance, String background) {
-//        this.id = id;
-//        this.name = name;
-//        this.description = description;
-//        this.appearance = appearance;
-//        this.background = background;
-//    }
-
-    @Override
-    public UUID getId() {
-        return id;
-    }
-
     public static class Builder {
         private UUID id = UUID.randomUUID();
         private String name;

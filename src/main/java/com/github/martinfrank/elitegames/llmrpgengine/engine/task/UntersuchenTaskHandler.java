@@ -2,11 +2,11 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -26,6 +26,9 @@ public class UntersuchenTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UntersuchenTaskHandler.class);
 
+    @Autowired
+    private NarratorAgent narratorAgent;
+
     @Override
     public TaskType type() {
         return TaskType.UNTERSUCHEN;
@@ -35,18 +38,35 @@ public class UntersuchenTaskHandler implements TaskHandler {
     public void execute(Verdict verdict, Session session) {
         Optional<UUID> targetId = verdict.targetUuid();
 
-        Optional<Location> location = targetId.flatMap(session::getLocation);
-        if (location.isPresent()) {
-            LOGGER.debug("Spieler untersucht den Ort: {}", location.get().name());
-            return;
-        }
+        if (targetId.isPresent()) {
+            Location location = session.getLocation(targetId.get());
+            if (location != null) {
+                inspectLocation(session, location);
+                return;
+            }
 
-        Optional<Person> person = targetId.flatMap(session::getPerson);
-        if (person.isPresent()) {
-            LOGGER.debug("Spieler untersucht die Person: {}", person.get().name());
-            return;
-        }
+            Person person = session.getPerson(targetId.get());
+            if (person != null) {
+                inspectPerson(session, person);
+                return;
+            }
 
-        LOGGER.info("Kein bekanntes Untersuchungsziel für UNTERSUCHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+            LOGGER.debug("Kein bekanntes Untersuchungsziel für UNTERSUCHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+        }
+    }
+
+    private void inspectLocation(Session session, Location location) {
+        LOGGER.debug("Spieler untersucht den Ort: {}", location.name());
+        NarratorContext context = NarratorContext.generateInspectLocationContext(session, location);
+        long now = System.currentTimeMillis();
+        String narration = narratorAgent.narrate(context);
+        long duration = System.currentTimeMillis() - now;
+        LOGGER.info("Duration narration evaluation: {} ms", duration);
+//        LOGGER.debug("Narration: {}", narration);
+        session.chatHistory.narrator(narration);
+    }
+
+    private void inspectPerson(Session session, Person person) {
+        LOGGER.debug("Spieler untersucht die Person: {}", person.name());
     }
 }

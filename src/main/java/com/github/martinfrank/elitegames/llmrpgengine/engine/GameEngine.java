@@ -1,10 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
-import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.VerdictAgent;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.VerdictContext;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import org.slf4j.Logger;
@@ -42,8 +38,11 @@ public class GameEngine {
      */
     public void handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);
-        LOGGER.debug("Context: {}", context);
+//        LOGGER.debug("Context: {}", context);
+        long now = System.currentTimeMillis();
         Verdict verdict = verdictAgent.evaluate(context, userInput);
+        long duration = System.currentTimeMillis() - now;
+        LOGGER.info("Duration verdict evaluation: {} ms", duration);
         LOGGER.debug("Verdict: {}", verdict);
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
