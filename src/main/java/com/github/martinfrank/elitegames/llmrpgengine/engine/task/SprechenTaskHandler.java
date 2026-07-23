@@ -30,11 +30,14 @@ public class SprechenTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<Person> person = verdict.targetUuid().flatMap(session::getPerson);
-        if (person.isPresent()) {
-            LOGGER.debug("Spieler spricht mit: {}", person.get().name());
-        } else {
-            LOGGER.info("Kein bekannter Gesprächspartner für SPRECHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+        if (verdict.targetUuid().isPresent()) {
+            Person person = session.getPerson(verdict.targetUuid().get());
+            if (person != null) {
+                LOGGER.debug("Spieler spricht mit: {}", person.name());
+            } else {
+                LOGGER.info("Kein bekannter Gesprächspartner für SPRECHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+            }
         }
+
     }
 }

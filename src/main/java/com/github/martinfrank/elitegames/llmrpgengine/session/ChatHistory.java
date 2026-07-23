@@ -25,7 +25,7 @@ public class ChatHistory {
     private void add(String actor, String statement) {
         String normalized = StringNormalizer.normalize(statement);
         ChatEntry entry = new ChatEntry(actor, normalized);
-        LOGGER.debug(entry.toString());
+        LOGGER.info(entry.toString());
         chatEntries.add(entry);
     }
 

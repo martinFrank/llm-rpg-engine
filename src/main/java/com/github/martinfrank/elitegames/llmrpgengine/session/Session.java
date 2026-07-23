@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 
@@ -75,13 +76,29 @@ public class Session {
         sessionFlags.setFlagValue(id, value);
     }
 
-    /** Looks up a location of the adventure by its id. Used to resolve a verdict's targetId. */
-    public Optional<Location> getLocation(UUID id) {
-        return Optional.ofNullable(adventure.getLocation(id));
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Location getLocation(UUID id) {
+        for(LocationCondition locationCondition: currentChapter.locationConditions() ){
+            if (locationCondition.location().id().equals(id)) {
+
+                List flags = locationCondition.condition().consideredFlags();
+                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                Condition condition = locationCondition.condition();
+                boolean evaluated = condition.evaluate(currentValues);
+                if (evaluated) {
+                    return locationCondition.location();
+                }
+            }
+        }
+        return null;
     }
 
-    /** Looks up a person of the adventure by its id. Used to resolve a verdict's targetId. */
-    public Optional<Person> getPerson(UUID id) {
-        return Optional.ofNullable(adventure.getPerson(id));
+    public Person getPerson(UUID id) {
+        List<Person> personsHere = getCurrentPersons(currentLocation);
+        Optional<Person> desiredPerson = personsHere.stream()
+                .filter(person -> person.id().equals(id))
+                .findFirst();
+        return desiredPerson.orElse(null);
     }
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Moves the player to the location resolved from {@link Verdict#targetUuid()}. If the
@@ -26,12 +27,15 @@ public class GeheZuTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<Location> target = verdict.targetUuid().flatMap(session::getLocation);
-        if (target.isPresent()) {
-            session.setCurrentLocation(target.get());
-            LOGGER.debug("Spieler bewegt sich nach: {}", target.get().name());
-        } else {
-            LOGGER.info("Kein bekannter Zielort für GEHEZU: '{}' (id: {})", verdict.target(), verdict.targetId());
+        Optional<UUID> id = verdict.targetUuid();
+        if (id.isPresent()) {
+            Location location = session.getLocation(id.get());
+            if (location != null) {
+                session.setCurrentLocation(location);
+                LOGGER.debug("Spieler bewegt sich nach: {}", location.name());
+            } else {
+                LOGGER.debug("Kein bekannter Zielort für GEHEZU: '{}' (id: {})", verdict.target(), verdict.targetId());
+            }
         }
     }
 }
