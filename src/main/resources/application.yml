@@ -23,6 +23,11 @@ rpg:
     # Alternatives: gemma4:26b, qwen3.5:27b, llama4:latest.
     model: "${NARRATOR_MODEL:qwen2.5:14b}"
     temperature: 0.9
+  talk:
+    # In-character NPC dialogue: creative but must stay faithful to the scripted
+    # dialog instructions, so a moderate temperature.
+    model: "${TALK_MODEL:qwen2.5:14b}"
+    temperature: 0.8
 
 server:
   port: 8080

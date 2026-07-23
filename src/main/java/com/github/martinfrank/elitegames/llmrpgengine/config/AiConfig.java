@@ -33,4 +33,16 @@ public class AiConfig {
                 .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();
     }
+
+    @Bean
+    ChatClient talkChatClient(ChatClient.Builder builder,
+                              @Value("${rpg.talk.model}") String model,
+                              @Value("${rpg.talk.temperature}") Double temperature) {
+        return builder
+                .defaultOptions(OllamaChatOptions.builder()
+                        .model(model)
+                        .temperature(temperature))
+                .defaultAdvisors(new SimpleLoggerAdvisor())
+                .build();
+    }
 }

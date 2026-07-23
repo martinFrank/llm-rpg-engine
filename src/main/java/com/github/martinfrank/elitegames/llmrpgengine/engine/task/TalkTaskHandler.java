@@ -1,8 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,15 +25,22 @@ import java.util.stream.Collectors;
  * <p>
  * The conversation topic is taken from {@link Verdict#dialogUuid()}: if it resolves to a
  * known {@link Dialog}, the player talks about that scripted dialog; otherwise the player
- * only makes small talk (gossip).
- * <p>
- * A conversation state (and a dedicated dialogue agent) is not modelled yet, so for now
- * this handler only resolves the person and the dialog the player wants to talk about.
+ * only makes small talk (gossip). Either way the {@link TalkAgent} produces the person's
+ * in-character reply, which is recorded in the talk- and chat-history.
  */
 @Component
 public class TalkTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TalkTaskHandler.class);
+
+    private static final int TALK_HISTORY_LENGTH = 5;
+    private static final int CHAT_HISTORY_LENGTH = 5;
+
+    private final TalkAgent talkAgent;
+
+    public TalkTaskHandler(TalkAgent talkAgent) {
+        this.talkAgent = talkAgent;
+    }
 
     @Override
     public TaskType type() {
@@ -57,11 +63,10 @@ public class TalkTaskHandler implements TaskHandler {
         Dialog dialog = resolveDialog(verdict, session);
         if (dialog != null) {
             LOGGER.debug("Player talks to {} about dialog '{}'", person.name(), dialog.topic());
-            handleTalking(session, person, dialog);
         } else {
             LOGGER.debug("Player makes small talk (gossip) with {}", person.name());
-            handleGossip(session, person);
         }
+        converse(session, person, dialog);
     }
 
     /**
@@ -80,26 +85,42 @@ public class TalkTaskHandler implements TaskHandler {
         return dialog;
     }
 
-    private void handleTalking(Session session, Person person, Dialog dialog) {
-        String talkTo = person.name();
-        String location = session.getCurrentLocation().name();
-        String primaryDialog = "Thema: " + dialog.topic()+ "\n Zusammenfassung: "+ StringNormalizer.normalize(dialog.summary()) + "\nKontext: "+StringNormalizer.normalize(dialog.context());
-         String chatHistory = session.chatHistory.getLatestEntries(5).stream()
-                .map(ChatEntry::toString)
-                .collect(Collectors.joining("\n"));
-        String talkHistory = session.talkHistory.getTalk(person.id(), 5).stream()
-                .map(TalkEntry::toString).collect(Collectors.joining("\n"));
-        String triggers = dialog.knowledgeTriggers().stream()
-                .map(t -> "Trigger: " + t.trigger()+" (id: "+t.id()+") ")
-                .collect(Collectors.joining("\n"));
+    private void converse(Session session, Person person, Dialog dialog) {
+        String statement = session.chatHistory.getLatestEntries(1).getFirst().statement();
+        TalkContext context = buildContext(session, person, dialog, statement);
 
-        TalkContext context = new TalkContext(talkTo, location, primaryDialog, triggers, talkHistory, chatHistory);
+        long now = System.currentTimeMillis();
+        String reply = talkAgent.talk(context);
+        long duration = System.currentTimeMillis() - now;
+        LOGGER.info("Duration talk evaluation: {} ms", duration);
 
-        LOGGER.debug("TALK CONTEXT: {}",context);
+        // Record both sides in the per-person talk history and surface the reply in the game log.
+        session.talkHistory.player(person.id(), statement);
+        session.talkHistory.npc(person.id(), reply);
+        session.chatHistory.narrator(reply);
     }
 
-    private void handleGossip(Session session, Person person) {
-        Location location = session.getCurrentLocation();
-//        TalkContext context = new TalkContext(location.description());
+    private TalkContext buildContext(Session session, Person person, Dialog dialog, String statement) {
+        String talkTo = person.name() + " (Beschreibung: " + StringNormalizer.normalize(person.description()) + ")";
+        String location = session.getCurrentLocation().name();
+        String chatHistory = session.chatHistory.getLatestEntries(CHAT_HISTORY_LENGTH).stream()
+                .map(ChatEntry::toString)
+                .collect(Collectors.joining("\n"));
+        String talkHistory = session.talkHistory.getTalk(person.id(), TALK_HISTORY_LENGTH).stream()
+                .map(TalkEntry::toString)
+                .collect(Collectors.joining("\n"));
+
+        String primaryDialog = "";
+        String triggers = "";
+        if (dialog != null) {
+            primaryDialog = "Thema: " + dialog.topic()
+                    + "\nZusammenfassung: " + StringNormalizer.normalize(dialog.summary())
+                    + "\nKontext: " + StringNormalizer.normalize(dialog.context());
+            triggers = dialog.knowledgeTriggers().stream()
+                    .map(t -> "TriggerThema: " + t.trigger() + " (id: " + t.id() + ")")
+                    .collect(Collectors.joining("\n"));
+        }
+
+        return new TalkContext(talkTo, location, statement, primaryDialog, triggers, talkHistory, chatHistory);
     }
 }
