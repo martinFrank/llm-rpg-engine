@@ -50,6 +50,7 @@ public class Session {
     }
     public void setCurrentTime(GameTime currentTime) {
         this.currentTime = currentTime;
+        setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
     }
 
     public Chapter getCurrentChapter() {

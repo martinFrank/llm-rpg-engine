@@ -10,7 +10,8 @@ import java.util.Objects;
 
 /**
  * Speaks as the non-player character the player addressed: turns a {@link TalkContext}
- * into a spoken, in-character reply that the player reads.
+ * into a {@link TalkResponse} carrying the person's in-character reply plus the knowledge
+ * triggers the exchange touched.
  * <p>
  * When a scripted dialog is present ({@link TalkContext#primaryDialog()}), the agent
  * follows its instructions on <em>what</em> to say; otherwise it makes small talk
@@ -29,7 +30,7 @@ public class TalkAgent {
         this.systemPrompt = systemPrompt;
     }
 
-    public String talk(TalkContext context) {
+    public TalkResponse talk(TalkContext context) {
         return chatClient.prompt()
                 .system(systemPrompt)
                 .user(u -> u
@@ -64,7 +65,7 @@ public class TalkAgent {
                         .param("statement", orEmpty(context.statement()))
                 )
                 .call()
-                .content();
+                .entity(TalkResponse.class);
     }
 
     private static String orEmpty(String value) {

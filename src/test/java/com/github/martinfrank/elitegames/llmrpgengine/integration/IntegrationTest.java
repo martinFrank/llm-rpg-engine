@@ -57,7 +57,8 @@ class IntegrationTest {
         session.start();
 
         //zeit auf abends setzen
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+//        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
 
         //zum gasthaus gehen
         Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
@@ -76,7 +77,8 @@ class IntegrationTest {
         session.start();
 
         //zeit auf abends setzen
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.AFTERNOON);
+//        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.AFTERNOON);
+        session.setCurrentTime(GameTime.AFTERNOON);
 
         //zum gasthaus gehen
         Location vorsteherhaus = buchenhain.getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"));

@@ -4,6 +4,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkResponse;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
@@ -90,11 +91,14 @@ public class TalkTaskHandler implements TaskHandler {
         TalkContext context = buildContext(session, person, dialog, statement);
 
         long now = System.currentTimeMillis();
-        String reply = talkAgent.talk(context);
+        TalkResponse response = talkAgent.talk(context);
         long duration = System.currentTimeMillis() - now;
         LOGGER.info("Duration talk evaluation: {} ms", duration);
+        LOGGER.debug("Triggered triggers: {}", response.triggeredTriggers());
 
         // Record both sides in the per-person talk history and surface the reply in the game log.
+        // Applying the triggered triggers (flags/knowledge) happens elsewhere.
+        String reply = response.reply();
         session.talkHistory.player(person.id(), statement);
         session.talkHistory.npc(person.id(), reply);
         session.chatHistory.narrator(reply);

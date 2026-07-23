@@ -24,7 +24,8 @@ public class AdventureTest {
         Person kalgeria = buchenhain.getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61"));
 
         //when
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+//        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
 
         //then
         List<Person> persons = session.getCurrentPersons(gasthaus);
@@ -41,7 +42,8 @@ public class AdventureTest {
         Session session = new Session(buchenhain, new Player("testeee"));
         session.start();
         Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
-        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+//        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
         session.setCurrentLocation(gasthaus);
 
         //then
