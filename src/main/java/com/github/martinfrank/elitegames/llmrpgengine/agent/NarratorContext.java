@@ -3,28 +3,30 @@ package com.github.martinfrank.elitegames.llmrpgengine.agent;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails) {
+public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails, String conversationHistory) {
 
 
 
-    public static NarratorContext generateInspectLocation(Session session, Location location) {
+    public static NarratorContext generateInspectLocationContext(Session session, Location location) {
         String persons = extractAvailablePersons(session, location);
         String locationString = extractLocation(location);
         String time = extractTime(session.getCurrentTime());
         String interestingDetails = extractDetails(session, location);
+        String chatHistory = extractChatHistory(session);
         return new NarratorContext(
                 "der Spieler untersucht einen Ort und möchte Details über diesen Ort wissen",
                 locationString,
                 persons,
                 time,
-                interestingDetails);
+                interestingDetails,
+                chatHistory);
     }
 
     private static String extractDetails(Session session, Location location) {
@@ -42,6 +44,12 @@ public record NarratorContext (String purpose, String location, String persons, 
                 .collect(Collectors.joining("\n"));
     }
 
+    private static String extractChatHistory(Session session) {
+        return session.chatHistory.getLatestEntries(5).stream()
+                .map(ChatEntry::toString)
+                .collect(Collectors.joining("\n"));
+    }
+
     private static String extractTime(GameTime time) {
         return switch (time){
             case AFTERNOON -> "nachmittag";
@@ -53,5 +61,20 @@ public record NarratorContext (String purpose, String location, String persons, 
             case DAWN -> "Sonnenaufgang";
             case DUSK -> "Sonnenuntergang";
         };
+    }
+
+    public static NarratorContext generateWalkToContext(Session session, Location location) {
+        String persons = extractAvailablePersons(session, location);
+        String locationString = extractLocation(location);
+        String time = extractTime(session.getCurrentTime());
+//        String interestingDetails = extractDetails(session, location);
+        String chatHistory = extractChatHistory(session);
+        return new NarratorContext(
+                "der Spieler geht zu einem anderen Ort, erzähle dem Spieler was er sieht, wenn er dort ankommt.",
+                locationString,
+                persons,
+                time,
+                "", //es gibt für den ortswechsel aktuell keine besonderheiten
+                chatHistory);
     }
 }

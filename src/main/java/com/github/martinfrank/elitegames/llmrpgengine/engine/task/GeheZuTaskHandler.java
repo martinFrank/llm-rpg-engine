@@ -1,11 +1,14 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -20,6 +23,9 @@ public class GeheZuTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeheZuTaskHandler.class);
 
+    @Autowired
+    private NarratorAgent narratorAgent;
+
     @Override
     public TaskType type() {
         return TaskType.GEHEZU;
@@ -31,11 +37,23 @@ public class GeheZuTaskHandler implements TaskHandler {
         if (id.isPresent()) {
             Location location = session.getLocation(id.get());
             if (location != null) {
-                session.setCurrentLocation(location);
-                LOGGER.debug("Spieler bewegt sich nach: {}", location.name());
+                setLocation(session, location);
             } else {
                 LOGGER.debug("Kein bekannter Zielort für GEHEZU: '{}' (id: {})", verdict.target(), verdict.targetId());
             }
         }
+    }
+
+    private void setLocation(Session session, Location location) {
+        LOGGER.debug("Spieler bewegt sich nach: {}", location.name());
+        session.setCurrentLocation(location);
+
+        NarratorContext context = NarratorContext.generateWalkToContext(session, location);
+        long now = System.currentTimeMillis();
+        String narration = narratorAgent.narrate(context);
+        long duration = System.currentTimeMillis() - now;
+        LOGGER.info("Duration narration evaluation: {} ms", duration);
+//        LOGGER.debug("Narration: {}", narration);
+        session.chatHistory.narrator(narration);
     }
 }
