@@ -39,6 +39,7 @@ class FullGameTest {
         session.start();
         engine.handleUserInput("wir sehen uns erstmal auf dem marktplatz um", session);
         engine.handleUserInput("wir gehen jetzt erstmal zum Dorfvorstehen, ich bin gespannt, was der von uns wollte", session);
+        engine.handleUserInput("Ich frage den Ulf, wieso er mit uns sprechen wollte", session);
 
     }
 

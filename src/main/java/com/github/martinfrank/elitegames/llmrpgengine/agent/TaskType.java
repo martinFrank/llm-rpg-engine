@@ -10,29 +10,29 @@ package com.github.martinfrank.elitegames.llmrpgengine.agent;
 public enum TaskType {
 
     /** The player wants to move to another location. Parameter {@code target}: the destination's name. */
-    GEHEZU,
+    GO_TO,
 
     /**
      * The player wants to investigate something more closely – a location, an item, or a person.
      * Parameter {@code target}: the name of the thing to investigate, as it appears in the context.
      */
-    UNTERSUCHEN,
+    INVESTIGATE,
 
     /**
      * The player wants to actively interact with an object – e.g. open a door or a letter,
      * press a button, flip a switch, or touch a magical orb. This is about manipulating or
-     * operating something, as opposed to merely looking at it ({@link #UNTERSUCHEN}).
+     * operating something, as opposed to merely looking at it ({@link #INVESTIGATE}).
      * Parameter {@code target}: the name of the object to interact with, as it appears in the context.
      */
-    INTERAGIEREN,
+    INTERACT,
 
     /**
      * The player wants to address a person and communicate with them – talk to, greet,
      * ask, or answer someone. Parameter {@code target}: the person's name; {@code targetId}:
      * the person's id from the available-persons list, or {@value Verdict#UNKNOWN}.
      */
-    SPRECHEN,
+    TALK,
 
     /** Fallback: the input could not be mapped to any known task. */
-    UNBEKANNT
+    UNKNOWN
 }

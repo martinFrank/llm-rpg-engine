@@ -11,7 +11,7 @@ import java.util.UUID;
  * @param interpretation short, plain description of what the player wants to do
  * @param task           the scripted task to run
  * @param target         the task's parameter as understood in words, e.g. the destination
- *                       name for {@link TaskType#GEHEZU}; empty when the task needs none
+ *                       name for {@link TaskType#GO_TO}; empty when the task needs none
  * @param targetId       the id of the resolved location or person, picked from the available
  *                       lists in the context, or {@value #UNKNOWN} when nothing matched
  */

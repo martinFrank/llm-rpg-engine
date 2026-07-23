@@ -34,4 +34,11 @@ public class ChatHistory {
         int from = Math.max(0, chatEntries.size() - length);
         return new ArrayList<>(chatEntries.subList(from, chatEntries.size()));
     }
+
+    @Override
+    public String toString() {
+        return "ChatHistory{" +
+                "chatEntries=" + chatEntries +
+                '}';
+    }
 }

@@ -53,7 +53,7 @@ public class GameEngine {
         if (handler != null) {
             handler.execute(verdict, session);
         } else {
-            LOGGER.info("Keine Aufgabe registriert für Task: {}", verdict.task());
+            LOGGER.info("No handler registered for task: {}", verdict.task());
         }
     }
 }

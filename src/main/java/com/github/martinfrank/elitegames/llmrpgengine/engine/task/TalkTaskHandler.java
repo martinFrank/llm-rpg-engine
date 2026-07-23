@@ -19,13 +19,13 @@ import java.util.Optional;
  * this handler only resolves and records person the player wants to talk to.
  */
 @Component
-public class SprechenTaskHandler implements TaskHandler {
+public class TalkTaskHandler implements TaskHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SprechenTaskHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TalkTaskHandler.class);
 
     @Override
     public TaskType type() {
-        return TaskType.SPRECHEN;
+        return TaskType.TALK;
     }
 
     @Override
@@ -33,9 +33,9 @@ public class SprechenTaskHandler implements TaskHandler {
         if (verdict.targetUuid().isPresent()) {
             Person person = session.getPerson(verdict.targetUuid().get());
             if (person != null) {
-                LOGGER.debug("Spieler spricht mit: {}", person.name());
+                LOGGER.debug("Player talks to: {}", person.name());
             } else {
-                LOGGER.info("Kein bekannter Gesprächspartner für SPRECHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+                LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
             }
         }
 

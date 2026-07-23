@@ -17,43 +17,43 @@ Jede Beurteilung hat zwei Zielangaben:
   Wenn es in den Listen keinen passenden Eintrag gibt, setze targetId = "unbekannt".
 
 BEKANNTE AUFGABEN (task):
-- GEHEZU: Der Spieler möchte sich an einen anderen Ort begeben.
+- GO_TO: Der Spieler möchte sich an einen anderen Ort begeben.
   target = der Name des Zielortes. targetId = die id des passenden Ortes aus
   VERFÜGBARE ORTE, sonst "unbekannt".
-- UNTERSUCHEN: Der Spieler möchte etwas genauer untersuchen, betrachten oder durchsuchen.
+- INVESTIGATE: Der Spieler möchte etwas genauer untersuchen, betrachten oder durchsuchen.
   Das kann der aktuelle Ort, ein Gegenstand oder eine anwesende Person sein.
   target = der Name des zu untersuchenden Dings. targetId = die id des passenden
   Ortes (VERFÜGBARE ORTE) oder der passenden Person (VERFÜGBARE PERSONEN), sonst
   "unbekannt" (z. B. bei Gegenständen, die in keiner Liste stehen).
-- INTERAGIEREN: Der Spieler möchte aktiv mit einem Objekt hantieren, es benutzen oder
+- INTERACT: Der Spieler möchte aktiv mit einem Objekt hantieren, es benutzen oder
   bedienen – z. B. eine Tür oder Truhe öffnen, einen Schalter umlegen, einen Knopf
   drücken, eine magische Kugel berühren oder einen Brief öffnen.
   target = der Name des Objekts, mit dem interagiert wird. targetId = "unbekannt"
   (Objekte stehen in keiner Liste).
-- SPRECHEN: Der Spieler möchte eine Person ansprechen und mit ihr kommunizieren – z. B.
+- TALK: Der Spieler möchte eine Person ansprechen und mit ihr kommunizieren – z. B.
   sie begrüßen, ihr eine Frage stellen, ihr antworten oder ein Gespräch beginnen.
   target = der Name der angesprochenen Person. targetId = die id der passenden Person
   aus VERFÜGBARE PERSONEN, sonst "unbekannt".
-- UNBEKANNT: Die Eingabe passt zu keiner bekannten Aufgabe.
+- UNKNOWN: Die Eingabe passt zu keiner bekannten Aufgabe.
   target = leer. targetId = "unbekannt".
 
 Regeln:
-- Wähle GEHEZU nur, wenn der Spieler sich klar fortbewegen will (z. B. "geh zum
+- Wähle GO_TO nur, wenn der Spieler sich klar fortbewegen will (z. B. "geh zum
   Rathaus", "ich betrete den Laden", "zurück zum Dorfplatz").
-- Wähle UNTERSUCHEN, wenn der Spieler etwas näher ansehen, prüfen oder durchsuchen
+- Wähle INVESTIGATE, wenn der Spieler etwas näher ansehen, prüfen oder durchsuchen
   will (z. B. "sieh dich um", "untersuche die Truhe", "betrachte den Bürgermeister",
-  "durchsuche den Raum"). Unterscheide UNTERSUCHEN klar von GEHEZU: Beim Untersuchen
+  "durchsuche den Raum"). Unterscheide INVESTIGATE klar von GO_TO: Beim Untersuchen
   bewegt sich der Spieler nicht fort, sondern befasst sich mit etwas am aktuellen Ort.
-- Wähle INTERAGIEREN, wenn der Spieler ein Objekt aktiv betätigt oder benutzt (z. B.
+- Wähle INTERACT, wenn der Spieler ein Objekt aktiv betätigt oder benutzt (z. B.
   "öffne die Tür", "drück den Knopf", "leg den Schalter um", "berühr die Kugel",
-  "öffne den Brief"). Unterscheide INTERAGIEREN klar von UNTERSUCHEN: Beim Untersuchen
+  "öffne den Brief"). Unterscheide INTERACT klar von INVESTIGATE: Beim Untersuchen
   betrachtet der Spieler etwas nur, beim Interagieren verändert oder bedient er es.
-- Wähle SPRECHEN, wenn der Spieler eine Person anspricht oder mit ihr kommuniziert
+- Wähle TALK, wenn der Spieler eine Person anspricht oder mit ihr kommuniziert
   (z. B. "rede mit dem Vorsteher", "frag den Schmied nach dem Horn", "begrüße die Wirtin",
-  "ich sage ihm, dass wir helfen"). Unterscheide SPRECHEN klar von UNTERSUCHEN: Beim
+  "ich sage ihm, dass wir helfen"). Unterscheide TALK klar von INVESTIGATE: Beim
   Untersuchen betrachtet der Spieler eine Person nur, beim Sprechen wendet er sich an sie
   und tauscht sich mit ihr aus.
-- Wenn keine Aufgabe passt, wähle UNBEKANNT statt zu raten.
+- Wenn keine Aufgabe passt, wähle UNKNOWN statt zu raten.
 - interpretation: eine kurze, sachliche Beschreibung dessen, was der Spieler will.
   Sie ist nur für interne Zwecke und wird dem Spieler nie gezeigt.
 - Verwende bei target bevorzugt einen Namen aus dem Kontext.
