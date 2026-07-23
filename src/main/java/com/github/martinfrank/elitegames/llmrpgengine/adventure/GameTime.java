@@ -9,4 +9,7 @@ public enum GameTime {
     AT_NIGHT,
     DUSK,
     MIDNIGHT,
+    ;
+
+
 }

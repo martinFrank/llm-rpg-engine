@@ -2,11 +2,11 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
-import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,6 +26,9 @@ import java.util.UUID;
 public class UntersuchenTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UntersuchenTaskHandler.class);
+
+    @Autowired
+    private NarratorAgent narratorAgent;
 
     @Override
     public TaskType type() {
@@ -54,10 +57,14 @@ public class UntersuchenTaskHandler implements TaskHandler {
     }
 
     private void inspectLocation(Session session, Location location) {
-        List<Person> persons = session.getCurrentPersons(location);
         LOGGER.debug("Spieler untersucht den Ort: {}", location.name());
-
-//        DescriptionContext context = new DescriptionContext();
+        NarratorContext context = NarratorContext.generateInspectLocation(session, location);
+        long now = System.currentTimeMillis();
+        String narration = narratorAgent.narrate(context);
+        long duration = System.currentTimeMillis() - now;
+        LOGGER.info("Duration narration evaluation: {} ms", duration);
+        LOGGER.debug("Narration: {}", narration);
+        session.chatHistory.narrator(narration);
     }
 
     private void inspectPerson(Session session, Person person) {
