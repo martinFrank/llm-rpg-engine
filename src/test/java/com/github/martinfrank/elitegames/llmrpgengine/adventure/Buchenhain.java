@@ -2,7 +2,6 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.BaseCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
@@ -11,7 +10,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange
 import java.util.List;
 import java.util.UUID;
 
-import static com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BaseFlag.GAME_TIME_FLAG;
+import static com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag.GAME_TIME_FLAG;
 
 public class Buchenhain implements Adventure {
 
@@ -101,7 +100,7 @@ public class Buchenhain implements Adventure {
                         .locationConditions(List.of(
                                 new LocationCondition(
                                         getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
-                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.id())
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
                                 ),
                                 new LocationCondition(
                                         getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
@@ -113,7 +112,7 @@ public class Buchenhain implements Adventure {
                                 ),
                                 new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
-                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.id())
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
                                 ),
                                 new LocationCondition(
                                         getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
@@ -144,7 +143,7 @@ public class Buchenhain implements Adventure {
                                 new PersonCondition(
                                         getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
-                                        getCondition(BaseCondition.ALWAYS_TRUE_CONDITION.id()) //always there
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()) //always there
                                 )
                         ))
                         .build()
@@ -255,11 +254,11 @@ public class Buchenhain implements Adventure {
                                 machen.
                                 """,
                         List.of(
-                                new KnowhowTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                                         "Bedrohung oder Gefahr für das Dorf",
                                         getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
                                         List.of()), //"wissen über die Bedrohung im Dorf"
-                                new KnowhowTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                                         "Auftrag oder heikles Thema",
                                         getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
                                         List.of(
@@ -339,7 +338,7 @@ public class Buchenhain implements Adventure {
     @SuppressWarnings("unchecked")
     public List<Condition<?>> getConditions() {
         return List.of(
-                BaseCondition.ALWAYS_TRUE_CONDITION,
+                Condition.ALWAYS_TRUE_CONDITION,
                 new RangeCondition<>(
                         UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"),
                         "dayTimeCondition",

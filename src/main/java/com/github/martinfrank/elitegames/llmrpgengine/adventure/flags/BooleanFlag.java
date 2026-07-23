@@ -1,11 +1,9 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure.flags;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
+
 import java.util.UUID;
 
-public class BooleanFlag extends BaseFlag<Boolean> {
-
-    public BooleanFlag(UUID id, String name, Boolean value) {
-        super(id, name, value);
-    }
+public record BooleanFlag (UUID id, String name, Boolean value) implements Flag<Boolean> {
 
 }

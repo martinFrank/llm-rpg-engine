@@ -1,18 +1,12 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure.condition;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 
 import java.util.List;
 import java.util.UUID;
 
-public class RangeCondition<R> extends BaseCondition<R> {
-
-    private final List<R> values;
-
-    public RangeCondition(UUID uuid, String description, List<Flag<R>> consideredFlags, List<R> values) {
-        super(uuid, description, consideredFlags);
-        this.values = values;
-    }
+public record RangeCondition<R>(UUID id, String description, List<Flag<R>> consideredFlags, List<R> values) implements Condition<R> {
 
     @Override
     public boolean evaluate(List<Flag<R>> flags) {
@@ -20,7 +14,7 @@ public class RangeCondition<R> extends BaseCondition<R> {
             return false;
         }
         for(R r : values) {
-            if (flags.getFirst().getValue().equals(r)){
+            if (flags.getFirst().value().equals(r)){
                 return true;
             }
         }

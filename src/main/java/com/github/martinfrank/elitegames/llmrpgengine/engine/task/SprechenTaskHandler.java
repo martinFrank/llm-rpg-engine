@@ -16,7 +16,7 @@ import java.util.Optional;
  * carries no resolvable person id, nothing happens.
  * <p>
  * A conversation state (and a dedicated dialogue agent) is not modelled yet, so for now
- * this handler only resolves and records who the player wants to talk to.
+ * this handler only resolves and records person the player wants to talk to.
  */
 @Component
 public class SprechenTaskHandler implements TaskHandler {

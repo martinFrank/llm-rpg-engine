@@ -42,7 +42,7 @@ public class NarratorAgent {
                                 Game over: {gameOver}
                                 """)
 //                        .param("scenario", session.getScenario())
-//                        .param("where", session.getWorldState().getLocation())
+//                        .param("location", session.getWorldState().getLocation())
 //                        .param("transcript", recentTranscript)
 //                        .param("action", playerAction)
 //                        .param("outcome", verdict.outcome())

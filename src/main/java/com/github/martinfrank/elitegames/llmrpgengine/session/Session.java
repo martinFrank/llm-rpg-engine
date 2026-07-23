@@ -54,17 +54,17 @@ public class Session {
         return currentChapter;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<Person> getCurrentPersons(Location location) {
         List<Person> result = new ArrayList<>();
         for (PersonCondition personCondition: currentChapter.personConditions()){
-            if (personCondition.where().id().equals(location.id())) {
-                List<Flag<?>> flags = personCondition.condition().getConsideredFlags();
+            if (personCondition.location().id().equals(location.id())) {
+                List flags = personCondition.condition().consideredFlags();
                 List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
                 Condition condition = personCondition.condition();
                 boolean evaluated = condition.evaluate(currentValues);
                 if (evaluated) {
-                    result.add(personCondition.who());
+                    result.add(personCondition.person());
                 }
             }
         }
