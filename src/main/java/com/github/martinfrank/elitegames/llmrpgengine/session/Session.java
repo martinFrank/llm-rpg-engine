@@ -106,4 +106,8 @@ public class Session {
     public List<Dialog> getCommonDialogs() {
         return adventure.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
     }
+
+    public Dialog getDialog(UUID id) {
+        return adventure.getDialog(id);
+    }
 }
