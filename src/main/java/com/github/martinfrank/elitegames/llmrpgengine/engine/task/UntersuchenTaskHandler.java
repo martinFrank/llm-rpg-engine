@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,12 +57,12 @@ public class UntersuchenTaskHandler implements TaskHandler {
 
     private void inspectLocation(Session session, Location location) {
         LOGGER.debug("Spieler untersucht den Ort: {}", location.name());
-        NarratorContext context = NarratorContext.generateInspectLocation(session, location);
+        NarratorContext context = NarratorContext.generateInspectLocationContext(session, location);
         long now = System.currentTimeMillis();
         String narration = narratorAgent.narrate(context);
         long duration = System.currentTimeMillis() - now;
         LOGGER.info("Duration narration evaluation: {} ms", duration);
-        LOGGER.debug("Narration: {}", narration);
+//        LOGGER.debug("Narration: {}", narration);
         session.chatHistory.narrator(narration);
     }
 

@@ -21,7 +21,7 @@ rpg:
   narrator:
     # Creative German prose, higher temperature.
     # Alternatives: gemma4:26b, qwen3.5:27b, llama4:latest.
-    model: "${NARRATOR_MODEL:Mistral-Small:latest}"
+    model: "${NARRATOR_MODEL:qwen2.5:14b}"
     temperature: 0.9
 
 server:

@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.integration;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -10,8 +11,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Scanner;
-import java.util.UUID;
 
 /**
  * Full integration test that talks to a REAL Ollama instance — no mocks.
@@ -24,22 +23,29 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Tag("integration")
 @EnabledIfEnvironmentVariable(named = "OLLAMA_IT", matches = "true")
-class FullGameTest {
+class NarratorAgentTest {
 
     // Injected by Spring, fully wired: GameEngine -> Verdict/NarratorAgent -> real Ollama ChatClients.
     @Autowired
     private GameEngine engine;
 
     @Test
-    void testFullGame(){
+    void testWalkToInput() {
         Adventure adventure = new Buchenhain();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
         session.start();
-        engine.handleUserInput("wir sehen uns erstmal auf dem marktplatz um", session);
-        engine.handleUserInput("wir gehen jetzt erstmal zum Dorfvorstehen, ich bin gespannt, was der von uns wollte", session);
-
+        engine.handleUserInput("wir gehen zum Haus des Bürgermeisters", session);
     }
 
+    @Test
+    void testInvestigateInput() {
+        Adventure adventure = new Buchenhain();
+        Player player = new Player("Thorsten");
+        Session session = new Session(adventure, player);
+        session.start();
+
+        engine.handleUserInput("sehen uns den markt genauer an", session);
+    }
 }
