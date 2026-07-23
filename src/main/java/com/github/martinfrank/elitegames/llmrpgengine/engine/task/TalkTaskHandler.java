@@ -1,6 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -9,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Handles the player addressing and communicating with the person resolved from
@@ -30,14 +33,21 @@ public class TalkTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        if (verdict.targetUuid().isPresent()) {
-            Person person = session.getPerson(verdict.targetUuid().get());
+        Optional<UUID> personId = verdict.targetUuid();
+        if (personId.isPresent()) {
+            Person person = session.getPerson(personId.get());
             if (person != null) {
+                handleTalking(session, person);
                 LOGGER.debug("Player talks to: {}", person.name());
             } else {
                 LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
             }
         }
 
+    }
+
+    private void handleTalking(Session session, Person person) {
+        Location location = session.getCurrentLocation();
+//        TalkContext context = new TalkContext(location.description());
     }
 }

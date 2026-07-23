@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
@@ -145,6 +146,14 @@ public class Buchenhain implements Adventure {
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()) //always there
                                 )
+
+                        ))
+                        .dialogConditions(List.of(
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getDialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e")), //dialog über den auftrag
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
+                                )
                         ))
                         .build()
 
@@ -232,12 +241,12 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Dialog> getDialogs() {
         return List.of(
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
+                        false,
                         """
                                 Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht
                                 grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr
@@ -253,22 +262,30 @@ public class Buchenhain implements Adventure {
                                 beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das
                                 machen.
                                 """,
-                        List.of(
-                                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
-                                        "Bedrohung oder Gefahr für das Dorf",
-                                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
-                                        List.of()), //"wissen über die Bedrohung im Dorf"
-                                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
-                                        "Auftrag oder heikles Thema",
-                                        getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
-                                        List.of(
-                                                new FlagChange<>(
-                                                        UUID.randomUUID(),
-                                                        (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
-                                                        true
-                                                )
-                                        )) //"wissen über Auftrag"
 
+                        List.of(
+                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")), //"wissen über die Bedrohung im Dorf
+                                getKnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711")) //"wissen über Auftrag"
+                        )
+                ),
+                new Dialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826"),
+                        "Gefahr für das Dorf",
+                        "dieser Dialog beschreibt die Gefahr, in der sich das Dorf Buchenhain befindet",
+                        true,
+                        """
+                                Wenn die Helden über die Gefahr für das Dorf reden, wird ihnen jeder erzählen, dass über
+                                Nacht grauenhaft mutierte Tiere um das Dorf schleichen. Die Monster sind Wölfe, gross
+                                wie Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den Adern
+                                gefrieren lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot
+                                leuchtenden Augen das Dorf bedrohen. hier darf auch noch ähnliches dazu erfunden werden.
+                                
+                                Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend
+                                beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das
+                                machen.
+                                """,
+
+                        List.of(
+                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")) //"wissen über die Bedrohung im Dorf"
                         )
                 )
         );
@@ -389,6 +406,28 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<KnowledgeTrigger> getKnowledgeTriggers() {
+        return List.of(
+                new KnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
+                        "Bedrohung oder Gefahr für das Dorf",
+                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
+                        List.of()
+                ), //"wissen über die Bedrohung im Dorf"
+                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                        "Auftrag oder heikles Thema",
+                        getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
+                        List.of(
+                                new FlagChange<>(
+                                        UUID.randomUUID(),
+                                        (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
+                                        true
+                                )
+                        ))
+        );
+    }
+
+    @Override
     public Condition<?> getCondition(UUID id) {
         return (Condition<?>) Identifiable.find(id, getConditions());
     }
@@ -416,5 +455,10 @@ public class Buchenhain implements Adventure {
     @Override
     public Knowledge getKnowledge(UUID id) {
         return (Knowledge) Identifiable.find(id, getKnowledges());
+    }
+
+    @Override
+    public KnowledgeTrigger getKnowledgeTrigger(UUID id) {
+        return (KnowledgeTrigger) Identifiable.find(id, getKnowledgeTriggers());
     }
 }

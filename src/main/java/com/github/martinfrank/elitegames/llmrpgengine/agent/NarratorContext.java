@@ -40,7 +40,7 @@ public record NarratorContext (String purpose, String location, String persons, 
     private static String extractAvailablePersons(Session session, Location location) {
         List<Person> persons = session.getCurrentPersons(location);
         return persons.stream()
-                .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: "+StringNormalizer.normalize(p.description())+")")
+                .map(p -> p.name() + " (Beschreibung: "+StringNormalizer.normalize(p.description())+")")
                 .collect(Collectors.joining("\n"));
     }
 

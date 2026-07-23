@@ -15,11 +15,12 @@ public class Session {
     private final Adventure adventure;
     private final Player player;
     public final ChatHistory chatHistory = new ChatHistory();
+    public final TalkHistory talkHistory = new TalkHistory();
 
     private Location currentLocation;
     private Chapter currentChapter;
     private GameTime currentTime = GameTime.AFTERNOON;
-    private final SessionFlags sessionFlags = new SessionFlags();
+    public final SessionFlags sessionFlags = new SessionFlags();
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
@@ -100,5 +101,9 @@ public class Session {
                 .filter(person -> person.id().equals(id))
                 .findFirst();
         return desiredPerson.orElse(null);
+    }
+
+    public List<Dialog> getCommonDialogs() {
+        return adventure.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
     }
 }
