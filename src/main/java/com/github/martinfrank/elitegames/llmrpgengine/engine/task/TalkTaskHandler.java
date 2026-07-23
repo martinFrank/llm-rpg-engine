@@ -3,15 +3,21 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
+import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
+import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
+import com.github.martinfrank.elitegames.llmrpgengine.session.TalkEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Handles the player addressing and communicating with the person resolved from
@@ -39,6 +45,7 @@ public class TalkTaskHandler implements TaskHandler {
     public void execute(Verdict verdict, Session session) {
         Optional<UUID> personId = verdict.targetUuid();
         if (personId.isEmpty()) {
+            LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
             return;
         }
         Person person = session.getPerson(personId.get());
@@ -74,8 +81,21 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     private void handleTalking(Session session, Person person, Dialog dialog) {
-        Location location = session.getCurrentLocation();
-//        TalkContext context = new TalkContext(location.description());
+        String talkTo = person.name();
+        String location = session.getCurrentLocation().name();
+        String primaryDialog = "Thema: " + dialog.topic()+ "\n Zusammenfassung: "+ StringNormalizer.normalize(dialog.summary()) + "\nKontext: "+StringNormalizer.normalize(dialog.context());
+         String chatHistory = session.chatHistory.getLatestEntries(5).stream()
+                .map(ChatEntry::toString)
+                .collect(Collectors.joining("\n"));
+        String talkHistory = session.talkHistory.getTalk(person.id(), 5).stream()
+                .map(TalkEntry::toString).collect(Collectors.joining("\n"));
+        String triggers = dialog.knowledgeTriggers().stream()
+                .map(t -> "Trigger: " + t.trigger()+" (id: "+t.id()+") ")
+                .collect(Collectors.joining("\n"));
+
+        TalkContext context = new TalkContext(talkTo, location, primaryDialog, triggers, talkHistory, chatHistory);
+
+        LOGGER.debug("TALK CONTEXT: {}",context);
     }
 
     private void handleGossip(Session session, Person person) {

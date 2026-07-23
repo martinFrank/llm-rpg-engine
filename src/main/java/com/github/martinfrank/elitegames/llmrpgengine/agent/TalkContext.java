@@ -1,5 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
-public record TalkContext (String person, String location, String message, String talkHistory) {
+public record TalkContext(String talkTo, String location, String primaryDialog, String triggers, String talkHistory, String chatHistory) {
 
 }

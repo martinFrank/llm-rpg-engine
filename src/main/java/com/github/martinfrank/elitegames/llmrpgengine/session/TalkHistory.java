@@ -4,7 +4,7 @@ import java.util.*;
 
 public class TalkHistory {
 
-    private Map<UUID, List<TalkEntry>> talks = new HashMap<>();
+    private final Map<UUID, List<TalkEntry>> talks = new HashMap<>();
 
 
     private static final String NPC = "Npc";
