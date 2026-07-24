@@ -44,8 +44,32 @@ public class GameEngine {
         long duration = System.currentTimeMillis() - now;
         LOGGER.info("Duration verdict evaluation: {} ms", duration);
         LOGGER.debug("Verdict: {}", verdict);
+        verdict = sanitize(verdict, session);
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
+    }
+
+    /**
+     * Guardrail: reconcile the (possibly imperfect) verdict with the actual game state before it
+     * is applied. A {@link TaskType#TALK} whose target is not a person present here is redirected:
+     * if the target is actually a location it becomes {@link TaskType#INVESTIGATE} (looking around
+     * that place), otherwise {@link TaskType#UNKNOWN}. This keeps a mis-classified input from
+     * producing a dead turn (TALK against a location id would resolve to no conversation partner).
+     */
+    private Verdict sanitize(Verdict verdict, Session session) {
+        if (verdict.task() != TaskType.TALK) {
+            return verdict;
+        }
+        boolean pointsToPerson = verdict.targetUuid().map(session::getPerson).isPresent();
+        if (pointsToPerson) {
+            return verdict;
+        }
+        boolean pointsToLocation = verdict.targetUuid().map(session::getLocation).isPresent();
+        TaskType fallback = pointsToLocation ? TaskType.INVESTIGATE : TaskType.UNKNOWN;
+        LOGGER.info("Guardrail: TALK without a present person (target='{}', id={}) -> {}",
+                verdict.target(), verdict.targetId(), fallback);
+        return new Verdict(verdict.interpretation(), fallback, verdict.target(), verdict.targetId(),
+                "", Verdict.UNKNOWN);
     }
 
     private void applyTask(Verdict verdict, Session session) {

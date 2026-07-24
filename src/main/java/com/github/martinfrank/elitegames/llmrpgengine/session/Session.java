@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -110,5 +111,27 @@ public class Session {
 
     public Dialog getDialog(UUID id) {
         return adventure.getDialog(id);
+    }
+
+    /**
+     * The dialogs the given person can currently talk about: their person-specific dialogs
+     * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
+     * This is the set a TALK verdict's dialog must belong to.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<Dialog> getAvailableDialogs(Person person) {
+        List<Dialog> dialogs = new ArrayList<>();
+        for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
+            if (dialogCondition.person().id().equals(person.id())) {
+                List flags = dialogCondition.condition().consideredFlags();
+                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                Condition condition = dialogCondition.condition();
+                if (condition.evaluate(currentValues)) {
+                    dialogs.add(dialogCondition.dialog());
+                }
+            }
+        }
+        dialogs.addAll(getCommonDialogs());
+        return dialogs;
     }
 }

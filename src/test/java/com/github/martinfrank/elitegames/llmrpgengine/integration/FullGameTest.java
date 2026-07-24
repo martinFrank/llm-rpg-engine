@@ -51,6 +51,8 @@ class FullGameTest {
         engine.handleUserInput("Ich frage die Wirtin, wie es gerade im Dorf so läuft", session);
         engine.handleUserInput("Ich frage den Ulf, wieso er mit uns sprechen wollte", session);
 
+        session.chatHistory.prettyPrint(System.out);
+
     }
 
 }

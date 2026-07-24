@@ -3,14 +3,12 @@ package com.github.martinfrank.elitegames.llmrpgengine.agent;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +63,7 @@ public record VerdictContext (String chapterSummary,
                 .map(PersonCondition::person)
                 .distinct().toList();
         return availablePersons.stream()
-                .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: "+StringNormalizer.normalize(p.description())+")")
+                .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: " + firstSentence(p.description()) + ")")
                 .collect(Collectors.joining("\n"));
     }
 
@@ -74,30 +72,27 @@ public record VerdictContext (String chapterSummary,
                 .map(LocationCondition::location)
                 .distinct().toList();
         return availableLocations.stream()
-                .map(l -> l.name() + " (id: " + l.id() + ", Beschreibung: "+StringNormalizer.normalize(l.description())+")")
+                .map(l -> l.name() + " (id: " + l.id() + ", Beschreibung: " + firstSentence(l.description()) + ")")
                 .collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * A short hint for id resolution: the first sentence of the description only. The verdict
+     * agent matches on the name/id; the full multi-sentence description would just bloat the
+     * prompt (and thus the prefill time) without helping the classification.
+     */
+    private static String firstSentence(String text) {
+        String normalized = StringNormalizer.normalize(text);
+        int end = normalized.indexOf('.');
+        return end < 0 ? normalized : normalized.substring(0, end + 1);
     }
 
     private static String extractTopics(Session session) {
         Location location = session.getCurrentLocation();
         List<Person> persons = session.getCurrentPersons(location);
-        StringBuilder topics =  new StringBuilder();
-
-        List<Dialog> commonDialogs = session.getCommonDialogs();
-
-        for (Person person: persons){
-            List<Dialog> dialogs = new ArrayList<>();
-            for(DialogCondition dialogCondition: session.getCurrentChapter().dialogConditions()){
-                if (dialogCondition.person().id().equals(person.id())){
-                    List requiredFlags = dialogCondition.condition().consideredFlags();
-                    List realFlags = session.sessionFlags.getFlags(requiredFlags);
-                    if (dialogCondition.condition().evaluate(realFlags)){
-                        dialogs.add(dialogCondition.dialog());
-                    }
-                }
-            }
-            dialogs.addAll(commonDialogs);
-            topics.append(createTopics(person, dialogs));
+        StringBuilder topics = new StringBuilder();
+        for (Person person : persons) {
+            topics.append(createTopics(person, session.getAvailableDialogs(person)));
         }
         return topics.toString();
     }
