@@ -3,6 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,5 +34,19 @@ public class ChatHistory {
     public List<ChatEntry> getLatestEntries(int length) {
         int from = Math.max(0, chatEntries.size() - length);
         return new ArrayList<>(chatEntries.subList(from, chatEntries.size()));
+    }
+
+    @Override
+    public String toString() {
+        return "ChatHistory{" +
+                "chatEntries=" + chatEntries +
+                '}';
+    }
+
+    public void prettyPrint(PrintStream out) {
+        out.println("-----------chat history----------");
+        for(ChatEntry entry : chatEntries) {
+            out.println(entry.toString());
+        }
     }
 }

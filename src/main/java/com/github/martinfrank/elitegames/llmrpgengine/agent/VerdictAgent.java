@@ -49,6 +49,9 @@ public class VerdictAgent {
                                 VERFÜGBARE PERSONEN (Name, id und Beschreibung):
                                 {availablePersons}
 
+                                MÖGLICHE GESPRÄCHSTHEMEN (pro anwesender Person, mit Dialog-ID):
+                                {dialogTopics}
+
                                 BISHERIGER VERLAUF:
                                 {chatHistory}
 
@@ -61,6 +64,7 @@ public class VerdictAgent {
                         .param("items", orEmpty(context.items()))
                         .param("availableLocations", orEmpty(context.availableLocations()))
                         .param("availablePersons", orEmpty(context.availablePersons()))
+                        .param("dialogTopics", orEmpty(context.dialogTopics()))
                         .param("chatHistory", orEmpty(context.chatHistory()))
                         .param("input", orEmpty(userInput))
                 )

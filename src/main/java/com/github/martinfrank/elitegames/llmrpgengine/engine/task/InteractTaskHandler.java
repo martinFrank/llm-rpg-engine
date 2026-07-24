@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
  * exist, the resolution and state changes are added here.
  */
 @Component
-public class InteragierenTaskHandler implements TaskHandler {
+public class InteractTaskHandler implements TaskHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InteragierenTaskHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InteractTaskHandler.class);
 
     @Override
     public TaskType type() {
-        return TaskType.INTERAGIEREN;
+        return TaskType.INTERACT;
     }
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        LOGGER.debug("Spieler interagiert mit: '{}'", verdict.target());
+        LOGGER.debug("Player interacts with: '{}'", verdict.target());
     }
 }

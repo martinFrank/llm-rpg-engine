@@ -14,15 +14,22 @@ spring:
 # Available models on the server can be listed via: GET {base-url}/api/tags
 rpg:
   verdict:
-    # Rules engine: must return reliable structured JSON (Verdict). Strong instruction
-    # following, low temperature. Alternatives: qwen2.5:7b-instruct, qwen3:14b.
-    model: "${VERDICT_MODEL:qwen2.5:14b}"
+    # Rules engine: pure classification + id-copying, so a smaller/faster model is enough.
+    # Low temperature for reliable structured JSON (Verdict).
+    # Alternatives: qwen2.5:14b (slower, higher quality), qwen2.5:3b-instruct (even faster).
+    #model: "${VERDICT_MODEL:qwen2.5:7b-instruct}"
+    model: "${VERDICT_MODEL:qwen2.5:14b-instruct}"
     temperature: 0.3
   narrator:
     # Creative German prose, higher temperature.
     # Alternatives: gemma4:26b, qwen3.5:27b, llama4:latest.
     model: "${NARRATOR_MODEL:qwen2.5:14b}"
     temperature: 0.9
+  talk:
+    # In-character NPC dialogue: creative but must stay faithful to the scripted
+    # dialog instructions, so a moderate temperature.
+    model: "${TALK_MODEL:qwen2.5:14b}"
+    temperature: 0.8
 
 server:
   port: 8080

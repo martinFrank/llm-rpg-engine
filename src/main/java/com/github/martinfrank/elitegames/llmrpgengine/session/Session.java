@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -15,11 +16,12 @@ public class Session {
     private final Adventure adventure;
     private final Player player;
     public final ChatHistory chatHistory = new ChatHistory();
+    public final TalkHistory talkHistory = new TalkHistory();
 
     private Location currentLocation;
     private Chapter currentChapter;
     private GameTime currentTime = GameTime.AFTERNOON;
-    private final SessionFlags sessionFlags = new SessionFlags();
+    public final SessionFlags sessionFlags = new SessionFlags();
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
@@ -49,6 +51,7 @@ public class Session {
     }
     public void setCurrentTime(GameTime currentTime) {
         this.currentTime = currentTime;
+        setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
     }
 
     public Chapter getCurrentChapter() {
@@ -100,5 +103,35 @@ public class Session {
                 .filter(person -> person.id().equals(id))
                 .findFirst();
         return desiredPerson.orElse(null);
+    }
+
+    public List<Dialog> getCommonDialogs() {
+        return adventure.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
+    }
+
+    public Dialog getDialog(UUID id) {
+        return adventure.getDialog(id);
+    }
+
+    /**
+     * The dialogs the given person can currently talk about: their person-specific dialogs
+     * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
+     * This is the set a TALK verdict's dialog must belong to.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<Dialog> getAvailableDialogs(Person person) {
+        List<Dialog> dialogs = new ArrayList<>();
+        for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
+            if (dialogCondition.person().id().equals(person.id())) {
+                List flags = dialogCondition.condition().consideredFlags();
+                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                Condition condition = dialogCondition.condition();
+                if (condition.evaluate(currentValues)) {
+                    dialogs.add(dialogCondition.dialog());
+                }
+            }
+        }
+        dialogs.addAll(getCommonDialogs());
+        return dialogs;
     }
 }

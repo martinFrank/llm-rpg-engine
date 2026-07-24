@@ -10,6 +10,8 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -38,7 +40,18 @@ class FullGameTest {
 
         session.start();
         engine.handleUserInput("wir sehen uns erstmal auf dem marktplatz um", session);
-        engine.handleUserInput("wir gehen jetzt erstmal zum Dorfvorstehen, ich bin gespannt, was der von uns wollte", session);
+        engine.handleUserInput("gehen erstmal zum gasthaus, mal schauen was da los ist", session);
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
+        Location currentLocation = session.getCurrentLocation();
+        List<Person> persons = session.getCurrentPersons(currentLocation);
+//        System.out.println("Current location: " + currentLocation);
+//        System.out.println("Current persons: " + persons);
+        engine.handleUserInput("wer ist denn alles so im Gasthaus?", session);
+//        engine.handleUserInput("wir gehen jetzt erstmal zum Dorfvorstehen, ich bin gespannt, was der von uns wollte", session);
+        engine.handleUserInput("Ich frage die Wirtin, wie es gerade im Dorf so läuft", session);
+        engine.handleUserInput("Ich frage den Ulf, wieso er mit uns sprechen wollte", session);
+
+        session.chatHistory.prettyPrint(System.out);
 
     }
 

@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class VerdictTest {
 
     private Verdict withTargetId(String targetId) {
-        return new Verdict("egal", TaskType.GEHEZU, "egal", targetId);
+        return new Verdict("egal", TaskType.GO_TO, "egal", targetId);
     }
 
     @Test

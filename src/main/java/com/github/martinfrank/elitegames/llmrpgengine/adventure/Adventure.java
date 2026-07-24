@@ -15,6 +15,7 @@ public interface Adventure {
     List<Condition<?>> getConditions();
     List<Flag<?>> getFlags();
     List<Knowledge> getKnowledges();
+    List<KnowledgeTrigger> getKnowledgeTriggers();
 
     Condition<?> getCondition(UUID id);
     Location getLocation(UUID id);
@@ -22,4 +23,5 @@ public interface Adventure {
     Flag<?> getFlag(UUID id);
     Dialog getDialog(UUID id);
     Knowledge getKnowledge(UUID id);
+    KnowledgeTrigger getKnowledgeTrigger(UUID id);
 }

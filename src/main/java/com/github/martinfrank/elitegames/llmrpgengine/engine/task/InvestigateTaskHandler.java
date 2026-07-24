@@ -22,16 +22,16 @@ import java.util.UUID;
  * resolved here yet.
  */
 @Component
-public class UntersuchenTaskHandler implements TaskHandler {
+public class InvestigateTaskHandler implements TaskHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UntersuchenTaskHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvestigateTaskHandler.class);
 
     @Autowired
     private NarratorAgent narratorAgent;
 
     @Override
     public TaskType type() {
-        return TaskType.UNTERSUCHEN;
+        return TaskType.INVESTIGATE;
     }
 
     @Override
@@ -51,12 +51,12 @@ public class UntersuchenTaskHandler implements TaskHandler {
                 return;
             }
 
-            LOGGER.debug("Kein bekanntes Untersuchungsziel für UNTERSUCHEN: '{}' (id: {})", verdict.target(), verdict.targetId());
+            LOGGER.debug("No known investigation target for INVESTIGATE: '{}' (id: {})", verdict.target(), verdict.targetId());
         }
     }
 
     private void inspectLocation(Session session, Location location) {
-        LOGGER.debug("Spieler untersucht den Ort: {}", location.name());
+        LOGGER.debug("Player investigates the location: {}", location.name());
         NarratorContext context = NarratorContext.generateInspectLocationContext(session, location);
         long now = System.currentTimeMillis();
         String narration = narratorAgent.narrate(context);
@@ -67,6 +67,6 @@ public class UntersuchenTaskHandler implements TaskHandler {
     }
 
     private void inspectPerson(Session session, Person person) {
-        LOGGER.debug("Spieler untersucht die Person: {}", person.name());
+        LOGGER.debug("Player investigates the person: {}", person.name());
     }
 }

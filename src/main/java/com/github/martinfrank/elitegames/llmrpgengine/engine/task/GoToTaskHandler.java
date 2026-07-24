@@ -19,16 +19,16 @@ import java.util.UUID;
  * verdict carries no resolvable location id, the current location is left unchanged.
  */
 @Component
-public class GeheZuTaskHandler implements TaskHandler {
+public class GoToTaskHandler implements TaskHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GeheZuTaskHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoToTaskHandler.class);
 
     @Autowired
     private NarratorAgent narratorAgent;
 
     @Override
     public TaskType type() {
-        return TaskType.GEHEZU;
+        return TaskType.GO_TO;
     }
 
     @Override
@@ -39,13 +39,13 @@ public class GeheZuTaskHandler implements TaskHandler {
             if (location != null) {
                 setLocation(session, location);
             } else {
-                LOGGER.debug("Kein bekannter Zielort für GEHEZU: '{}' (id: {})", verdict.target(), verdict.targetId());
+                LOGGER.debug("No known destination for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
             }
         }
     }
 
     private void setLocation(Session session, Location location) {
-        LOGGER.debug("Spieler bewegt sich nach: {}", location.name());
+        LOGGER.debug("Player moves to: {}", location.name());
         session.setCurrentLocation(location);
 
         NarratorContext context = NarratorContext.generateWalkToContext(session, location);
