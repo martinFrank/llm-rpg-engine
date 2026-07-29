@@ -125,10 +125,6 @@ public class Session {
         return Levenshtein.findClosest(reportedId, getCurrentPersons(currentLocation));
     }
 
-    public List<Dialog> getCommonDialogs() {
-        return adventure.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
-    }
-
     public Dialog getDialog(UUID id) {
         return adventure.getDialog(id);
     }
@@ -151,7 +147,6 @@ public class Session {
                 }
             }
         }
-        dialogs.addAll(getCommonDialogs());
         return dialogs;
     }
 

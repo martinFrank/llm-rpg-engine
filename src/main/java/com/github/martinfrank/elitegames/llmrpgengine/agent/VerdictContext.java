@@ -97,11 +97,20 @@ public record VerdictContext (String chapterSummary,
         return topics.toString();
     }
 
+    /**
+     * The dialogs of one person, plus an explicit "no topic fits" entry. That entry is what the
+     * agent picks for small talk – as an option <em>in the list</em> it is chosen far more reliably
+     * than the same rule stated in the system prompt, which a model tends to ignore when the list
+     * holds only one real topic and it feels obliged to choose it.
+     */
     private static String createTopics(Person persons, List<Dialog> dialogs) {
         String dialoList = dialogs.stream()
                 .map(d -> "Thema:" + d.topic()+" (ID: "+d.id()+", Zusammenfassung: "+d.summary()+")")
                 .collect(Collectors.joining("\n"));
-        return "Person: "+persons.name()+" (ID: "+persons.id()+") hat folgende Dialog(e): "+dialoList;
+        return "Person: "+persons.name()+" (ID: "+persons.id()+") hat folgende Dialog(e):\n"+dialoList
+                + "\nThema: kein passendes Thema (ID: " + Verdict.UNKNOWN
+                + ", Zusammenfassung: der Spieler spricht über etwas anderes, es ist nur Small Talk"
+                + " bzw. Tratsch - wähle diesen Eintrag, wenn kein Thema oben inhaltlich passt)\n";
     }
 
     private static String extractItems(Session session) {

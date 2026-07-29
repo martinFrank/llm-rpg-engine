@@ -24,8 +24,15 @@ dialogId = "unbekannt".
   GESPRÄCHSTHEMEN die Dialoge der angesprochenen Person an und wähle den Dialog,
   dessen Thema am besten zur Eingabe des Spielers passt. Übernimm dessen id (den
   Wert in Klammern hinter "ID:") exakt und unverändert.
-  Wenn kein Dialog inhaltlich zur Eingabe passt (der Spieler macht nur Small Talk /
-  Tratsch), setze dialogId = "unbekannt" und dialogTopic = leer.
+  In der Themenliste jeder Person steht als letzter Eintrag "kein passendes Thema
+  (ID: unbekannt)". Wähle diesen Eintrag, wenn kein aufgeführtes Thema inhaltlich zur
+  Eingabe passt – der Spieler macht dann nur Small Talk / Tratsch. Er ist eine
+  vollwertige, häufig richtige Wahl: die meisten Äusserungen treffen KEIN Thema.
+  Wähle dann dialogId = "unbekannt" und dialogTopic = leer, statt das inhaltlich
+  nächstliegende Thema zu nehmen.
+- dialogTopic und dialogId müssen zusammenpassen: dialogTopic ist das Thema GENAU
+  jenes Dialogs, dessen id in dialogId steht. Schreibe niemals ein Thema, das in der
+  Liste nicht vorkommt.
 
 BEKANNTE AUFGABEN (task):
 - GO_TO: Der Spieler möchte sich an einen anderen Ort begeben.

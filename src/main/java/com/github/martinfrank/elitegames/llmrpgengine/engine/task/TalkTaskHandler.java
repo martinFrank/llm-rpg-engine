@@ -18,7 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,12 @@ public class TalkTaskHandler implements TaskHandler {
 
     private static final int TALK_HISTORY_LENGTH = 5;
     private static final int CHAT_HISTORY_LENGTH = 5;
+
+    /**
+     * Shortest word length still compared when checking a reported dialog topic against the real
+     * one. Keeps filler words ("und", "das", "für") from counting as agreement.
+     */
+    private static final int MEANINGFUL_WORD_LENGTH = 4;
 
     private final TalkAgent talkAgent;
 
@@ -74,16 +84,71 @@ public class TalkTaskHandler implements TaskHandler {
      * <p>
      * Guardrail: the dialog id is only accepted when it belongs to <em>this</em> person's
      * available dialogs – that candidate list is what keeps a verdict pointing at a dialog the
-     * person cannot talk about (e.g. another person's dialog) from being used. A slightly mangled
-     * id still resolves to the dialog it was meant to be, anything else falls back to gossip.
+     * person cannot talk about (e.g. another person's dialog) from being used.
+     * <p>
+     * An exact id is taken as it is. A merely <em>close</em> id has to survive a second check
+     * against {@link Verdict#dialogTopic()}: the distance guardrail assumes a near miss is a typo
+     * of the intended id, but a model that invents a topic tends to invent an id right next to the
+     * one id it saw in the context – a single changed digit is indistinguishable from a typo. In
+     * that case the reported topic gives it away, because it does not describe the dialog the id
+     * points at, and the turn falls back to gossip.
      */
     private Dialog resolveDialog(Verdict verdict, Session session, Person person) {
-        Dialog dialog = Levenshtein.findClosest(verdict.dialogId(), session.getAvailableDialogs(person));
-        if (dialog == null && verdict.hasDialogId()) {
-            LOGGER.info("Guardrail: dialog id {} ('{}') does not belong to {} -> gossip",
-                    verdict.dialogId(), verdict.dialogTopic(), person.name());
+        List<Dialog> available = session.getAvailableDialogs(person);
+
+        Dialog exact = exactDialog(verdict.dialogId(), available);
+        if (exact != null) {
+            return exact;
         }
-        return dialog;
+
+        Dialog closest = Levenshtein.findClosest(verdict.dialogId(), available);
+        if (closest == null) {
+            if (verdict.hasDialogId()) {
+                LOGGER.info("Guardrail: dialog id {} ('{}') does not belong to {} -> gossip",
+                        verdict.dialogId(), verdict.dialogTopic(), person.name());
+            }
+            return null;
+        }
+        if (!topicMatches(verdict.dialogTopic(), closest.topic())) {
+            LOGGER.info("Guardrail: dialog id {} is close to '{}' ({}), but the reported topic '{}' "
+                            + "describes something else -> gossip",
+                    verdict.dialogId(), closest.topic(), closest.id(), verdict.dialogTopic());
+            return null;
+        }
+        return closest;
+    }
+
+    /** The dialog whose id is exactly the reported one, or {@code null} – ids differ in case only. */
+    private static Dialog exactDialog(String reportedId, List<Dialog> candidates) {
+        if (reportedId == null || reportedId.isBlank()) {
+            return null;
+        }
+        String needle = reportedId.strip();
+        return candidates.stream()
+                .filter(d -> d.id().toString().equalsIgnoreCase(needle))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Whether the topic the agent reported plausibly describes {@code actualTopic}: they have to
+     * share at least one meaningful word. This tolerates rewording ("Gefahr im Dorf" for "Gefahr
+     * für das Dorf") but rejects an unrelated, invented topic ("Waffenpflege und Ausrüstung").
+     * A missing topic cannot confirm anything and therefore does not match.
+     */
+    private static boolean topicMatches(String reportedTopic, String actualTopic) {
+        if (reportedTopic == null || reportedTopic.isBlank()) {
+            return false;
+        }
+        Set<String> reported = meaningfulWords(reportedTopic);
+        reported.retainAll(meaningfulWords(actualTopic));
+        return !reported.isEmpty();
+    }
+
+    private static Set<String> meaningfulWords(String topic) {
+        return Arrays.stream(topic.toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}]+"))
+                .filter(word -> word.length() >= MEANINGFUL_WORD_LENGTH)
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
