@@ -8,14 +8,11 @@ import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-import java.util.UUID;
-
 /**
- * Moves the player to the location resolved from {@link Verdict#targetUuid()}. If the
+ * Moves the player to the location resolved from {@link Verdict#targetId()} (guardrail: via
+ * {@link Session#resolveLocation(String)}, so a slightly mangled id still resolves). If the
  * verdict carries no resolvable location id, the current location is left unchanged.
  */
 @Component
@@ -23,8 +20,11 @@ public class GoToTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GoToTaskHandler.class);
 
-    @Autowired
-    private NarratorAgent narratorAgent;
+    private final NarratorAgent narratorAgent;
+
+    public GoToTaskHandler(NarratorAgent narratorAgent) {
+        this.narratorAgent = narratorAgent;
+    }
 
     @Override
     public TaskType type() {
@@ -33,14 +33,11 @@ public class GoToTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> id = verdict.targetUuid();
-        if (id.isPresent()) {
-            Location location = session.getLocation(id.get());
-            if (location != null) {
-                setLocation(session, location);
-            } else {
-                LOGGER.debug("No known destination for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
-            }
+        Location location = session.resolveLocation(verdict.targetId());
+        if (location != null) {
+            setLocation(session, location);
+        } else if (verdict.hasTargetId()) {
+            LOGGER.debug("No known destination for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
         }
     }
 

@@ -429,36 +429,36 @@ public class Buchenhain implements Adventure {
 
     @Override
     public Condition<?> getCondition(UUID id) {
-        return (Condition<?>) Identifiable.find(id, getConditions());
+        return Identifiable.find(id, getConditions());
     }
 
     @Override
     public Location getLocation(UUID id) {
-        return (Location) Identifiable.find(id, getLocations());
+        return Identifiable.find(id, getLocations());
     }
 
     @Override
     public Person getPerson(UUID id) {
-        return (Person) Identifiable.find(id, getPersons());
+        return Identifiable.find(id, getPersons());
     }
 
     @Override
     public Flag<?> getFlag(UUID id) {
-        return (Flag<?>) Identifiable.find(id, getFlags());
+        return Identifiable.find(id, getFlags());
     }
 
     @Override
     public Dialog getDialog(UUID id) {
-        return (Dialog) Identifiable.find(id, getDialogs());
+        return Identifiable.find(id, getDialogs());
     }
 
     @Override
     public Knowledge getKnowledge(UUID id) {
-        return (Knowledge) Identifiable.find(id, getKnowledges());
+        return Identifiable.find(id, getKnowledges());
     }
 
     @Override
     public KnowledgeTrigger getKnowledgeTrigger(UUID id) {
-        return (KnowledgeTrigger) Identifiable.find(id, getKnowledgeTriggers());
+        return Identifiable.find(id, getKnowledgeTriggers());
     }
 }

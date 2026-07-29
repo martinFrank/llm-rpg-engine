@@ -42,6 +42,27 @@ public record Verdict(
     }
 
     /**
+     * Whether the agent reported a target id at all, i.e. it is neither blank nor
+     * {@value #UNKNOWN}. A reported id may still be mangled, so handlers resolve it through the
+     * guardrail ({@code session.resolvePerson/resolveLocation}) rather than parsing it directly.
+     */
+    public boolean hasTargetId() {
+        return isReported(targetId);
+    }
+
+    /**
+     * Whether the agent reported a dialog id at all, i.e. it is neither blank nor
+     * {@value #UNKNOWN}. {@code false} means the player only makes small talk (gossip).
+     */
+    public boolean hasDialogId() {
+        return isReported(dialogId);
+    }
+
+    private static boolean isReported(String value) {
+        return value != null && !value.isBlank() && !UNKNOWN.equalsIgnoreCase(value.strip());
+    }
+
+    /**
      * The resolved target as a UUID, or empty if it is {@value #UNKNOWN}, blank, or not a
      * valid UUID. Handlers use this to look the target up in the session/adventure.
      */

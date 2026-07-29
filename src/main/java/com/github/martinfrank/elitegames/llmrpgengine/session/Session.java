@@ -5,10 +5,10 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCo
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
+import com.github.martinfrank.elitegames.llmrpgengine.util.Levenshtein;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Session {
@@ -80,29 +80,48 @@ public class Session {
     }
 
 
+    /**
+     * The locations the player can currently reach: those of the current chapter whose conditions
+     * evaluate to true. This is the set a location id from a verdict must belong to.
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Location getLocation(UUID id) {
-        for(LocationCondition locationCondition: currentChapter.locationConditions() ){
-            if (locationCondition.location().id().equals(id)) {
-
-                List flags = locationCondition.condition().consideredFlags();
-                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
-                Condition condition = locationCondition.condition();
-                boolean evaluated = condition.evaluate(currentValues);
-                if (evaluated) {
-                    return locationCondition.location();
-                }
+    public List<Location> getAvailableLocations() {
+        List<Location> locations = new ArrayList<>();
+        for (LocationCondition locationCondition : currentChapter.locationConditions()) {
+            List flags = locationCondition.condition().consideredFlags();
+            List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+            Condition condition = locationCondition.condition();
+            if (condition.evaluate(currentValues) && !locations.contains(locationCondition.location())) {
+                locations.add(locationCondition.location());
             }
         }
-        return null;
+        return locations;
+    }
+
+    public Location getLocation(UUID id) {
+        return Identifiable.find(id, getAvailableLocations());
     }
 
     public Person getPerson(UUID id) {
-        List<Person> personsHere = getCurrentPersons(currentLocation);
-        Optional<Person> desiredPerson = personsHere.stream()
-                .filter(person -> person.id().equals(id))
-                .findFirst();
-        return desiredPerson.orElse(null);
+        return Identifiable.find(id, getCurrentPersons(currentLocation));
+    }
+
+    /**
+     * Guardrail: resolves a location id as reported by an agent – a slightly mangled id still
+     * resolves to the location it was meant to be, an invented one to {@code null}.
+     * Only currently reachable locations are candidates.
+     */
+    public Location resolveLocation(String reportedId) {
+        return Levenshtein.findClosest(reportedId, getAvailableLocations());
+    }
+
+    /**
+     * Guardrail: resolves a person id as reported by an agent – a slightly mangled id still
+     * resolves to the person it was meant to be, an invented one to {@code null}.
+     * Only persons present at the current location are candidates.
+     */
+    public Person resolvePerson(String reportedId) {
+        return Levenshtein.findClosest(reportedId, getCurrentPersons(currentLocation));
     }
 
     public List<Dialog> getCommonDialogs() {

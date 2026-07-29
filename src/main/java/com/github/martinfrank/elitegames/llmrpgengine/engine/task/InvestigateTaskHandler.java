@@ -9,12 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-import java.util.UUID;
-
 /**
- * Resolves what the player wants to investigate from {@link Verdict#targetUuid()} against
- * the session: first a location, then a person. Investigating does not change the session
+ * Resolves what the player wants to investigate from {@link Verdict#targetId()} against
+ * the session: first a location, then a person – both through the guardrail, so a slightly
+ * mangled id still resolves. Investigating does not change the session
  * state – the resolved subject is what the Narrator later describes to the player. If the
  * target cannot be resolved, nothing happens.
  * <p>
@@ -36,21 +34,19 @@ public class InvestigateTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> targetId = verdict.targetUuid();
+        Location location = session.resolveLocation(verdict.targetId());
+        if (location != null) {
+            inspectLocation(session, location);
+            return;
+        }
 
-        if (targetId.isPresent()) {
-            Location location = session.getLocation(targetId.get());
-            if (location != null) {
-                inspectLocation(session, location);
-                return;
-            }
+        Person person = session.resolvePerson(verdict.targetId());
+        if (person != null) {
+            inspectPerson(session, person);
+            return;
+        }
 
-            Person person = session.getPerson(targetId.get());
-            if (person != null) {
-                inspectPerson(session, person);
-                return;
-            }
-
+        if (verdict.hasTargetId()) {
             LOGGER.debug("No known investigation target for INVESTIGATE: '{}' (id: {})", verdict.target(), verdict.targetId());
         }
     }

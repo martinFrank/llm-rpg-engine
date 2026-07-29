@@ -19,16 +19,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * Handles the player addressing and communicating with the person resolved from
- * {@link Verdict#targetUuid()} (an id from the available-persons list). If the verdict
- * carries no resolvable person id, nothing happens.
+ * {@link Verdict#targetId()} (an id from the available-persons list, resolved through the
+ * guardrail {@link Session#resolvePerson(String)}). If the verdict carries no resolvable
+ * person id, nothing happens.
  * <p>
- * The conversation topic is taken from {@link Verdict#dialogUuid()}: if it resolves to a
+ * The conversation topic is taken from {@link Verdict#dialogId()}: if it resolves to a
  * known {@link Dialog}, the player talks about that scripted dialog; otherwise the player
  * only makes small talk (gossip). Either way the {@link TalkAgent} produces the person's
  * in-character reply, which is recorded in the talk- and chat-history.
@@ -40,13 +39,6 @@ public class TalkTaskHandler implements TaskHandler {
 
     private static final int TALK_HISTORY_LENGTH = 5;
     private static final int CHAT_HISTORY_LENGTH = 5;
-
-    /**
-     * How far a reported trigger id may be (in edit distance) from a real dialog trigger id and
-     * still be accepted as that trigger. Ids (UUIDs) are far apart, so a small threshold recovers
-     * LLM typos without risking a wrong match.
-     */
-    private static final int MAX_TRIGGER_ID_DISTANCE = 2;
 
     private final TalkAgent talkAgent;
 
@@ -61,12 +53,7 @@ public class TalkTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> personId = verdict.targetUuid();
-        if (personId.isEmpty()) {
-            LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
-            return;
-        }
-        Person person = session.getPerson(personId.get());
+        Person person = session.resolvePerson(verdict.targetId());
         if (person == null) {
             LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
             return;
@@ -86,22 +73,17 @@ public class TalkTaskHandler implements TaskHandler {
      * matched (small talk / gossip).
      * <p>
      * Guardrail: the dialog id is only accepted when it belongs to <em>this</em> person's
-     * available dialogs. A verdict that points at a dialog the person cannot talk about (e.g.
-     * another person's dialog) falls back to gossip instead of using a foreign dialog.
+     * available dialogs – that candidate list is what keeps a verdict pointing at a dialog the
+     * person cannot talk about (e.g. another person's dialog) from being used. A slightly mangled
+     * id still resolves to the dialog it was meant to be, anything else falls back to gossip.
      */
     private Dialog resolveDialog(Verdict verdict, Session session, Person person) {
-        Optional<UUID> dialogId = verdict.dialogUuid();
-        if (dialogId.isEmpty()) {
-            return null;
+        Dialog dialog = Levenshtein.findClosest(verdict.dialogId(), session.getAvailableDialogs(person));
+        if (dialog == null && verdict.hasDialogId()) {
+            LOGGER.info("Guardrail: dialog id {} ('{}') does not belong to {} -> gossip",
+                    verdict.dialogId(), verdict.dialogTopic(), person.name());
         }
-        return session.getAvailableDialogs(person).stream()
-                .filter(d -> d.id().equals(dialogId.get()))
-                .findFirst()
-                .orElseGet(() -> {
-                    LOGGER.info("Guardrail: dialog id {} ('{}') does not belong to {} -> gossip",
-                            verdict.dialogId(), verdict.dialogTopic(), person.name());
-                    return null;
-                });
+        return dialog;
     }
 
     private void converse(Session session, Person person, Dialog dialog) {
@@ -127,10 +109,9 @@ public class TalkTaskHandler implements TaskHandler {
 
     /**
      * Guardrail 3: maps the triggers the agent reported onto the real {@link KnowledgeTrigger}s of
-     * the dialog. Instead of rigorously discarding an id that does not match exactly, the closest
-     * dialog trigger by {@link Levenshtein} distance wins, as long as it is within
-     * {@link #MAX_TRIGGER_ID_DISTANCE}. This recovers ids the model got slightly wrong (a mangled
-     * UUID) while still rejecting invented ones (which are far from every candidate).
+     * the dialog via {@link Levenshtein#findClosest(String, List)} – the candidates are the
+     * triggers of <em>this</em> dialog, so invented ids are ignored while mangled ones still
+     * resolve.
      */
     private List<KnowledgeTrigger> resolveTriggers(Dialog dialog, TalkResponse response) {
         if (dialog == null || response.triggeredTriggers().isEmpty()) {
@@ -139,7 +120,7 @@ public class TalkTaskHandler implements TaskHandler {
         List<KnowledgeTrigger> candidates = dialog.knowledgeTriggers();
         List<KnowledgeTrigger> resolved = new ArrayList<>();
         for (TalkResponse.TriggeredTrigger reported : response.triggeredTriggers()) {
-            KnowledgeTrigger match = closestTrigger(reported.triggerId(), candidates);
+            KnowledgeTrigger match = Levenshtein.findClosest(reported.triggerId(), candidates);
             if (match == null) {
                 LOGGER.info("Guardrail: reported trigger id '{}' ('{}') matches no dialog trigger -> ignored",
                         reported.triggerId(), reported.trigger());
@@ -148,23 +129,6 @@ public class TalkTaskHandler implements TaskHandler {
             }
         }
         return resolved;
-    }
-
-    private static KnowledgeTrigger closestTrigger(String reportedId, List<KnowledgeTrigger> candidates) {
-        if (reportedId == null || reportedId.isBlank()) {
-            return null;
-        }
-        String needle = reportedId.strip();
-        KnowledgeTrigger best = null;
-        int bestDistance = Integer.MAX_VALUE;
-        for (KnowledgeTrigger candidate : candidates) {
-            int distance = Levenshtein.distance(needle, candidate.id().toString());
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                best = candidate;
-            }
-        }
-        return bestDistance <= MAX_TRIGGER_ID_DISTANCE ? best : null;
     }
 
     private TalkContext buildContext(Session session, Person person, Dialog dialog, String statement) {
