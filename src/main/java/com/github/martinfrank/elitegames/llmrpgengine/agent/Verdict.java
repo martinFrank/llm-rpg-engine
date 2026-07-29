@@ -1,12 +1,15 @@
 package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
-import java.util.Optional;
-import java.util.UUID;
-
 /**
  * The result of the {@link VerdictAgent}: its understanding of what the player's
  * input actually means, mapped onto one scripted {@link TaskType} that the engine
  * can execute against the session.
+ * <p>
+ * The ids stay raw strings on purpose: they come from an agent and may be mangled, so parsing
+ * them to a {@link java.util.UUID} here would drop exactly the ids the guardrail can still
+ * recover. Handlers resolve them against the candidates that are legal at that point – see
+ * {@code Session.resolvePerson/resolveLocation} and
+ * {@link com.github.martinfrank.elitegames.llmrpgengine.util.Levenshtein#findClosest(String, java.util.List)}.
  *
  * @param interpretation short, plain description of what the player wants to do
  * @param task           the scripted task to run
@@ -60,32 +63,5 @@ public record Verdict(
 
     private static boolean isReported(String value) {
         return value != null && !value.isBlank() && !UNKNOWN.equalsIgnoreCase(value.strip());
-    }
-
-    /**
-     * The resolved target as a UUID, or empty if it is {@value #UNKNOWN}, blank, or not a
-     * valid UUID. Handlers use this to look the target up in the session/adventure.
-     */
-    public Optional<UUID> targetUuid() {
-        return toUuid(targetId);
-    }
-
-    /**
-     * The matched dialog as a UUID, or empty if it is {@value #UNKNOWN}, blank, or not a
-     * valid UUID. Empty means the player only makes small talk (gossip) with no scripted dialog.
-     */
-    public Optional<UUID> dialogUuid() {
-        return toUuid(dialogId);
-    }
-
-    private static Optional<UUID> toUuid(String value) {
-        if (value == null || value.isBlank() || UNKNOWN.equalsIgnoreCase(value.strip())) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(UUID.fromString(value.strip()));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
     }
 }

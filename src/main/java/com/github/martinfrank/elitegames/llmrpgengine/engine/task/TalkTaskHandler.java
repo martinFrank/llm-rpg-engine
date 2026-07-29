@@ -1,7 +1,9 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.KnowledgeTrigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Identifiable;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
@@ -95,10 +97,10 @@ public class TalkTaskHandler implements TaskHandler {
         long duration = System.currentTimeMillis() - now;
         LOGGER.info("Duration talk evaluation: {} ms", duration);
 
-        // Guardrail: resolve the (possibly LLM-mangled) reported trigger ids to real dialog
+        // Guardrail: resolve the (possibly LLM-mangled) reported triggerCondition ids to real dialog
         // triggers. Applying them (flags/knowledge) happens elsewhere.
-        List<KnowledgeTrigger> triggers = resolveTriggers(dialog, response);
-        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(KnowledgeTrigger::id).toList());
+        List<Trigger<?>> triggers = resolveTriggers(dialog, response);
+        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Identifiable::id).toList());
 
         // Record both sides in the per-person talk history and surface the reply in the game log.
         String reply = response.reply();
@@ -113,16 +115,16 @@ public class TalkTaskHandler implements TaskHandler {
      * triggers of <em>this</em> dialog, so invented ids are ignored while mangled ones still
      * resolve.
      */
-    private List<KnowledgeTrigger> resolveTriggers(Dialog dialog, TalkResponse response) {
+    private List<Trigger<?>> resolveTriggers(Dialog dialog, TalkResponse response) {
         if (dialog == null || response.triggeredTriggers().isEmpty()) {
             return List.of();
         }
-        List<KnowledgeTrigger> candidates = dialog.knowledgeTriggers();
-        List<KnowledgeTrigger> resolved = new ArrayList<>();
+        List<Trigger<?>> candidates = dialog.knowledgeTriggers();
+        List<Trigger<?>> resolved = new ArrayList<>();
         for (TalkResponse.TriggeredTrigger reported : response.triggeredTriggers()) {
-            KnowledgeTrigger match = Levenshtein.findClosest(reported.triggerId(), candidates);
+            Trigger<?> match = Levenshtein.findClosest(reported.triggerId(), candidates);
             if (match == null) {
-                LOGGER.info("Guardrail: reported trigger id '{}' ('{}') matches no dialog trigger -> ignored",
+                LOGGER.info("Guardrail: reported triggerCondition id '{}' ('{}') matches no dialog triggerCondition -> ignored",
                         reported.triggerId(), reported.trigger());
             } else if (!resolved.contains(match)) {
                 resolved.add(match);
@@ -148,7 +150,7 @@ public class TalkTaskHandler implements TaskHandler {
                     + "\nZusammenfassung: " + StringNormalizer.normalize(dialog.summary())
                     + "\nKontext: " + StringNormalizer.normalize(dialog.context());
             triggers = dialog.knowledgeTriggers().stream()
-                    .map(t -> "TriggerThema: " + t.trigger() + " (id: " + t.id() + ")")
+                    .map(t -> "TriggerThema: " + t.triggerCondition() + " (id: " + t.id() + ")")
                     .collect(Collectors.joining("\n"));
         }
 

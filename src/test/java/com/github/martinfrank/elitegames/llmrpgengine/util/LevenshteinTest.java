@@ -50,9 +50,35 @@ class LevenshteinTest {
     }
 
     @Test
+    void idJustWithinTheThresholdResolves() {
+        String mangled = mangle(ANNA, Levenshtein.MAX_ID_DISTANCE);
+        assertThat(Levenshtein.findClosest(mangled, CANDIDATES)).isEqualTo(ANNA);
+    }
+
+    @Test
     void tooDistantIdResolvesToNothing() {
-        String mangled = "409b408c-4b7a-4bcc-9a37-527d02bcd000";
+        String mangled = mangle(ANNA, Levenshtein.MAX_ID_DISTANCE + 1);
         assertThat(Levenshtein.findClosest(mangled, CANDIDATES)).isNull();
+    }
+
+    @Test
+    void thresholdCanBeTightened() {
+        String mangled = mangle(ANNA, 2);
+        assertThat(Levenshtein.findClosest(mangled, CANDIDATES, 2)).isEqualTo(ANNA);
+        assertThat(Levenshtein.findClosest(mangled, CANDIDATES, 1)).isNull();
+    }
+
+    /** The candidate's id with its last {@code edits} hex digits changed, i.e. exactly that far away. */
+    private static String mangle(Candidate candidate, int edits) {
+        char[] chars = candidate.id().toString().toCharArray();
+        for (int i = 0, changed = 0; i < chars.length && changed < edits; i++) {
+            char c = chars[chars.length - 1 - i];
+            if (c != '-') {
+                chars[chars.length - 1 - i] = c == '0' ? '1' : '0';
+                changed++;
+            }
+        }
+        return new String(chars);
     }
 
     @Test

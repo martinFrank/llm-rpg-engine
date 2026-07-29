@@ -1,4 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-public class TriggeredEvent {
+public interface TriggeredEvent {
+
 }

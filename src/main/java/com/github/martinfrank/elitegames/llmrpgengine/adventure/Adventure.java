@@ -1,5 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +17,7 @@ public interface Adventure {
     List<Condition<?>> getConditions();
     List<Flag<?>> getFlags();
     List<Knowledge> getKnowledges();
-    List<KnowledgeTrigger> getKnowledgeTriggers();
+    List<Trigger<?>> getTriggers();
 
     Condition<?> getCondition(UUID id);
     Location getLocation(UUID id);
@@ -23,5 +25,5 @@ public interface Adventure {
     Flag<?> getFlag(UUID id);
     Dialog getDialog(UUID id);
     Knowledge getKnowledge(UUID id);
-    KnowledgeTrigger getKnowledgeTrigger(UUID id);
+    Trigger<?> getTrigger(UUID id);
 }

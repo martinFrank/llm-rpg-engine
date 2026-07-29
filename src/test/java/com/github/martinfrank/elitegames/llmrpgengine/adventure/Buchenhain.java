@@ -4,9 +4,10 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCo
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.NotCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
 
 import java.util.List;
 import java.util.UUID;
@@ -101,59 +102,55 @@ public class Buchenhain implements Adventure {
                         .locationConditions(List.of(
                                 new LocationCondition(
                                         getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
-                                ),
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
                                 new LocationCondition(
                                         getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
-                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
-                                ),
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
                                 new LocationCondition(
                                         getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //dorf schmiede
-                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
-                                ),
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
                                 new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
-                                ),
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
                                 new LocationCondition(
                                         getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
-                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44")) //nachdem mit dem Dorfvorsteher geredet wurde
-                                )
+                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"))) //nachdem mit dem Dorfvorsteher geredet wurde
                         ))
                         .personConditions(List.of(
                                 new PersonCondition(
                                         getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
                                         getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
-                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
-                                ),
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
                                 new PersonCondition(
                                         getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
-                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8")) //evening time condition
-                                ),
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
                                 new PersonCondition(
                                         getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
                                         getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //Schmiede
-                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
-                                ),
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
                                 new PersonCondition(
                                         getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //marktplatz
-                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8")) //evening time condition
-                                ),
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
                                 new PersonCondition(
                                         getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()) //always there
-                                )
-
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())) //always there
                         ))
                         .dialogConditions(List.of(
                                 new DialogCondition(
                                         getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
                                         getDialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e")), //dialog über den auftrag
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
-                                )
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
                         .build()
 
@@ -264,8 +261,8 @@ public class Buchenhain implements Adventure {
                                 """,
 
                         List.of(
-                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")), //"wissen über die Bedrohung im Dorf
-                                getKnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711")) //"wissen über Auftrag"
+                                getTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")), //"wissen über die Bedrohung im Dorf
+                                getTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711")) //"wissen über Auftrag"
                         )
                 ),
                 new Dialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826"),
@@ -285,7 +282,7 @@ public class Buchenhain implements Adventure {
                                 """,
 
                         List.of(
-                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")) //"wissen über die Bedrohung im Dorf"
+                                getTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")) //"wissen über die Bedrohung im Dorf"
                         )
                 )
         );
@@ -360,17 +357,23 @@ public class Buchenhain implements Adventure {
                         UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"),
                         "dayTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
-                        List.of(GameTime.MORNING, GameTime.HIGH_NOON, GameTime.AFTERNOON)), //bedingung: es ist tagsüber
+                        List.of(GameTime.MORNING, GameTime.HIGH_NOON, GameTime.AFTERNOON)) //bedingung: es ist tagsüber
+                ,
                 new RangeCondition<>(
                         UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"),
                         "nightTimeCondition",
                         List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
-                        List.of(GameTime.IN_THE_EVENING, GameTime.AT_NIGHT, GameTime.MIDNIGHT)), //bedingung: es ist abends/nachts
+                        List.of(GameTime.IN_THE_EVENING, GameTime.AT_NIGHT, GameTime.MIDNIGHT)) //bedingung: es ist abends/nachts
+                ,
                 new IsCondition(
                         UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"),
                         "prüft ob mit dem dorfvorsteher schon geredet wurde",
-                        List.of((Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"))) // hat mit dorf-vorsteher geredet
-                )
+                        List.of((Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
+                ,
+                new NotCondition(
+                        UUID.fromString("89f20b76-476a-4da8-bbaf-3d2bce881d87"),
+                        "prüft ob noch nicht mit dem dorfvorsteher schon geredet wurde",
+                        List.of((Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat NOCH NICHT mit dorf-vorsteher geredet
 
         );
     }
@@ -393,37 +396,36 @@ public class Buchenhain implements Adventure {
                         """
                                 die Spieler wissen jetzt, dass Monster das Dorf angreifen. Es handelt sich um mutierte
                                 Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
-                                """
-                ),
+                                """)
+                ,
                 new Knowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa"),
                         "Auftrag des Ortsvorstehers",
                         """
                                 die Spieler wissen jetzt, dass ihr Auftrag ist, dass sie die Ursache der Bedrohung des
                                 Dorf herausfinden sollen und die Bedrohung abwenden.
-                                """
-                )
+                                """)
         );
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<KnowledgeTrigger> getKnowledgeTriggers() {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<Trigger<?>> getTriggers() {
         return List.of(
-                new KnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
+                new KnowledgeTrigger(
+                        UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
                         "Bedrohung oder Gefahr für das Dorf",
-                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
-                        List.of()
-                ), //"wissen über die Bedrohung im Dorf"
-                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                        List.of(),
+                        new TriggeredEvent() {
+                            //getKnowledge(UUID.fromString("xxx"))))
+                        })
+                , //"wissen über die Bedrohung im Dorf"
+                new KnowledgeTrigger(
+                        UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                         "Auftrag oder heikles Thema",
-                        getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
                         List.of(
-                                new FlagChange<>(
-                                        UUID.randomUUID(),
-                                        (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
-                                        true
-                                )
-                        ))
+                                getCondition(UUID.fromString("89f20b76-476a-4da8-bbaf-3d2bce881d87"))
+                        ),
+                        new TriggeredEvent() { })
         );
     }
 
@@ -458,7 +460,7 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public KnowledgeTrigger getKnowledgeTrigger(UUID id) {
-        return Identifiable.find(id, getKnowledgeTriggers());
+    public Trigger<?> getTrigger(UUID id) {
+        return Identifiable.find(id, getTriggers());
     }
 }
