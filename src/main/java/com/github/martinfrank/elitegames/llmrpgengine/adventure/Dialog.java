@@ -1,7 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
-
 import java.util.List;
 import java.util.UUID;
 

@@ -6,9 +6,16 @@ import java.util.UUID;
 
 public interface Flag<R> extends Identifiable{
 
-    Flag<GameTime> GAME_TIME_FLAG = new GameTimeFlag(UUID.fromString("ab9ee3e8-04df-493b-a408-dc93e738eaa3"), "game time flag", GameTime.AFTERNOON);
+    Flag<GameTime> GAME_TIME_FLAG = new GameTimeFlag(
+            UUID.fromString("ab9ee3e8-04df-493b-a408-dc93e738eaa3"),
+            "game time flag",
+            "beschreibt die aktuelle uhrzeit",
+            GameTime.AFTERNOON);
 
     R value();
+
+    String name();
+    String description();
 
     /*
     Also nicht:

@@ -4,6 +4,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import com.github.martinfrank.elitegames.llmrpgengine.util.Levenshtein;
 
@@ -152,5 +153,9 @@ public class Session {
         }
         dialogs.addAll(getCommonDialogs());
         return dialogs;
+    }
+
+    public void applyFlagChange(FlagChange<?> flagChange) {
+        sessionFlags.setFlagValue(flagChange.flag().id(),  flagChange.newValue());
     }
 }

@@ -5,7 +5,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 
 import java.util.UUID;
 
-public record GameTimeFlag (UUID id, String name, GameTime value) implements Flag<GameTime> {
+public record GameTimeFlag (UUID id, String name, String description, GameTime value) implements Flag<GameTime> {
 
 //    public GameTimeFlag(UUID id, String name, GameTime value) {
 //        super(id, name, value);

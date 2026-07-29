@@ -50,6 +50,7 @@ class FullGameTest {
 //        engine.handleUserInput("wir gehen jetzt erstmal zum Dorfvorstehen, ich bin gespannt, was der von uns wollte", session);
         engine.handleUserInput("Ich frage die Wirtin, wie es gerade im Dorf so läuft", session);
         engine.handleUserInput("Ich frage den Ulf, wieso er mit uns sprechen wollte", session);
+        engine.handleUserInput("Ich frage den Dorfvorsteher, welchen Auftrag er für uns hat", session);
 
         session.chatHistory.prettyPrint(System.out);
 

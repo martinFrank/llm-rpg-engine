@@ -7,7 +7,9 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCond
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.NotCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.AndConditionTrigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTriggerEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -150,7 +152,7 @@ public class Buchenhain implements Adventure {
                                 new DialogCondition(
                                         getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
                                         getDialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e")), //dialog über den auftrag
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                        getCondition(UUID.fromString("89f20b76-476a-4da8-bbaf-3d2bce881d87"))) // not auftrag erhalten
                         ))
                         .build()
 
@@ -384,26 +386,61 @@ public class Buchenhain implements Adventure {
                 GAME_TIME_FLAG,
                 new BooleanFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"),
                         "hat mit Dorf-Vorsteher geredet und Quest erhalten",
+                        """
+                                die Spieler wissen jetzt, dass ihr Auftrag ist, dass sie die Ursache der Bedrohung des
+                                Dorf herausfinden sollen und die Bedrohung abwenden.
+                                """,
+                        false)
+                ,
+                new BooleanFlag(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"),
+                        "wissen über die Bedrohung im Dorf",
+                        """
+                                die Spieler wissen jetzt, dass Monster das Dorf angreifen. Es handelt sich um mutierte
+                                Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
+                                """,
                         false)
         );
     }
 
     @Override
-    public List<Knowledge> getKnowledges() {
+    public List<TriggeredEvent<?>> getTriggeredEvents() {
         return List.of(
-                new Knowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475"),
-                        "wissen über die Bedrohung im Dorf",
+                new KnowledgeTriggerEvent<>(
+                        UUID.fromString("0ba0e019-01b7-4c56-952d-4df110d08bb9"),
+                        "Auftrag des Dorfvorstehers",
                         """
-                                die Spieler wissen jetzt, dass Monster das Dorf angreifen. Es handelt sich um mutierte
-                                Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
-                                """)
+                                die Helden erhalten vom Dorfvorsteher den Auftrag, sich um die Bedrohung des Dorfes zu
+                                kümmern
+                                """,
+                        null, //keine veränderung des Ortes
+                        List.of(
+                                new FlagChange<>(
+                                        (BooleanFlag) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")),
+                                        true) //auftragsflag
+                                ,
+                                new FlagChange<>(
+                                        (BooleanFlag) getFlag(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
+                                        true) //wissen über bedrohungsflag
+//                                ,
+//                                new FlagChange<>(
+//                                        (BooleanFlag) getFlag(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
+//                                        true) //auftragsflag
+
+                        ))
                 ,
-                new Knowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa"),
-                        "Auftrag des Ortsvorstehers",
+                new KnowledgeTriggerEvent<>(
+                        UUID.fromString("2912127a-afb2-4eb9-8770-ada9f3aea475"),
+                        "Wissen über die Bedrohung",
                         """
-                                die Spieler wissen jetzt, dass ihr Auftrag ist, dass sie die Ursache der Bedrohung des
-                                Dorf herausfinden sollen und die Bedrohung abwenden.
-                                """)
+                                die Helden lernen, was die Bedrohung des Dorfes konkret ist
+                                """,
+                        null, //keine veränderung des Ortes
+                        List.of(
+                                new FlagChange<>(
+                                        (BooleanFlag) getFlag(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
+                                        true)
+                        )
+                )
         );
     }
 
@@ -411,21 +448,19 @@ public class Buchenhain implements Adventure {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public List<Trigger<?>> getTriggers() {
         return List.of(
-                new KnowledgeTrigger(
+                new AndConditionTrigger(
                         UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
                         "Bedrohung oder Gefahr für das Dorf",
                         List.of(),
-                        new TriggeredEvent() {
-                            //getKnowledge(UUID.fromString("xxx"))))
-                        })
+                        getTriggeredEvent(UUID.fromString("2912127a-afb2-4eb9-8770-ada9f3aea475")))
                 , //"wissen über die Bedrohung im Dorf"
-                new KnowledgeTrigger(
+                new AndConditionTrigger(
                         UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                         "Auftrag oder heikles Thema",
                         List.of(
                                 getCondition(UUID.fromString("89f20b76-476a-4da8-bbaf-3d2bce881d87"))
                         ),
-                        new TriggeredEvent() { })
+                        getTriggeredEvent(UUID.fromString("0ba0e019-01b7-4c56-952d-4df110d08bb9")))
         );
     }
 
@@ -454,9 +489,10 @@ public class Buchenhain implements Adventure {
         return Identifiable.find(id, getDialogs());
     }
 
+
     @Override
-    public Knowledge getKnowledge(UUID id) {
-        return Identifiable.find(id, getKnowledges());
+    public TriggeredEvent<?> getTriggeredEvent(UUID id) {
+        return Identifiable.find(id, getTriggeredEvents());
     }
 
     @Override

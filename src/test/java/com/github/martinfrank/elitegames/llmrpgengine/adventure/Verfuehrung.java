@@ -1,7 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -53,12 +51,12 @@ public class Verfuehrung implements Adventure {
     }
 
     @Override
-    public List<Knowledge> getKnowledges() {
+    public List<Trigger<?>> getTriggers() {
         return List.of();
     }
 
     @Override
-    public List<Trigger<?>> getTriggers() {
+    public List<TriggeredEvent<?>> getTriggeredEvents() {
         return List.of();
     }
 
@@ -88,12 +86,12 @@ public class Verfuehrung implements Adventure {
     }
 
     @Override
-    public Knowledge getKnowledge(UUID id) {
+    public Trigger<?> getTrigger(UUID id) {
         return null;
     }
 
     @Override
-    public Trigger<?> getTrigger(UUID id) {
+    public TriggeredEvent<?> getTriggeredEvent(UUID id) {
         return null;
     }
 }

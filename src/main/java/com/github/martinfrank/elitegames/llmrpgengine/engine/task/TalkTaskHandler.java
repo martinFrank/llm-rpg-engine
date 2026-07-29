@@ -1,10 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Identifiable;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.KnowledgeTrigger;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.trigger.AndConditionTrigger;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkResponse;
@@ -88,6 +86,7 @@ public class TalkTaskHandler implements TaskHandler {
         return dialog;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void converse(Session session, Person person, Dialog dialog) {
         String statement = session.chatHistory.getLatestEntries(1).getFirst().statement();
         TalkContext context = buildContext(session, person, dialog, statement);
@@ -101,6 +100,21 @@ public class TalkTaskHandler implements TaskHandler {
         // triggers. Applying them (flags/knowledge) happens elsewhere.
         List<Trigger<?>> triggers = resolveTriggers(dialog, response);
         LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Identifiable::id).toList());
+        if(!triggers.isEmpty()){
+            for(Trigger<?> trigger : triggers){
+                List conditions = trigger.conditions();
+                LOGGER.debug("current trigger: {}, is triggered: {}", trigger, trigger.isTriggered(conditions, session) );
+                if (trigger.isTriggered(conditions, session)) {
+
+                    TriggeredEvent<?> event = trigger.triggeredEvent();
+                    LOGGER.debug("hei its a triggeredEvent! : {}", event.name());
+                    for (FlagChange<?> flagChange : event.flagChanges()) {
+                        session.applyFlagChange(flagChange);
+                        LOGGER.debug("we make a flag change! : {} -> {}", flagChange.flag().name(), flagChange.newValue());
+                    }
+                }
+            }
+        }
 
         // Record both sides in the per-person talk history and surface the reply in the game log.
         String reply = response.reply();
@@ -110,7 +124,7 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     /**
-     * Guardrail 3: maps the triggers the agent reported onto the real {@link KnowledgeTrigger}s of
+     * Guardrail 3: maps the triggers the agent reported onto the real {@link AndConditionTrigger}s of
      * the dialog via {@link Levenshtein#findClosest(String, List)} – the candidates are the
      * triggers of <em>this</em> dialog, so invented ids are ignored while mangled ones still
      * resolve.
