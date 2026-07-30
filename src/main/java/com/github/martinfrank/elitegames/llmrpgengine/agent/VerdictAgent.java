@@ -37,7 +37,7 @@ public class VerdictAgent {
                                 AKTUELLER ORT:
                                 {location}
 
-                                ANWESENDE PERSONEN:
+                                ANWESENDE PERSONEN (Name, id und Rolle) – nur diese Personen sind als Ziel wählbar:
                                 {persons}
 
                                 GEGENSTÄNDE:
@@ -46,7 +46,7 @@ public class VerdictAgent {
                                 VERFÜGBARE ORTE (Name, id und Beschreibung):
                                 {availableLocations}
 
-                                VERFÜGBARE PERSONEN (Name, id und Beschreibung):
+                                PERSONEN IM KAPITEL (nur zur Namenszuordnung, NICHT anwesend und NICHT als Ziel wählbar):
                                 {availablePersons}
 
                                 MÖGLICHE GESPRÄCHSTHEMEN (pro anwesender Person, mit Dialog-ID):

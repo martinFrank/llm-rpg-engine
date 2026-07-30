@@ -3,6 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
+import io.netty.util.internal.SuppressJava8Requirement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,7 @@ public class AdventureTest {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     void testDialogCondition(){
         //given
         Adventure buchenhain = new Buchenhain();
@@ -49,9 +51,6 @@ public class AdventureTest {
         //then
         List<Person> persons = session.getCurrentPersons(gasthaus);
         Assertions.assertEquals(3, persons.size());
-
-        List<Dialog> commonKnowledge = buchenhain.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
-        Assertions.assertEquals(1, commonKnowledge.size());
 
         for (Person person: persons){
             for(DialogCondition dialogCondition: session.getCurrentChapter().dialogConditions()){

@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.integration;
 
+import com.github.martinfrank.elitegames.llmrpgengine.LlmRpgEngineApplication;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -8,12 +9,13 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 /**
  * Full integration test that talks to a REAL Ollama instance — no mocks.
@@ -53,6 +55,50 @@ class FullGameTest {
 
         session.chatHistory.prettyPrint(System.out);
 
+    }
+
+    /**
+     * The same game as {@link #testFullGame()}, but the input comes from the console instead of a
+     * scripted list: every line is handed to the engine as the player's turn until {@code exit}
+     * (or end of input) ends the session.
+     * <p>
+     * Needs a running Ollama, like the test. Unlike the test it wires up Spring itself, so it can
+     * be started straight from the IDE ("run main"); {@code OLLAMA_IT} is not consulted.
+     */
+    public static void main(String[] args) {
+        try (ConfigurableApplicationContext context = new SpringApplicationBuilder(LlmRpgEngineApplication.class)
+                .web(WebApplicationType.NONE)
+                .run(args)) {
+
+            GameEngine engine = context.getBean(GameEngine.class);
+            Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+
+            session.start();
+
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.print("\n> ");
+                System.out.flush();
+                if (!scanner.hasNextLine()) {
+                    break;
+                }
+                String userInput = scanner.nextLine().strip();
+                if (userInput.isEmpty()) {
+                    continue;
+                }
+                if ("exit".equalsIgnoreCase(userInput)) {
+                    break;
+                }
+                if ("history".equalsIgnoreCase(userInput)) {
+                    session.chatHistory.prettyPrint(System.out);
+                    continue;
+                }
+                engine.handleUserInput(userInput, session);
+            }
+
+            System.out.println();
+            session.chatHistory.prettyPrint(System.out);
+        }
     }
 
 }

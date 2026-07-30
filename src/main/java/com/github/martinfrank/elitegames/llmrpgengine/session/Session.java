@@ -34,8 +34,10 @@ public class Session {
         chatHistory.narrator(adventure.getIntro().author());
         chatHistory.narrator(adventure.getIntro().intro());
         currentLocation = adventure.getIntro().startLocation();
-        currentTime = adventure.getIntro().startTime();
         currentChapter = adventure.getChapters().getFirst();
+        // Via the setter, so the game-time flag starts out agreeing with the intro's start time
+        // instead of keeping whatever default the flag was initialised with.
+        setCurrentTime(adventure.getIntro().startTime());
     }
 
     public Location getCurrentLocation() {
@@ -49,9 +51,15 @@ public class Session {
     public GameTime getCurrentTime() {
         return currentTime;
     }
+
+    /**
+     * Advances the clock. The game-time flag is kept in sync, because that flag – not this field –
+     * is what the chapter conditions evaluate: it decides which locations are open and where the
+     * persons currently are.
+     */
     public void setCurrentTime(GameTime currentTime) {
         this.currentTime = currentTime;
-        setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
+        setFlag(Flag.GAME_TIME_FLAG.id(), currentTime);
     }
 
     public Chapter getCurrentChapter() {
@@ -105,10 +113,6 @@ public class Session {
         return desiredPerson.orElse(null);
     }
 
-    public List<Dialog> getCommonDialogs() {
-        return adventure.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
-    }
-
     public Dialog getDialog(UUID id) {
         return adventure.getDialog(id);
     }
@@ -131,7 +135,6 @@ public class Session {
                 }
             }
         }
-        dialogs.addAll(getCommonDialogs());
         return dialogs;
     }
 }

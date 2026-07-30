@@ -17,6 +17,10 @@ import java.util.Objects;
  * follows its instructions on <em>what</em> to say; otherwise it makes small talk
  * (gossip). Either way the reply stays in character, guided by the short person
  * description carried in {@link TalkContext#talkTo()}.
+ * <p>
+ * {@link TalkContext#commonKnowledge()} is what the figure knows about the village – its people
+ * and places. It is the authoritative source for names and whereabouts: without it the model
+ * has no way to answer "who is the smith?" except by inventing someone.
  */
 @Component
 public class TalkAgent {
@@ -41,6 +45,10 @@ public class TalkAgent {
                                 ORT:
                                 {location}
 
+                                ALLGEMEINES WISSEN (Personen und Orte, die deine Figur kennt – die
+                                einzige erlaubte Quelle für Namen und Aufenthaltsorte):
+                                {commonKnowledge}
+
                                 MASSGEBLICHER DIALOG (Anweisungen, was gesagt werden soll):
                                 {primaryDialog}
 
@@ -58,6 +66,7 @@ public class TalkAgent {
                                 """)
                         .param("talkTo", orEmpty(context.talkTo()))
                         .param("location", orEmpty(context.location()))
+                        .param("commonKnowledge", orEmpty(context.commonKnowledge()))
                         .param("primaryDialog", orEmpty(context.primaryDialog()))
                         .param("triggers", orEmpty(context.triggers()))
                         .param("talkHistory", orEmpty(context.talkHistory()))

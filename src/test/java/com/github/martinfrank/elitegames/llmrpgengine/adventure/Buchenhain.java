@@ -112,6 +112,10 @@ public class Buchenhain implements Adventure {
                                         getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
                                 ),
                                 new LocationCondition(
+                                        getLocation(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b")), //dorfladen
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
+                                ),
+                                new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
                                 ),
@@ -167,11 +171,11 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4"))
                         .name("Ulf Stetten")
                         .description("""
-                                Ulf Stetten ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
+                                Er ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
                                 in der Bevölkerung geniesst. Er ist gütig und weise.
                                 """)
                         .role("""
-                                Ulf Stetten ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
+                                Er ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
                                 um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden
                                 bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er
                                 verfügbar hat, falls er danach gefragt wird.
@@ -183,17 +187,18 @@ public class Buchenhain implements Adventure {
                         .background("""
                                 Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
                                 """)
+                        .personality("Er ist ein herzensguter Mensch, der sich sehr für das Allgemeinwohl einsetzt.")
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636"))
                         .name("Rangolf Klingbeil")
                         .description("""
-                                Rangolf Klingbeil ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
+                                Er ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
                                 schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die
                                 Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
                                 """)
                         .role("""
-                                Rangolf Klingbeil ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
+                                Er ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
                                 Spieler Waffen, Rüstungen und Gegenstände zu verkaufen.
                                 """)
                         .appearance("""
@@ -207,16 +212,17 @@ public class Buchenhain implements Adventure {
                                 Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain. Er hat die
                                 Schmiede seines Vaters übernommen.
                                 """)
+                        .personality("Rangolf Klingbeil wirkt oft nervös und unsicher, aber er ist loyal und gutherzig")
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61"))
                         .name("Kalgeria Mondläufer")
                         .description("""
-                                Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
+                                Sie betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
                                 ihre Präsenz eine angenehme Atmosphäre aus.
                                 """)
                         .role("""
-                                Kalgeria Mondläufer ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
+                                Sie ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
                                 Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus
                                 für die Spieler eine Übernachtungsmöglichkeit.
                                 """)
@@ -231,6 +237,7 @@ public class Buchenhain implements Adventure {
                                 Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf Buchenhain
                                 gezogen und führt seit dem die Kneipe.
                                 """)
+                        .personality("Sie redet gerne, lacht viel und hat fast immer gute Laune.")
                         .build()
         );
     }
@@ -246,7 +253,6 @@ public class Buchenhain implements Adventure {
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
-                        false,
                         """
                                 Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht
                                 grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr
@@ -271,7 +277,6 @@ public class Buchenhain implements Adventure {
                 new Dialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826"),
                         "Gefahr für das Dorf",
                         "dieser Dialog beschreibt die Gefahr, in der sich das Dorf Buchenhain befindet",
-                        true,
                         """
                                 Wenn die Helden über die Gefahr für das Dorf reden, wird ihnen jeder erzählen, dass über
                                 Nacht grauenhaft mutierte Tiere um das Dorf schleichen. Die Monster sind Wölfe, gross
@@ -298,9 +303,21 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))
                         .name("Buchenhain Dorfplatz")
                         .description("""
-                                Der Dorfplatz von Buchenhain. Hier findet man einen kleinen Laden
-                                und der Schmied hat hier seine Schmiede. Es spielen einige Kinder
-                                auf dem Dorfplatz aber ansonsten ist es ein ruhiger Ort
+                                Der Dorfplatz von Buchenhain. Von hier aus erreicht man den kleinen
+                                Dorfladen und die Schmiede, die beide direkt am Platz liegen. Es
+                                spielen einige Kinder auf dem Dorfplatz aber ansonsten ist es ein
+                                ruhiger Ort
+                                """)
+                        .build(),
+                new Location.Builder()
+                        .id(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b"))
+                        .name("Der Dorfladen")
+                        .description("""
+                                Der Laden ist die vordere Stube eines Bauernhauses am Dorfplatz, in
+                                der sich verkauft, was im Dorf gebraucht wird: Mehl, Salz und
+                                getrocknete Früchte in offenen Säcken, daneben Seile, Kerzen, Decken
+                                und einfaches Reisegerät. Es riecht nach Leinöl und Räucherspeck, und
+                                über der Tür hängt eine hölzerne Tafel mit einem eingekerbten Korb.
                                 """)
                         .build(),
                 new Location.Builder()
