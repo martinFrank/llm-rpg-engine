@@ -39,11 +39,16 @@ public record VerdictContext (String chapterSummary,
         return StringNormalizer.normalize(session.getCurrentChapter().summary());
     }
 
+    /**
+     * The persons actually present at the current location (their chapter conditions hold right
+     * now). This is the list a person target must be picked from, so it carries the ids: a TALK
+     * (or a person INVESTIGATE) may only ever address someone who is here.
+     */
     private static String extractPersons(Session session) {
         Location location = session.getCurrentLocation();
         List<Person> persons = session.getCurrentPersons(location);
         return persons.stream()
-                .map(p -> "Name: "+p.name()+", Rolle: "+ StringNormalizer.normalize(p.role()))
+                .map(p -> p.name() + " (id: " + p.id() + ", Rolle: " + StringNormalizer.normalize(p.role()) + ")")
                 .collect(Collectors.joining("\n"));
     }
 
@@ -58,12 +63,20 @@ public record VerdictContext (String chapterSummary,
                 .collect(Collectors.joining("\n"));
     }
 
+    /**
+     * Everyone who appears in the current chapter, whether or not they are here right now. This
+     * list deliberately carries <em>no</em> ids: no task may target an absent person (you cannot
+     * talk to or inspect someone who is elsewhere), so offering their ids only invited the verdict
+     * agent to address the person a question was <em>about</em> instead of the person present.
+     * It stays in the prompt purely so the agent can map a description the player used ("der
+     * Dorfvorsteher") onto a name.
+     */
     private static String extractAvailablePersons(Session session) {
         List<Person> availablePersons = session.getCurrentChapter().personConditions().stream()
                 .map(PersonCondition::person)
                 .distinct().toList();
         return availablePersons.stream()
-                .map(p -> p.name() + " (id: " + p.id() + ", Beschreibung: " + firstSentence(p.description()) + ")")
+                .map(p -> p.name() + " (" + firstSentence(p.description()) + ")")
                 .collect(Collectors.joining("\n"));
     }
 
