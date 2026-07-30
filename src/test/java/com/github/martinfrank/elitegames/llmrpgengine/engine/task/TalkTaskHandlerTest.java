@@ -14,10 +14,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
 
+import org.mockito.ArgumentCaptor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -89,6 +92,55 @@ class TalkTaskHandlerTest {
                     assertThat(entry.actor()).isEqualTo("Narrator");
                     assertThat(entry.statement()).contains(KALGERIA_NAME);
                 });
+    }
+
+    /** The common knowledge the handler handed to the agent for the turn. */
+    private String capturedCommonKnowledge(Session session) {
+        when(talkAgent.talk(any(TalkContext.class))).thenReturn(new TalkResponse("Gewiss.", List.of()));
+        handler.execute(gossipWithKalgeria(), session);
+
+        ArgumentCaptor<TalkContext> context = ArgumentCaptor.forClass(TalkContext.class);
+        verify(talkAgent).talk(context.capture());
+        return context.getValue().commonKnowledge();
+    }
+
+    @Test
+    void namesEveryKnownPersonOnceWithTheirCurrentWhereabouts() {
+        // The chapter holds several (person, location, time) triples per figure; each must be
+        // collapsed to the single location that holds right now (afternoon), not listed repeatedly.
+        String knowledge = capturedCommonKnowledge(sessionAtTheInn());
+
+        // The list prefix, not the bare name: a person's own name may well occur inside their
+        // personality or role text (Rangolf's does).
+        assertThat(knowledge)
+                .containsOnlyOnce(" - Ulf Stetten:")
+                .containsOnlyOnce(" - Rangolf Klingbeil:")
+                .containsOnlyOnce(" - " + KALGERIA_NAME + ":")
+                .contains("AUFENTHALTSORT=Haus des Dorfvorstehers")
+                .contains("AUFENTHALTSORT=Die Dorf Schmiede")
+                .contains("AUFENTHALTSORT=Wirtshaus zum kleinen Adler")
+                .doesNotContain("AUFENTHALTSORT=unbekannt");
+    }
+
+    @Test
+    void namesTheReachableLocationsOnly() {
+        String knowledge = capturedCommonKnowledge(sessionAtTheInn());
+
+        assertThat(knowledge)
+                .contains("Buchenhain Dorfplatz")
+                .contains("Der Dorfladen")
+                .contains("Wirtshaus zum kleinen Adler")
+                // Blumental only opens up once the village elder has handed out the quest.
+                .doesNotContain("Blumental");
+    }
+
+    @Test
+    void keepsAuthoredTextBlocksOnOneLinePerParagraph() {
+        String knowledge = capturedCommonKnowledge(sessionAtTheInn());
+
+        // The adventure authors descriptions as wrapped text blocks; unnormalized they would
+        // arrive in the prompt broken mid-sentence.
+        assertThat(knowledge).contains("Er wurde gewählt weil er ein breites Vertrauen in der Bevölkerung geniesst.");
     }
 
     @Test

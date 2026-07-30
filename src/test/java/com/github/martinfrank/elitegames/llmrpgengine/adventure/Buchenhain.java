@@ -112,6 +112,10 @@ public class Buchenhain implements Adventure {
                                         getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
                                 ),
                                 new LocationCondition(
+                                        getLocation(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b")), //dorfladen
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392")) //daytime condition
+                                ),
+                                new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id())
                                 ),
@@ -299,9 +303,21 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))
                         .name("Buchenhain Dorfplatz")
                         .description("""
-                                Der Dorfplatz von Buchenhain. Hier findet man einen kleinen Laden
-                                und der Schmied hat hier seine Schmiede. Es spielen einige Kinder
-                                auf dem Dorfplatz aber ansonsten ist es ein ruhiger Ort
+                                Der Dorfplatz von Buchenhain. Von hier aus erreicht man den kleinen
+                                Dorfladen und die Schmiede, die beide direkt am Platz liegen. Es
+                                spielen einige Kinder auf dem Dorfplatz aber ansonsten ist es ein
+                                ruhiger Ort
+                                """)
+                        .build(),
+                new Location.Builder()
+                        .id(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b"))
+                        .name("Der Dorfladen")
+                        .description("""
+                                Der Laden ist die vordere Stube eines Bauernhauses am Dorfplatz, in
+                                der sich verkauft, was im Dorf gebraucht wird: Mehl, Salz und
+                                getrocknete Früchte in offenen Säcken, daneben Seile, Kerzen, Decken
+                                und einfaches Reisegerät. Es riecht nach Leinöl und Räucherspeck, und
+                                über der Tür hängt eine hölzerne Tafel mit einem eingekerbten Korb.
                                 """)
                         .build(),
                 new Location.Builder()

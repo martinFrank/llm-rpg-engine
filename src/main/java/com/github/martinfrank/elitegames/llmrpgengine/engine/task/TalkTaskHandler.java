@@ -1,7 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.KnowledgeTrigger;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -54,6 +56,9 @@ public class TalkTaskHandler implements TaskHandler {
      * LLM typos without risking a wrong match.
      */
     private static final int MAX_TRIGGER_ID_DISTANCE = 2;
+
+    /** Whereabouts of a person no chapter condition currently places anywhere. */
+    private static final String UNKNOWN_WHEREABOUTS = "unbekannt";
 
     /**
      * In-character excuses for a conversation turn the {@link TalkAgent} could not deliver (see
@@ -238,32 +243,64 @@ public class TalkTaskHandler implements TaskHandler {
         return new TalkContext(talkTo, location, statement, primaryDialog, triggers, talkHistory, chatHistory, commonKnowledge);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    /**
+     * What the person knows about the village: its people (with their current whereabouts) and its
+     * places. This is the figure's authoritative source for names and locations – without it the
+     * agent can only invent a smith when the player asks for one.
+     * <p>
+     * All texts go through {@link StringNormalizer} because the adventure authors them as wrapped
+     * text blocks; unnormalized they would arrive in the prompt broken mid-sentence.
+     */
     private String createCommonKnowledge(Session session) {
         StringBuilder commonKnowledge = new StringBuilder("BEKANNTE PERSONEN:\n");
-        for(PersonCondition condition: session.getCurrentChapter().personConditions()){
-            commonKnowledge.append(" - ").append(condition.person().name())
-                    .append(": PERSOENLICHKEIT=").append(condition.person().personality())
-                    .append(" BESCHREIBUNG=").append(condition.person().description())
-                    .append(" ROLLE=").append(condition.person().role());
-            List consideredFlags = condition.condition().consideredFlags();
-            List currentFlags = session.sessionFlags.getFlags(consideredFlags);
-            String ort = (condition.condition().evaluate(currentFlags)) ? condition.location().name() : "unbekannt";
-            commonKnowledge.append(" AUFENTHALSORT=").append(ort);
-            commonKnowledge.append("\n");
-        }
+        currentWhereabouts(session).forEach((person, whereabouts) ->
+                commonKnowledge.append(" - ").append(person.name())
+                        .append(": PERSOENLICHKEIT=").append(StringNormalizer.normalize(person.personality()))
+                        .append(" BESCHREIBUNG=").append(StringNormalizer.normalize(person.description()))
+                        .append(" ROLLE=").append(StringNormalizer.normalize(person.role()))
+                        .append(" AUFENTHALTSORT=").append(whereabouts)
+                        .append("\n"));
         commonKnowledge.append("\n");
 
         commonKnowledge.append("BEKANNTE ORTE:\n");
-        for (LocationCondition condition: session.getCurrentChapter().locationConditions()){
-            List consideredFlags = condition.condition().consideredFlags();
-            List currentFlags = session.sessionFlags.getFlags(consideredFlags);
-            if(condition.condition().evaluate(currentFlags)){
+        for (LocationCondition condition : session.getCurrentChapter().locationConditions()) {
+            if (holds(session, condition.condition())) {
                 commonKnowledge.append(" - ").append(condition.location().name());
                 commonKnowledge.append(": BESCHREIBUNG=").append(StringNormalizer.normalize(condition.location().description()));
                 commonKnowledge.append("\n");
             }
         }
         return commonKnowledge.toString();
+    }
+
+    /**
+     * Every person of the chapter mapped to where they are right now, in chapter order.
+     * <p>
+     * A chapter holds one {@link PersonCondition} per (person, location, condition) triple, because
+     * the same figure is somewhere else at another time of day. Listing those triples directly puts
+     * a person into the prompt several times with contradicting whereabouts – once at their current
+     * location, once as "unknown" for every condition that does not hold. So they are collapsed to
+     * the one location whose condition currently holds; a person no condition covers stays
+     * {@value #UNKNOWN_WHEREABOUTS}, which the person still knows about but cannot currently locate.
+     */
+    private Map<Person, String> currentWhereabouts(Session session) {
+        Map<Person, String> whereabouts = new LinkedHashMap<>();
+        for (PersonCondition condition : session.getCurrentChapter().personConditions()) {
+            String known = whereabouts.get(condition.person());
+            if (known != null && !UNKNOWN_WHEREABOUTS.equals(known)) {
+                continue; // already located by an earlier condition
+            }
+            whereabouts.put(condition.person(),
+                    holds(session, condition.condition()) ? condition.location().name() : UNKNOWN_WHEREABOUTS);
+        }
+        return whereabouts;
+    }
+
+    /** Evaluates a chapter condition against the session's current flag values. */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static boolean holds(Session session, Condition<?> condition) {
+        List consideredFlags = condition.consideredFlags();
+        List currentFlags = session.sessionFlags.getFlags(consideredFlags);
+        return condition.evaluate(currentFlags);
     }
 }
