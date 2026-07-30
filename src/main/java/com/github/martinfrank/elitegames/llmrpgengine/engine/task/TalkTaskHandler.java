@@ -121,11 +121,12 @@ public class TalkTaskHandler implements TaskHandler {
         List<KnowledgeTrigger> triggers = resolveTriggers(dialog, response);
         LOGGER.debug("Resolved triggers: {}", triggers.stream().map(KnowledgeTrigger::id).toList());
 
-        // Record both sides in the per-person talk history and surface the reply in the game log.
+        // Record both sides in the per-person talk history and surface the reply in the game log,
+        // attributed to the person who said it (not to the narrator).
         String reply = response.reply();
         session.talkHistory.player(person.id(), statement);
         session.talkHistory.npc(person.id(), reply);
-        session.chatHistory.narrator(reply);
+        session.chatHistory.npc(person, reply);
     }
 
     /**
