@@ -138,7 +138,7 @@ public class TalkTaskHandler implements TaskHandler {
     private void converse(Session session, Person person, Dialog dialog) {
         String statement = session.chatHistory.getLatestEntries(1).getFirst().statement();
         TalkContext context = buildContext(session, person, dialog, statement);
-
+        LOGGER.debug(context.toString());
         long now = System.currentTimeMillis();
         TalkResponse response;
         try {
@@ -260,7 +260,7 @@ public class TalkTaskHandler implements TaskHandler {
             List currentFlags = session.sessionFlags.getFlags(consideredFlags);
             if(condition.condition().evaluate(currentFlags)){
                 commonKnowledge.append(" - ").append(condition.location().name());
-                commonKnowledge.append(" Beschreibung=").append(condition.location().description());
+                commonKnowledge.append(": BESCHREIBUNG=").append(StringNormalizer.normalize(condition.location().description()));
                 commonKnowledge.append("\n");
             }
         }
