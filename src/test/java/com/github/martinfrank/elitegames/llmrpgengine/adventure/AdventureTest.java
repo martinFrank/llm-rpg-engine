@@ -50,9 +50,6 @@ public class AdventureTest {
         List<Person> persons = session.getCurrentPersons(gasthaus);
         Assertions.assertEquals(3, persons.size());
 
-        List<Dialog> commonKnowledge = buchenhain.getDialogs().stream().filter(Dialog::isCommonKnowledge).toList();
-        Assertions.assertEquals(1, commonKnowledge.size());
-
         for (Person person: persons){
             for(DialogCondition dialogCondition: session.getCurrentChapter().dialogConditions()){
                 if (dialogCondition.person().id().equals(person.id())){

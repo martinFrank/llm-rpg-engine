@@ -10,9 +10,17 @@ spring:
           model: "${OLLAMA_MODEL:qwen2.5:14b}"
           temperature: 0.8
 
-# Application-specific tuning for the two agents.
+# Application-specific tuning for the three agents.
 # Available models on the server can be listed via: GET {base-url}/api/tags
 rpg:
+  # Context window (num_ctx), covering prompt AND generated response. When it runs out
+  # mid-answer the response is simply cut off, which for the structured agents means
+  # unparseable JSON ("expected close marker for Object").
+  # Deliberately ONE shared value for all agents: Ollama identifies a loaded model by its
+  # runner options, so giving the same model a different num_ctx per agent (narrator and
+  # talk share one model) forces a reload on every switch and defeats keep-alive.
+  # Costs VRAM for the KV cache, so raise in steps and watch the host.
+  num-ctx: ${NUM_CTX:16384}
   verdict:
     # Rules engine: pure classification + id-copying, so a smaller/faster model is enough.
     # Low temperature for reliable structured JSON (Verdict).
@@ -20,18 +28,25 @@ rpg:
     #model: "${VERDICT_MODEL:qwen2.5:7b-instruct}"
     model: "${VERDICT_MODEL:qwen2.5:14b-instruct}"
     temperature: 0.3
+    # A Verdict is a handful of short fields; anything longer is a runaway.
+    num-predict: 400
   narrator:
     # Creative German prose, higher temperature.
     # Alternatives: gemma4:26b, qwen3.5:27b, llama4:latest.
 #    model: "${NARRATOR_MODEL:qwen2.5:14b}"
     model: "${NARRATOR_MODEL:Mistral-Small:latest}"
     temperature: 0.9
+    # Longest output of the three: several paragraphs of scene description.
+    num-predict: 1200
   talk:
     # In-character NPC dialogue: creative but must stay faithful to the scripted
     # dialog instructions, so a moderate temperature.
 #    model: "${TALK_MODEL:qwen2.5:14b}"
     model: "${TALK_MODEL:Mistral-Small:latest}"
     temperature: 0.8
+    # The prompt asks for one to four sentences (~150 tokens) plus the trigger list;
+    # 800 leaves ample room, so hitting this bound means the model went off the rails.
+    num-predict: 800
 
 server:
   port: 8080

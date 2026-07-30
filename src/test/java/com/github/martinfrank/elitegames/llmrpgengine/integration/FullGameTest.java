@@ -91,6 +91,10 @@ class FullGameTest {
                 if ("exit".equalsIgnoreCase(userInput)) {
                     break;
                 }
+                if ("history".equalsIgnoreCase(userInput)) {
+                    session.chatHistory.prettyPrint(System.out);
+                    continue;
+                }
                 engine.handleUserInput(userInput, session);
             }
 
