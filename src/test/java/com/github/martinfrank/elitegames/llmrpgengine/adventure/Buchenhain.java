@@ -249,7 +249,6 @@ public class Buchenhain implements Adventure {
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
-                        false,
                         """
                                 Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht
                                 grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr
@@ -274,7 +273,6 @@ public class Buchenhain implements Adventure {
                 new Dialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826"),
                         "Gefahr für das Dorf",
                         "dieser Dialog beschreibt die Gefahr, in der sich das Dorf Buchenhain befindet",
-                        true,
                         """
                                 Wenn die Helden über die Gefahr für das Dorf reden, wird ihnen jeder erzählen, dass über
                                 Nacht grauenhaft mutierte Tiere um das Dorf schleichen. Die Monster sind Wölfe, gross
