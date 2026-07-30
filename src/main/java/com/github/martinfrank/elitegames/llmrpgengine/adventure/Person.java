@@ -3,7 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 import java.util.Objects;
 import java.util.UUID;
 
-public record Person (UUID id, String name, String description, String role, String appearance, String background) implements Identifiable {
+public record Person (UUID id, String name, String description, String role, String appearance, String background, String personality) implements Identifiable {
 
     public static class Builder {
         private UUID id = UUID.randomUUID();
@@ -12,9 +12,10 @@ public record Person (UUID id, String name, String description, String role, Str
         private String role;
         private String appearance;
         private String background;
+        private String personality;
 
         public Person build() {
-            return new Person(id, name, description, role, appearance, background);
+            return new Person(id, name, description, role, appearance, background, personality);
         }
         public Builder id(UUID id) {
             this.id = id;
@@ -43,6 +44,11 @@ public record Person (UUID id, String name, String description, String role, Str
 
         public Builder background(String background) {
             this.background = background;
+            return this;
+        }
+
+        public Builder personality(String personality) {
+            this.personality = personality;
             return this;
         }
     }

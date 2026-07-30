@@ -167,11 +167,11 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4"))
                         .name("Ulf Stetten")
                         .description("""
-                                Ulf Stetten ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
+                                Er ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
                                 in der Bevölkerung geniesst. Er ist gütig und weise.
                                 """)
                         .role("""
-                                Ulf Stetten ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
+                                Er ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
                                 um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden
                                 bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er
                                 verfügbar hat, falls er danach gefragt wird.
@@ -183,17 +183,18 @@ public class Buchenhain implements Adventure {
                         .background("""
                                 Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
                                 """)
+                        .personality("Er ist ein herzensguter Mensch, der sich sehr für das Allgemeinwohl einsetzt.")
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636"))
                         .name("Rangolf Klingbeil")
                         .description("""
-                                Rangolf Klingbeil ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
+                                Er ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
                                 schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die
                                 Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
                                 """)
                         .role("""
-                                Rangolf Klingbeil ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
+                                Er ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
                                 Spieler Waffen, Rüstungen und Gegenstände zu verkaufen.
                                 """)
                         .appearance("""
@@ -207,16 +208,17 @@ public class Buchenhain implements Adventure {
                                 Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain. Er hat die
                                 Schmiede seines Vaters übernommen.
                                 """)
+                        .personality("Rangolf Klingbeil wirkt oft nervös und unsicher, aber er ist loyal und gutherzig")
                         .build(),
                 new Person.Builder()
                         .id(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61"))
                         .name("Kalgeria Mondläufer")
                         .description("""
-                                Kalgeria Mondläufer betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
+                                Sie betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
                                 ihre Präsenz eine angenehme Atmosphäre aus.
                                 """)
                         .role("""
-                                Kalgeria Mondläufer ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
+                                Sie ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
                                 Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus
                                 für die Spieler eine Übernachtungsmöglichkeit.
                                 """)
@@ -231,6 +233,7 @@ public class Buchenhain implements Adventure {
                                 Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf Buchenhain
                                 gezogen und führt seit dem die Kneipe.
                                 """)
+                        .personality("Sie redet gerne, lacht viel und hat fast immer gute Laune.")
                         .build()
         );
     }

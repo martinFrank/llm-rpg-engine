@@ -1,8 +1,11 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.KnowledgeTrigger;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkResponse;
@@ -176,6 +179,7 @@ public class TalkTaskHandler implements TaskHandler {
         String talkHistory = session.talkHistory.getTalk(person.id(), TALK_HISTORY_LENGTH).stream()
                 .map(TalkEntry::toString)
                 .collect(Collectors.joining("\n"));
+        String commonKnowledge = createCommonKnowledge(session);
 
         String primaryDialog = "";
         String triggers = "";
@@ -188,6 +192,35 @@ public class TalkTaskHandler implements TaskHandler {
                     .collect(Collectors.joining("\n"));
         }
 
-        return new TalkContext(talkTo, location, statement, primaryDialog, triggers, talkHistory, chatHistory);
+        return new TalkContext(talkTo, location, statement, primaryDialog, triggers, talkHistory, chatHistory, commonKnowledge);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private String createCommonKnowledge(Session session) {
+        StringBuilder commonKnowledge = new StringBuilder("BEKANNTE PERSONEN:\n");
+        for(PersonCondition condition: session.getCurrentChapter().personConditions()){
+            commonKnowledge.append(" - ").append(condition.person().name())
+                    .append(": PERSOENLICHKEIT=").append(condition.person().personality())
+                    .append(" BESCHREIBUNG=").append(condition.person().description())
+                    .append(" ROLLE=").append(condition.person().role());
+            List consideredFlags = condition.condition().consideredFlags();
+            List currentFlags = session.sessionFlags.getFlags(consideredFlags);
+            String ort = (condition.condition().evaluate(currentFlags)) ? condition.location().name() : "unbekannt";
+            commonKnowledge.append(" AUFENTHALSORT=").append(ort);
+            commonKnowledge.append("\n");
+        }
+        commonKnowledge.append("\n");
+
+        commonKnowledge.append("BEKANNTE ORTE:\n");
+        for (LocationCondition condition: session.getCurrentChapter().locationConditions()){
+            List consideredFlags = condition.condition().consideredFlags();
+            List currentFlags = session.sessionFlags.getFlags(consideredFlags);
+            if(condition.condition().evaluate(currentFlags)){
+                commonKnowledge.append(" - ").append(condition.location().name());
+                commonKnowledge.append(" Beschreibung=").append(condition.location().description());
+                commonKnowledge.append("\n");
+            }
+        }
+        return commonKnowledge.toString();
     }
 }
