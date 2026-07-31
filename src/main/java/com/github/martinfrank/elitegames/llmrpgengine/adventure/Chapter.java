@@ -57,7 +57,7 @@ public record Chapter(
             return this;
         }
 
-        public Builder chapterFinishedConditions(ChapterFinishedCondition<?> chapterFinishedCondition) {
+        public Builder chapterFinishedCondition(ChapterFinishedCondition<?> chapterFinishedCondition) {
             this.chapterFinishedCondition = chapterFinishedCondition;
             return this;
         }

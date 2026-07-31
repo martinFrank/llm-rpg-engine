@@ -162,7 +162,7 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
-                        .chapterFinishedConditions(List.of()) //FIXME
+                        .chapterFinishedCondition(null) //FIXME
                         .build()
 
         );
