@@ -31,17 +31,20 @@ public record NarratorContext (String purpose, String location, String persons, 
     }
 
     private static String extractDetails(Session session, Location location) {
-        StringBuilder details = new StringBuilder("ZIEL-ORTE die von hier aus erreicht werden können:\n");
+        StringBuilder details = new StringBuilder();
         for (UUID destinationId: location.destinationIds()) {
             Location destination = session.getLocation(destinationId);
             if (destination != null) {
                 details.append(" - ")
                         .append(destination.name())
-                        .append("(").append(destinationId).append("): ")
-                        .append(destination.description()).append("\n");
+                        .append(": ")
+                        .append(StringNormalizer.normalize(destination.description())).append("\n");
             }
         }
-        return details.toString();
+        if (details.isEmpty()) {
+            return "";
+        }
+        return "ZIEL-ORTE die von hier aus erreicht werden können:\n" + details;
     }
 
     private static String extractLocation(Location location) {

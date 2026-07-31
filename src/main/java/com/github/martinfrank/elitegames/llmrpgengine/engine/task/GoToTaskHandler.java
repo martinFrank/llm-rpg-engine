@@ -40,10 +40,12 @@ public class GoToTaskHandler implements TaskHandler {
             Location location = session.getLocation(id.get());
             if (location != null) {
                 setLocation(session, location);
-            } else {
-                LOGGER.debug("No known destination for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
+                return;
             }
         }
+        //wenn es bis jetzt kein reurn gab, ist was schief gelaufen
+        LOGGER.debug("destination not reachable for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
+        session.chatHistory.narrator("dieser Ort ist euch nicht bekannt");
     }
 
     private void setLocation(Session session, Location location) {

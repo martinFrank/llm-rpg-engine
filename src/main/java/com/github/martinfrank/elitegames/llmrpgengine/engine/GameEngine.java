@@ -97,6 +97,7 @@ public class GameEngine {
             handler.execute(verdict, session);
         } else {
             LOGGER.info("No handler registered for task: {}", verdict.task());
+            //FIXME - narrator soll sagen, dass er es nicht verarbeiten kann
         }
     }
 }
