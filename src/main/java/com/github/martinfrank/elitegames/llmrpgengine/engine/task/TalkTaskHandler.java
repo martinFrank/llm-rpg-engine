@@ -6,6 +6,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkResponse;
@@ -151,7 +152,7 @@ public class TalkTaskHandler implements TaskHandler {
         } catch (RuntimeException e) {
             LOGGER.warn("Talk agent delivered no usable reply for {} -> narrating the mishap: {}",
                     person.name(), e.toString());
-            session.chatHistory.narrator(failedReplyNarration(person));
+            session.chatHistory.narrator(failedReplyNarration(person)+" (Entwicklerhinweis: die Verarbeitung vom LLM ist fehlgeschlagen, bitte erneut versuchen)");
             return;
         }
         long duration = System.currentTimeMillis() - now;
@@ -170,10 +171,15 @@ public class TalkTaskHandler implements TaskHandler {
         session.chatHistory.npc(person, reply);
     }
 
+    @SuppressWarnings("rawtypes")
     private void handleTalkTriggers(Session session, List<Trigger> triggers) {
-        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
+//        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
         for(Trigger trigger : triggers) {
-
+            LOGGER.debug("execute trigger: {}", trigger.trigger());
+            for(FlagChange flagChange : trigger.flagChanges()) {
+                LOGGER.debug("execute trigger: {} set flag {} to {}", trigger.trigger(), flagChange.flag().name(), flagChange.newValue());
+                session.sessionFlags.setFlagValue(flagChange.flag().id(), flagChange.newValue());
+            }
         }
     }
 

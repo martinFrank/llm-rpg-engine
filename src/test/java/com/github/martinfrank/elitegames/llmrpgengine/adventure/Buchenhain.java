@@ -379,7 +379,6 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Condition> getConditions() {
         return List.of(
                 Condition.ALWAYS_TRUE_CONDITION,
@@ -494,8 +493,8 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Flag getFlag(UUID id) {
-        return (Flag) Identifiable.find(id, getFlags());
+    public Flag<?,?> getFlag(UUID id) {
+        return (Flag<?, ?>) Identifiable.find(id, getFlags());
     }
 
     @Override

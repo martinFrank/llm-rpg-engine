@@ -31,6 +31,12 @@ public class SessionFlags {
     @SuppressWarnings("rawtypes")
     private static Flag copyFlag(Flag flag, Object value ){
         return new Flag() {
+
+            @Override
+            public String name() {
+                return flag.name();
+            }
+
             @Override
             public Object value() {
                 return value;
