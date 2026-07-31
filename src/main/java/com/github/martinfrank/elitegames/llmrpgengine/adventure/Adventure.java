@@ -12,16 +12,16 @@ public interface Adventure {
     List<Item> getItems();
     List<Dialog> getDialogs();
     List<Location> getLocations();
-    List<Condition<?>> getConditions();
-    List<Flag<?>> getFlags();
+    List<Condition> getConditions();
+    List<Flag<?,?>> getFlags();
     List<Knowledge> getKnowledges();
-    List<KnowledgeTrigger> getKnowledgeTriggers();
+    List<Trigger> getKnowledgeTriggers();
 
-    Condition<?> getCondition(UUID id);
+    Condition getCondition(UUID id);
     Location getLocation(UUID id);
     Person getPerson(UUID id);
-    Flag<?> getFlag(UUID id);
+    Flag<?,?> getFlag(UUID id);
     Dialog getDialog(UUID id);
     Knowledge getKnowledge(UUID id);
-    KnowledgeTrigger getKnowledgeTrigger(UUID id);
+    Trigger getKnowledgeTrigger(UUID id);
 }

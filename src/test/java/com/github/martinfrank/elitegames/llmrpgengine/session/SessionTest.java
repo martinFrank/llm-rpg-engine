@@ -38,8 +38,8 @@ class SessionTest {
     }
 
     private static GameTime gameTimeFlagValue(Session session) {
-        List<Flag<?>> flags = session.sessionFlags.getFlags(List.of(Flag.GAME_TIME_FLAG));
-        return (GameTime) flags.getFirst().value();
+        List flags = session.sessionFlags.getFlags(List.of(Flag.GAME_TIME_FLAG));
+        return ((Flag<GameTime,String>) flags.getFirst()).value();
     }
 
     @Test

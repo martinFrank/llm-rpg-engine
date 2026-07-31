@@ -4,7 +4,10 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,13 +69,13 @@ public class Session {
         return currentChapter;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     public List<Person> getCurrentPersons(Location location) {
         List<Person> result = new ArrayList<>();
         for (PersonCondition personCondition: currentChapter.personConditions()){
             if (personCondition.location().id().equals(location.id())) {
                 List flags = personCondition.condition().consideredFlags();
-                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                List<Flag> currentValues = sessionFlags.getFlags(flags);
                 Condition condition = personCondition.condition();
                 boolean evaluated = condition.evaluate(currentValues);
                 if (evaluated) {
@@ -88,13 +91,13 @@ public class Session {
     }
 
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     public Location getLocation(UUID id) {
         for(LocationCondition locationCondition: currentChapter.locationConditions() ){
             if (locationCondition.location().id().equals(id)) {
 
                 List flags = locationCondition.condition().consideredFlags();
-                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                List<Flag> currentValues = sessionFlags.getFlags(flags);
                 Condition condition = locationCondition.condition();
                 boolean evaluated = condition.evaluate(currentValues);
                 if (evaluated) {
@@ -118,13 +121,13 @@ public class Session {
      * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
      * This is the set a TALK verdict's dialog must belong to.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     public List<Dialog> getAvailableDialogs(Person person) {
         List<Dialog> dialogs = new ArrayList<>();
         for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
             if (dialogCondition.person().id().equals(person.id())) {
                 List flags = dialogCondition.condition().consideredFlags();
-                List<Flag<?>> currentValues = sessionFlags.getFlags(flags);
+                List<Flag> currentValues = sessionFlags.getFlags(flags);
                 Condition condition = dialogCondition.condition();
                 if (condition.evaluate(currentValues)) {
                     dialogs.add(dialogCondition.dialog());
@@ -134,7 +137,4 @@ public class Session {
         return dialogs;
     }
 
-    public void progressInChapter() {
-
-    }
 }

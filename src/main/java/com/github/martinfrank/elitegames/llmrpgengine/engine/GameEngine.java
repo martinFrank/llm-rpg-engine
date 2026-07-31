@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -47,7 +48,21 @@ public class GameEngine {
         verdict = sanitize(verdict, session);
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
-        session.progressInChapter();
+        progressChapter(session);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void progressChapter(Session session) {
+        List requiredFlags = session.getCurrentChapter().chapterFinishedCondition().consideredFlags();
+        List currentFlags = session.sessionFlags.getFlags(requiredFlags);
+
+        for(Object flagObject : currentFlags) {
+            Flag flag = (Flag) flagObject;
+            LOGGER.debug("Flag: {} is fulfilled? {}", flag.name(), flag.value());
+        }
+
+        boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
+        LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
     }
 
     /**

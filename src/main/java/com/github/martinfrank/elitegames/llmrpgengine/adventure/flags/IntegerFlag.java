@@ -4,6 +4,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 
 import java.util.UUID;
 
-public record IntegerFlag(UUID id, String name, Integer value) implements Flag<Integer> {
+public record IntegerFlag<R>(UUID id, String name, R data, Integer value) implements Flag<Integer, R> {
 
 }

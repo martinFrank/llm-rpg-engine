@@ -4,5 +4,5 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 
-public record PersonCondition(Person person, Location location, Condition<?> condition) {
+public record PersonCondition(Person person, Location location, Condition condition) {
 }

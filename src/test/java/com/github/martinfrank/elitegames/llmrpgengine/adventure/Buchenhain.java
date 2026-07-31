@@ -3,6 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.AndCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
@@ -162,7 +163,7 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
-                        .chapterFinishedCondition(null) //FIXME
+                        .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
                         .build()
 
         );
@@ -378,36 +379,42 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<Condition<?>> getConditions() {
+    public List<Condition> getConditions() {
         return List.of(
                 Condition.ALWAYS_TRUE_CONDITION,
-                new RangeCondition<>(
+                new RangeCondition(
                         UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"),
                         "dayTimeCondition",
-                        List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
+                        List.of(getFlag(GAME_TIME_FLAG.id())),
                         List.of(GameTime.MORNING, GameTime.HIGH_NOON, GameTime.AFTERNOON)) //bedingung: es ist tagsüber
                 ,
-                new RangeCondition<>(
+                new RangeCondition(
                         UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"),
                         "nightTimeCondition",
-                        List.of((Flag<GameTime>) getFlag(GAME_TIME_FLAG.id())),
+                        List.of(getFlag(GAME_TIME_FLAG.id())),
                         List.of(GameTime.IN_THE_EVENING, GameTime.AT_NIGHT, GameTime.MIDNIGHT)) //bedingung: es ist abends/nachts
                 ,
                 new IsCondition(
                         UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"),
                         "prüft ob mit dem dorfvorsteher schon geredet wurde",
-                        List.of((Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
+                        List.of(getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
                 ,
                 new IsCondition(
                         UUID.fromString("e4956157-cc1d-4b6e-817c-45a9e80c2aec"),
                         "prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht",
-                        List.of((Flag<Boolean>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")))) // hat mit dorf-vorsteher geredet
+                        List.of(getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")))) // knowledge über Bedrohung im Dorf
+                ,
+                new AndCondition(
+                        UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc"),
+                        "Chapfter 1 Finished Condition, muss den auftrag haben UND muss über Monster bescheid wissen",
+                        List.of(
+                                getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //  knowledge über Bedrohung im Dorf
+                                getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
         );
     }
 
     @Override
-    public List<Flag<?>> getFlags() {
+    public List<Flag<?,?>> getFlags() {
         return List.of(
                 GAME_TIME_FLAG,
                 new BooleanFlag<>(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"),
@@ -444,27 +451,25 @@ public class Buchenhain implements Adventure {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<KnowledgeTrigger> getKnowledgeTriggers() {
+    public List<Trigger> getKnowledgeTriggers() {
         return List.of(
-                new KnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
+                new Trigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
                         "Bedrohung oder Gefahr für das Dorf",
-                        getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")),
                         List.of(
                                 new FlagChange<>(
                                         UUID.randomUUID(),
-                                        (Flag<Boolean>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //flag wissen über monster
+                                        (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //flag wissen über monster
                                         true
                                 )
                         ))
                 ,
-                 //"wissen über die Bedrohung im Dorf"
-                new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
+                //"wissen über die Bedrohung im Dorf"
+                new Trigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                         "Auftrag oder heikles Thema",
-                        getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),
                         List.of(
                                 new FlagChange<>(
                                         UUID.randomUUID(),
-                                        (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
+                                        (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
                                         true
                                 )
                         ))
@@ -473,8 +478,8 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Condition<?> getCondition(UUID id) {
-        return (Condition<?>) Identifiable.find(id, getConditions());
+    public Condition getCondition(UUID id) {
+        return (Condition) Identifiable.find(id, getConditions());
     }
 
     @Override
@@ -488,8 +493,8 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Flag<?> getFlag(UUID id) {
-        return (Flag<?>) Identifiable.find(id, getFlags());
+    public Flag<?,?> getFlag(UUID id) {
+        return (Flag<?, ?>) Identifiable.find(id, getFlags());
     }
 
     @Override
@@ -503,7 +508,7 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public KnowledgeTrigger getKnowledgeTrigger(UUID id) {
-        return (KnowledgeTrigger) Identifiable.find(id, getKnowledgeTriggers());
+    public Trigger getKnowledgeTrigger(UUID id) {
+        return (Trigger) Identifiable.find(id, getKnowledgeTriggers());
     }
 }
