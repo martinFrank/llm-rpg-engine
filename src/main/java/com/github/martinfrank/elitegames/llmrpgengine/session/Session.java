@@ -4,7 +4,10 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +137,4 @@ public class Session {
         return dialogs;
     }
 
-    public void progressInChapter() {
-
-    }
 }

@@ -3,6 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.AndCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.RangeCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.BooleanFlag;
@@ -162,7 +163,7 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
-                        .chapterFinishedCondition(null) //FIXME
+                        .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
                         .build()
 
         );
@@ -402,7 +403,14 @@ public class Buchenhain implements Adventure {
                 new IsCondition(
                         UUID.fromString("e4956157-cc1d-4b6e-817c-45a9e80c2aec"),
                         "prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht",
-                        List.of((Flag<Boolean>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")))) // hat mit dorf-vorsteher geredet
+                        List.of((Flag<Boolean>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")))) // knowledge über Bedrohung im Dorf
+                ,
+                new AndCondition(
+                        UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc"),
+                        "Chapfter 1 Finished Condition, muss den auftrag haben UND muss über Monster bescheid wissen",
+                        List.of(
+                                (Flag<Boolean>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //  knowledge über Bedrohung im Dorf
+                                (Flag<Boolean>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
         );
     }
 
@@ -457,7 +465,7 @@ public class Buchenhain implements Adventure {
                                 )
                         ))
                 ,
-                 //"wissen über die Bedrohung im Dorf"
+                //"wissen über die Bedrohung im Dorf"
                 new KnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                         "Auftrag oder heikles Thema",
                         getKnowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa")),

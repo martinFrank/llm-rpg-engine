@@ -47,7 +47,15 @@ public class GameEngine {
         verdict = sanitize(verdict, session);
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
-        session.progressInChapter();
+        progressChapter(session);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void progressChapter(Session session) {
+        List requiredFlags = session.getCurrentChapter().chapterFinishedCondition().consideredFlags();
+        List currentFlags = session.sessionFlags.getFlags(requiredFlags);
+        boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
+        LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
     }
 
     /**
