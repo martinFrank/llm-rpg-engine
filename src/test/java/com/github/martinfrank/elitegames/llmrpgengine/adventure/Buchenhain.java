@@ -245,18 +245,18 @@ public class Buchenhain implements Adventure {
                         ))
                         .dialogConditions(List.of(
                                 new DialogCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new DialogCondition(
                                         getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
-                                        getDialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e")), //dialog über den auftrag
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                                 ,
                                 new DialogCondition(
-                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
-                                        getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
-                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
-                                ,
-                                new DialogCondition(
-                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
-                                        getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
                         .chapterFinishedCondition(getCondition(UUID.fromString("9661117e-163c-4cc6-940f-ed0d527fa9c5"))) //wissen über horndiebstahl und wissen über wiederherstellungs-ritual
@@ -666,7 +666,7 @@ public class Buchenhain implements Adventure {
                         "Weg zum Buchenwald",
                         List.of(
                                 new FlagChange<>(
-                                        (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("ef1064c1-661d-4f8e-96ba-5070c32ba25a")), //flag Weg zum Blumental bekannt
+                                        (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb")), //flag Weg zum Blumental bekannt
                                         true
                                 )
                         ))
