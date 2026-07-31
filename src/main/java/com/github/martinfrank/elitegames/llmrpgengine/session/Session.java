@@ -33,14 +33,12 @@ public class Session {
     }
 
     public void start() {
-        chatHistory.narrator(adventure.getIntro().title());
-        chatHistory.narrator(adventure.getIntro().author());
-        chatHistory.narrator(adventure.getIntro().intro());
-        currentLocation = adventure.getIntro().startLocation();
+        chatHistory.narrator(adventure.getMetadata().title());
+        chatHistory.narrator(adventure.getMetadata().author());
         currentChapter = adventure.getChapters().getFirst();
-        // Via the setter, so the game-time flag starts out agreeing with the intro's start time
-        // instead of keeping whatever default the flag was initialised with.
-        setCurrentTime(adventure.getIntro().startTime());
+        chatHistory.narrator(currentChapter.intro().intro());
+        currentLocation = currentChapter.intro().startLocation();
+        setCurrentTime(currentChapter.intro().startTime());
     }
 
     public Location getCurrentLocation() {

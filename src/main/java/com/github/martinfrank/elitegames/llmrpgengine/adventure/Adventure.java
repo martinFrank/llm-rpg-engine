@@ -6,7 +6,7 @@ import java.util.UUID;
 public interface Adventure {
 
     String getPlotSummary();
-    Intro getIntro();
+    Metadata getMetadata();
     List<Chapter> getChapters();
     List<Person> getPersons();
     List<Item> getItems();

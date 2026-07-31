@@ -40,6 +40,7 @@ public class Buchenhain implements Adventure {
                 Chapter 2: Herausfinden der Ursache
                 - Die Helden untersuchen das Grab vom Druiden und sein Geist erscheint - er "erklärt" die Lage (inkl.
                 Ritual zur reinigung), kann die Kreaturen aber nicht mehr zurück halten
+                - Druide ist Gunver Eichblatt
                 - Danach werden die Helden von Kreatuern angegriffen
                 
                 Chapter 3a: Suche nach dem Horn
@@ -65,21 +66,8 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Intro getIntro() {
-        return new Intro(
-                "Abenteuer in Buchenwald",
-                "Martin Frank 2026",
-                """
-                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar
-                        wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen
-                        Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom
-                        Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus
-                        vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm
-                        später einen Besuch abstatten werdet. Danach verlässt er den Platz.
-                        """,
-                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),
-                GameTime.AFTERNOON
-        );
+    public Metadata getMetadata() {
+        return new Metadata("Abenteuer in Buchenwald", "Martin Frank 2026");
     }
 
     @Override
@@ -96,6 +84,111 @@ public class Buchenhain implements Adventure {
                                 sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das
                                 nächste Kapitel.
                                 """)
+                        .intro(new Intro(
+                                """
+                                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur
+                                        aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der
+                                        Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den
+                                        Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf
+                                        Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit
+                                        ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später
+                                        einen Besuch abstatten werdet. Danach verlässt er den Platz.
+                                        """,
+                                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),
+                                GameTime.AFTERNOON
+                        ))
+                        .locationConditions(List.of(
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //dorf schmiede
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b")), //dorfladen
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+//                                , //diese Location habe ich ins nächste Chapter gepackt
+//                                new LocationCondition(
+//                                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
+//                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"))) //nachdem mit dem Dorfvorsteher geredet wurde
+                        ))
+                        .personConditions(List.of(
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //Schmiede
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //marktplatz
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())) //always there
+                        ))
+                        .dialogConditions(List.of(
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getDialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e")), //dialog über den auftrag
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                        ))
+                        .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
+                        .build()
+                ,
+                new Chapter.Builder()
+                        .name("Ursache der Probleme")
+                        .summary("""
+                                Die Helden sollen das Grab des Druiden Gunver Eichblatt finden. Wenn es finden wird sein
+                                Geist erscheinen und den Helden erklären, warum die Tiere das Dorf angreifen. Die Tiere
+                                sind erbost, weil sein Schutzzauber nicht mehr wirkt und die Tiere für das Böse anfällig
+                                werden. Der Zauber wirkt nicht mehr, weil das Horn von Silana gestohlen wurde, ein
+                                magisches Artefakt, das für den Zauber verwendet wurde.
+                                
+                                Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das
+                                Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber
+                                erneuert.
+                                """)
+                        .intro(new Intro(
+                                """
+                                        Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf
+                                        den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends
+                                        geworden. Ihr solltet heute Abend im Gasthaus übernachten.
+                                        """,
+                                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),//marktplatz
+                                GameTime.IN_THE_EVENING
+                        ))
                         .locationConditions(List.of(
                                 new LocationCondition(
                                         getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
@@ -119,7 +212,7 @@ public class Buchenhain implements Adventure {
                                 ,
                                 new LocationCondition(
                                         getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
-                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"))) //nachdem mit dem Dorfvorsteher geredet wurde
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())) //ist jetzt immer verfügbar
                         ))
                         .personConditions(List.of(
                                 new PersonCondition(
@@ -414,7 +507,7 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public List<Flag<?,?>> getFlags() {
+    public List<Flag<?, ?>> getFlags() {
         return List.of(
                 GAME_TIME_FLAG,
                 new BooleanFlag<>(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"),
@@ -493,7 +586,7 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Flag<?,?> getFlag(UUID id) {
+    public Flag<?, ?> getFlag(UUID id) {
         return (Flag<?, ?>) Identifiable.find(id, getFlags());
     }
 
