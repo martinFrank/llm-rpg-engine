@@ -5,11 +5,11 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.TrueCo
 import java.util.List;
 import java.util.UUID;
 
-public interface Condition<R> extends Identifiable {
+public interface Condition extends Identifiable {
 
-    Condition<Boolean> ALWAYS_TRUE_CONDITION = new TrueCondition(UUID.fromString("7b8e5213-c009-49f2-8488-6e051f88643f"));
+    Condition ALWAYS_TRUE_CONDITION = new TrueCondition(UUID.fromString("7b8e5213-c009-49f2-8488-6e051f88643f"));
 
-    boolean evaluate(List<Flag<R>> flags);
+    boolean evaluate(List<Flag> flags);
 
-    List<Flag<R>> consideredFlags();
+    List<Flag> consideredFlags();
 }

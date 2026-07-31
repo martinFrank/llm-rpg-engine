@@ -15,7 +15,7 @@ public record Chapter(
         List<LocationCondition> locationConditions,
         List<PersonCondition> personConditions,
         List <DialogCondition> dialogConditions,
-        Condition<?> chapterFinishedCondition) implements Identifiable {
+        Condition chapterFinishedCondition) implements Identifiable {
 
     public static class Builder {
 
@@ -25,7 +25,7 @@ public record Chapter(
         private List<LocationCondition> locations = new ArrayList<>();
         private List<PersonCondition> personConditions = new ArrayList<>();
         private List<DialogCondition> dialogConditions = new ArrayList<>();
-        private Condition<?> chapterFinishedCondition = null; //FIXME
+        private Condition chapterFinishedCondition = null; //FIXME
 
         public Builder id(UUID id) {
             this.id = id;
@@ -57,7 +57,7 @@ public record Chapter(
             return this;
         }
 
-        public Builder chapterFinishedCondition(Condition<?> chapterFinishedCondition) {
+        public Builder chapterFinishedCondition(Condition chapterFinishedCondition) {
             this.chapterFinishedCondition = chapterFinishedCondition;
             return this;
         }

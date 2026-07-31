@@ -2,7 +2,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.KnowledgeTrigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
@@ -143,7 +143,7 @@ public class TalkTaskHandler implements TaskHandler {
     private void converse(Session session, Person person, Dialog dialog) {
         String statement = session.chatHistory.getLatestEntries(1).getFirst().statement();
         TalkContext context = buildContext(session, person, dialog, statement);
-        LOGGER.debug(context.toString());
+//        LOGGER.debug(context.toString());
         long now = System.currentTimeMillis();
         TalkResponse response;
         try {
@@ -159,7 +159,7 @@ public class TalkTaskHandler implements TaskHandler {
 
         // Guardrail: resolve the (possibly LLM-mangled) reported trigger ids to real dialog
         // triggers. Applying them (flags/knowledge) happens elsewhere.
-        List<KnowledgeTrigger> triggers = resolveTriggers(dialog, response);
+        List<Trigger> triggers = resolveTriggers(dialog, response);
         handleTalkTriggers(session, triggers);
 
         // Record both sides in the per-person talk history and surface the reply in the game log,
@@ -170,8 +170,11 @@ public class TalkTaskHandler implements TaskHandler {
         session.chatHistory.npc(person, reply);
     }
 
-    private void handleTalkTriggers(Session session, List<KnowledgeTrigger> triggers) {
-        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(KnowledgeTrigger::id).toList());
+    private void handleTalkTriggers(Session session, List<Trigger> triggers) {
+        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
+        for(Trigger trigger : triggers) {
+
+        }
     }
 
     /** A random excuse from {@link #FAILED_REPLY_NARRATIONS}, so repeated mishaps do not read alike. */
@@ -181,20 +184,20 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     /**
-     * Guardrail 3: maps the triggers the agent reported onto the real {@link KnowledgeTrigger}s of
+     * Guardrail 3: maps the triggers the agent reported onto the real {@link Trigger}s of
      * the dialog. Instead of rigorously discarding an id that does not match exactly, the closest
      * dialog trigger by {@link Levenshtein} distance wins, as long as it is within
      * {@link #MAX_TRIGGER_ID_DISTANCE}. This recovers ids the model got slightly wrong (a mangled
      * UUID) while still rejecting invented ones (which are far from every candidate).
      */
-    private List<KnowledgeTrigger> resolveTriggers(Dialog dialog, TalkResponse response) {
+    private List<Trigger> resolveTriggers(Dialog dialog, TalkResponse response) {
         if (dialog == null || response.triggeredTriggers().isEmpty()) {
             return List.of();
         }
-        List<KnowledgeTrigger> candidates = dialog.knowledgeTriggers();
-        List<KnowledgeTrigger> resolved = new ArrayList<>();
+        List<Trigger> candidates = dialog.knowledgeTriggers();
+        List<Trigger> resolved = new ArrayList<>();
         for (TalkResponse.TriggeredTrigger reported : response.triggeredTriggers()) {
-            KnowledgeTrigger match = closestTrigger(reported.triggerId(), candidates);
+            Trigger match = closestTrigger(reported.triggerId(), candidates);
             if (match == null) {
                 LOGGER.info("Guardrail: reported trigger id '{}' ('{}') matches no dialog trigger -> ignored",
                         reported.triggerId(), reported.trigger());
@@ -205,14 +208,14 @@ public class TalkTaskHandler implements TaskHandler {
         return resolved;
     }
 
-    private static KnowledgeTrigger closestTrigger(String reportedId, List<KnowledgeTrigger> candidates) {
+    private static Trigger closestTrigger(String reportedId, List<Trigger> candidates) {
         if (reportedId == null || reportedId.isBlank()) {
             return null;
         }
         String needle = reportedId.strip();
-        KnowledgeTrigger best = null;
+        Trigger best = null;
         int bestDistance = Integer.MAX_VALUE;
-        for (KnowledgeTrigger candidate : candidates) {
+        for (Trigger candidate : candidates) {
             int distance = Levenshtein.distance(needle, candidate.id().toString());
             if (distance < bestDistance) {
                 bestDistance = distance;
@@ -302,7 +305,7 @@ public class TalkTaskHandler implements TaskHandler {
 
     /** Evaluates a chapter condition against the session's current flag values. */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static boolean holds(Session session, Condition<?> condition) {
+    private static boolean holds(Session session, Condition condition) {
         List consideredFlags = condition.consideredFlags();
         List currentFlags = session.sessionFlags.getFlags(consideredFlags);
         return condition.evaluate(currentFlags);

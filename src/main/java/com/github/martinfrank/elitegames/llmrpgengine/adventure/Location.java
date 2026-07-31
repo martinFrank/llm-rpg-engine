@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public record Location (UUID id, String name, String description, List<FlagChange<Boolean>> flagChanges) implements Identifiable{
+public record Location (UUID id, String name, String description, List<FlagChange> flagChanges) implements Identifiable{
 
     public static class Builder {
         private UUID id = UUID.randomUUID();
         private String name;
         private String description;
-        private List<FlagChange<Boolean>> flagChanges = new ArrayList<>();
+        private List<FlagChange> flagChanges = new ArrayList<>();
 
         public Builder id(UUID id) {
             this.id = id;
@@ -27,7 +27,7 @@ public record Location (UUID id, String name, String description, List<FlagChang
             this.description = description;
             return this;
         }
-        public Builder flagChanges(List<FlagChange<Boolean>> visitedPlacesFlagChanges) {
+        public Builder flagChanges(List<FlagChange> visitedPlacesFlagChanges) {
             this.flagChanges = visitedPlacesFlagChanges;
             return this;
         }

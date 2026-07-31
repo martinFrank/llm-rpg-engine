@@ -6,14 +6,15 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import java.util.List;
 import java.util.UUID;
 
-public record TrueCondition(UUID id) implements Condition<Boolean> {
+public record TrueCondition(UUID id) implements Condition {
+
     @Override
-    public boolean evaluate(List<Flag<Boolean>> flags) {
+    public boolean evaluate(List<Flag> flags) {
         return true;
     }
 
     @Override
-    public List<Flag<Boolean>> consideredFlags() {
+    public List<Flag> consideredFlags() {
         return List.of();
     }
 }

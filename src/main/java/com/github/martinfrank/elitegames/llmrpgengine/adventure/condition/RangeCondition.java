@@ -6,15 +6,15 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import java.util.List;
 import java.util.UUID;
 
-public record RangeCondition<R>(UUID id, String description, List<Flag<R>> consideredFlags, List<R> values) implements Condition<R> {
+public record RangeCondition(UUID id, String description, List<Flag> consideredFlags, List values) implements Condition {
 
     @Override
-    public boolean evaluate(List<Flag<R>> flags) {
+    public boolean evaluate(List flags) {
         if (values == null || flags == null || flags.size() != 1) {
             return false;
         }
-        for(R r : values) {
-            if (flags.getFirst().value().equals(r)){
+        for(Object r : values) {
+            if (((Flag<Object, ?>)flags.getFirst()).value().equals(r)){
                 return true;
             }
         }

@@ -8,8 +8,8 @@ public class SessionFlags {
 
     private final Map<UUID, Object> currentFlags = new HashMap<>();
 
-    public void init(List<Flag<?>> flags) {
-        for (Flag<?> flag : flags) {
+    public void init(List<Flag<?,?>> flags) {
+        for (Flag<?,?> flag : flags) {
             currentFlags.put(flag.id(), flag.value());
         }
     }
@@ -19,9 +19,10 @@ public class SessionFlags {
     }
 
 
-    public List<Flag<?>> getFlags(List<Flag<?>> flags) {
-        List<Flag<?>> result = new ArrayList<>();
-        for (Flag<?> flag : flags) {
+    public List<Flag> getFlags(List flags) {
+        List result = new ArrayList<>();
+        for (Object flagObject : flags) {
+            Flag flag = (Flag) flagObject;
             result.add( copyFlag(flag, currentFlags.get(flag.id()))); //new BaseFlag(flag.id(), "sessionFlag", currentFlags.get(flag.id())));
         }
         return result;
@@ -29,10 +30,15 @@ public class SessionFlags {
 
     @SuppressWarnings("rawtypes")
     private static Flag copyFlag(Flag flag, Object value ){
-        return new Flag<Object>() {
+        return new Flag() {
             @Override
             public Object value() {
                 return value;
+            }
+
+            @Override
+            public Object data() {
+                return flag.data();
             }
 
             @Override
