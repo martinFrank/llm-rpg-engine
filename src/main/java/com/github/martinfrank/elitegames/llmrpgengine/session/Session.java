@@ -113,10 +113,6 @@ public class Session {
         return desiredPerson.orElse(null);
     }
 
-    public Dialog getDialog(UUID id) {
-        return adventure.getDialog(id);
-    }
-
     /**
      * The dialogs the given person can currently talk about: their person-specific dialogs
      * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
@@ -136,5 +132,9 @@ public class Session {
             }
         }
         return dialogs;
+    }
+
+    public void progressInChapter() {
+
     }
 }

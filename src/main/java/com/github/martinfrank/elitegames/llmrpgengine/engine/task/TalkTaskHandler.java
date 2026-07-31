@@ -160,7 +160,7 @@ public class TalkTaskHandler implements TaskHandler {
         // Guardrail: resolve the (possibly LLM-mangled) reported trigger ids to real dialog
         // triggers. Applying them (flags/knowledge) happens elsewhere.
         List<KnowledgeTrigger> triggers = resolveTriggers(dialog, response);
-        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(KnowledgeTrigger::id).toList());
+        handleTalkTriggers(session, triggers);
 
         // Record both sides in the per-person talk history and surface the reply in the game log,
         // attributed to the person who said it (not to the narrator).
@@ -168,6 +168,10 @@ public class TalkTaskHandler implements TaskHandler {
         session.talkHistory.player(person.id(), statement);
         session.talkHistory.npc(person.id(), reply);
         session.chatHistory.npc(person, reply);
+    }
+
+    private void handleTalkTriggers(Session session, List<KnowledgeTrigger> triggers) {
+        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(KnowledgeTrigger::id).toList());
     }
 
     /** A random excuse from {@link #FAILED_REPLY_NARRATIONS}, so repeated mishaps do not read alike. */

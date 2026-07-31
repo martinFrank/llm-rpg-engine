@@ -47,6 +47,7 @@ public class GameEngine {
         verdict = sanitize(verdict, session);
         session.chatHistory.player(userInput);
         applyTask(verdict, session);
+        session.progressInChapter();
     }
 
     /**
