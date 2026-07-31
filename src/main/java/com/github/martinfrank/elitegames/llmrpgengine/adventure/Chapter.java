@@ -20,7 +20,7 @@ public record Chapter(
 
     public static class Builder {
 
-        private UUID id = UUID.randomUUID();
+        private UUID id = null;
         private String name;
         private String summary;
         private Intro intro;
@@ -70,6 +70,9 @@ public record Chapter(
         }
 
         public Chapter build() {
+            if (this.id == null){
+                throw new IllegalStateException("chapter id cannot be null");
+            }
             if (chapterFinishedCondition == null) {
                 throw new IllegalStateException("chapter finished condition cannot be null");
             }

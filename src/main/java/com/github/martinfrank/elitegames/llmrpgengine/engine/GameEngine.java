@@ -63,6 +63,9 @@ public class GameEngine {
 
         boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
         LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
+        if(isCurrentChapterOver) {
+            session.moveToNextChapter();
+        }
     }
 
     /**

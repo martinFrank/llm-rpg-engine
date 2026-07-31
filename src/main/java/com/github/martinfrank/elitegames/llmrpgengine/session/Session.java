@@ -16,6 +16,8 @@ import java.util.UUID;
 
 public class Session {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
+
     private final Adventure adventure;
     private final Player player;
     public final ChatHistory chatHistory = new ChatHistory();
@@ -135,4 +137,21 @@ public class Session {
         return dialogs;
     }
 
+    public void moveToNextChapter() {
+        //TODO diesen teil als methode ausgliedern, refactoring
+        int nextChapterIndex = -1;
+        for (int i = 0; i < adventure.getChapters().size(); i++){
+            if (adventure.getChapters().get(i).id().equals(currentChapter.id())){
+                nextChapterIndex = i + 1;
+                break;
+            }
+        }
+        if (nextChapterIndex == -1){
+            LOGGER.warn("index of next chapter could not be identified!");
+        }
+        currentChapter = adventure.getChapters().get(nextChapterIndex);
+        chatHistory.narrator(currentChapter.intro().intro());
+        currentLocation = currentChapter.intro().startLocation();
+        setCurrentTime(currentChapter.intro().startTime());
+    }
 }
