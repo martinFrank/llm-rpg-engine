@@ -69,15 +69,12 @@ public class Buchenhain implements Adventure {
                 "Abenteuer in Buchenwald",
                 "Martin Frank 2026",
                 """
-                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei.
-                        Der Ort besteht nur aus ein paar wenigen Häusern, die von den
-                        Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen
-                        Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz
-                        betretet, werdet ihr vom Ortsvorsteher begrüsst. Er bittet
-                        euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm
-                        ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr
-                        ihm später einen Besuch abstatten werdet. Danach verlässt er
-                        den Platz.
+                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar
+                        wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen
+                        Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom
+                        Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus
+                        vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm
+                        später einen Besuch abstatten werdet. Danach verlässt er den Platz.
                         """,
                 getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),
                 GameTime.AFTERNOON
@@ -250,6 +247,7 @@ public class Buchenhain implements Adventure {
     @Override
     public List<Dialog> getDialogs() {
         return List.of(
+                Dialog.GOSSIP,
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
