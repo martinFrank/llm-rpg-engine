@@ -154,4 +154,8 @@ public class Session {
         currentLocation = currentChapter.intro().startLocation();
         setCurrentTime(currentChapter.intro().startTime());
     }
+
+    public List<Trigger> getTriggers(List<UUID> triggers) {
+        return adventure.getTriggers().stream().filter( t -> triggers.contains(t.id())).toList();
+    }
 }

@@ -1,6 +1,9 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
@@ -10,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,14 +55,34 @@ public class GoToTaskHandler implements TaskHandler {
 
     private void setLocation(Session session, Location location) {
         LOGGER.debug("Player moves to: {}", location.name());
-        session.setCurrentLocation(location);
 
+        handleLeaveLocationTrigger(session, session.getCurrentLocation());
+        session.setCurrentLocation(location);
+        handleEnterLocationTrigger(session, location);
         NarratorContext context = NarratorContext.generateWalkToContext(session, location);
         long now = System.currentTimeMillis();
         String narration = narratorAgent.narrate(context);
         long duration = System.currentTimeMillis() - now;
         LOGGER.info("Duration narration evaluation: {} ms", duration);
-//        LOGGER.debug("Narration: {}", narration);
         session.chatHistory.narrator(narration);
+    }
+    private void handleLeaveLocationTrigger(Session session, Location location) {
+        handleLocationTrigger(session, location, "LEAVE");
+    }
+
+    private void handleEnterLocationTrigger(Session session, Location location) {
+        handleLocationTrigger(session, location, "ENTER");
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void handleLocationTrigger(Session session, Location location, String direction) {
+        List<Trigger> triggers = session.getTriggers(location.triggers());
+        for (Trigger trigger : triggers) {
+            LOGGER.debug("handle on {} {} trigger on", direction, location.name());
+            for (FlagChange change : trigger.flagChanges()) {
+                LOGGER.debug("change flage {} to {}", change.flag().name(), change.newValue());
+                session.sessionFlags.setFlagValue(change.flag().id(), change.newValue());
+            }
+        }
     }
 }

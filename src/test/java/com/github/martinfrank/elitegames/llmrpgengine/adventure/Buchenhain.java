@@ -497,13 +497,19 @@ public class Buchenhain implements Adventure {
                         .id(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471"))
                         .name("Blumental")
                         .description("""
-                                Dier Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich
-                                könnte man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf,
-                                dass es sich nicht rentiert, dort Landwirtschaft zu betreiben. Der Weg führt hier
-                                vom Dorf weiter in den Buchenwald hinein.
+                                Dieser Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich könnte
+                                man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf, dass es sich
+                                nicht rentiert, dort Landwirtschaft zu betreiben. Mitten im Tal gibt es ein Wegweiser,
+                                von hier aus kommt man zu vier verschiedenen orten: Zurück ins Dorf Buchenhain, zum
+                                alten Steinbruch, zum Pferdebauer und in den Buchenwald.
                                 """)
                         .destinations(List.of(
                                 UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
+//                                UUID.fromString("xxx")), //Buchenwald
+//                                UUID.fromString("xxx")), //Pferdebauer
+//                                UUID.fromString("xxx"))), //alter Steinbruch
+                        .triggers(List.of(
+                                    UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"))) //location Trigger on Enter Blumental
                         .build()
         );
     }
@@ -584,6 +590,11 @@ public class Buchenhain implements Adventure {
                 new BooleanFlag<>(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb"),
                         "wissen, dass der weg zum Buchenwald über das Blumental geht",
                         getKnowledge(UUID.fromString("ef1064c1-661d-4f8e-96ba-5070c32ba25a")), //knowledge über weg blumental nach buchenwald
+                        false)
+                ,
+                new BooleanFlag<>(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693"),
+                        "Flag, dass das Blumental betreten wurde",
+                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //location BLumental wurde betreten
                         false)
                 ,
                 new BooleanFlag<>(UUID.fromString("dd936532-6a33-4222-a98e-9c1b61bfd862"),
@@ -670,7 +681,16 @@ public class Buchenhain implements Adventure {
                                         true
                                 )
                         ))
-
+                ,
+                //"blumental betreten"
+                new Trigger(UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"),
+                        "ENTER", //LEAVE
+                        List.of(
+                                new FlagChange<>(
+                                        (Flag<Boolean, Location>) getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693")), //flag Weg zum Blumental bekannt
+                                        true
+                                )
+                        ))
         );
     }
 

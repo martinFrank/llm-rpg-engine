@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public record Location (UUID id, String name, String description, List<UUID> destinationIds) implements Identifiable{
+public record Location (UUID id, String name, String description, List<UUID> destinationIds, List<UUID> triggers) implements Identifiable{
 
 
     public static class Builder {
@@ -13,6 +13,7 @@ public record Location (UUID id, String name, String description, List<UUID> des
         private String name;
         private String description;
         private List<UUID> destinationIds = new ArrayList<>();
+        private List<UUID> triggers = new ArrayList<>();
 
         public Builder id(UUID id) {
             this.id = id;
@@ -31,7 +32,12 @@ public record Location (UUID id, String name, String description, List<UUID> des
             return this;
         }
         public Location build() {
-            return new Location(id, name, description, destinationIds);
+            return new Location(id, name, description, destinationIds, triggers);
+        }
+
+        public Builder triggers(List<UUID> triggers) {
+            this.triggers = triggers;
+            return this;
         }
     }
 
