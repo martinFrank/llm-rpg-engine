@@ -428,6 +428,12 @@ public class Buchenhain implements Adventure {
                                 spielen einige Kinder auf dem Dorfplatz aber ansonsten ist es ein
                                 ruhiger Ort
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"),//Haus des Dorfvorstehers
+                                UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3"), //Schmiede
+                                UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"), //Wirtshaus zum Adler
+                                UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b"), //Der Dorfladen
+                                UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471"))) //Blumental
                         .build()
                 ,
                 new Location.Builder()
@@ -440,6 +446,8 @@ public class Buchenhain implements Adventure {
                                 und einfaches Reisegerät. Es riecht nach Leinöl und Räucherspeck, und
                                 über der Tür hängt eine hölzerne Tafel mit einem eingekerbten Korb.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build(),
                 new Location.Builder()
                         .id(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"))
@@ -452,6 +460,8 @@ public class Buchenhain implements Adventure {
                                 ins Arbeitszimmer geführt, könnt dabei aber auch noch einen Blick
                                 in die Küche werfen. Es duftet von dort nach deftigem Essen.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
@@ -465,6 +475,8 @@ public class Buchenhain implements Adventure {
                                 Bänken, hinter dem sich ein weiteres Tor öffnet, durch das man direkt
                                 in die Schmiede hineinkommt.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
@@ -477,6 +489,8 @@ public class Buchenhain implements Adventure {
                                 Eingangsbereich durch eine reich verzierte Holztür geschützt wird. Vor
                                 dem Gasthaus führt ein breiter, leicht abschüssiger Weg bis zum Marktplatz.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
@@ -488,6 +502,8 @@ public class Buchenhain implements Adventure {
                                 dass es sich nicht rentiert, dort Landwirtschaft zu betreiben. Der Weg führt hier
                                 vom Dorf weiter in den Buchenwald hinein.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
         );
     }
@@ -692,4 +708,5 @@ public class Buchenhain implements Adventure {
     public Trigger getTrigger(UUID id) {
         return (Trigger) Identifiable.find(id, getTriggers());
     }
+
 }

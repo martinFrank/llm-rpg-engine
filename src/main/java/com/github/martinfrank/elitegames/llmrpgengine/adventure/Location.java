@@ -1,19 +1,18 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public record Location (UUID id, String name, String description, List<FlagChange> flagChanges) implements Identifiable{
+public record Location (UUID id, String name, String description, List<UUID> destinationIds) implements Identifiable{
+
 
     public static class Builder {
         private UUID id = UUID.randomUUID();
         private String name;
         private String description;
-        private List<FlagChange> flagChanges = new ArrayList<>();
+        private List<UUID> destinationIds = new ArrayList<>();
 
         public Builder id(UUID id) {
             this.id = id;
@@ -27,12 +26,12 @@ public record Location (UUID id, String name, String description, List<FlagChang
             this.description = description;
             return this;
         }
-        public Builder flagChanges(List<FlagChange> visitedPlacesFlagChanges) {
-            this.flagChanges = visitedPlacesFlagChanges;
+        public Builder destinations(List<UUID> destinationIds) {
+            this.destinationIds = destinationIds;
             return this;
         }
         public Location build() {
-            return new Location(id, name, description, flagChanges);
+            return new Location(id, name, description, destinationIds);
         }
     }
 
