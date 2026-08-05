@@ -1,12 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkResponse;
@@ -171,16 +167,16 @@ public class TalkTaskHandler implements TaskHandler {
         session.chatHistory.npc(person, reply);
     }
 
-    @SuppressWarnings("rawtypes")
     private void handleTalkTriggers(Session session, List<Trigger> triggers) {
 //        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
-        for(Trigger trigger : triggers) {
+        List<Trigger> unTriggers = session.sessionTriggers.untriggered( triggers );
+        for(Trigger trigger : unTriggers) {
             LOGGER.debug("execute trigger: {}", trigger.trigger());
-            List<FlagChange<?,?>> flagChanges = trigger.event().flagChanges();
-            if (flagChanges != null && !flagChanges.isEmpty()) {
-                for (FlagChange flagChange : flagChanges) {
-                    LOGGER.debug("execute trigger: {} set flag {} to {}", trigger.trigger(), flagChange.flag().name(), flagChange.newValue());
-                    session.sessionFlags.setFlagValue(flagChange.flag().id(), flagChange.newValue());
+            List<Flag<?>> raiseFlags = trigger.event().raisedFlags();
+            if (raiseFlags != null && !raiseFlags.isEmpty()) {
+                for (Flag<?> raisedFlag : raiseFlags) {
+                    LOGGER.debug("execute trigger: {} raise flag {}", trigger.trigger(), raisedFlag.name());
+                    session.sessionFlags.raiseFlagValue(raisedFlag.id());
                 }
             }
         }
@@ -313,10 +309,7 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     /** Evaluates a chapter condition against the session's current flag values. */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private static boolean holds(Session session, Condition condition) {
-        List consideredFlags = condition.consideredFlags();
-        List currentFlags = session.sessionFlags.getFlags(consideredFlags);
-        return condition.evaluate(currentFlags);
+        return session.evaluate(condition);
     }
 }

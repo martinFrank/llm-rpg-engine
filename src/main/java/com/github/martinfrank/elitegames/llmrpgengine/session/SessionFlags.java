@@ -1,36 +1,44 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SessionFlags {
 
-    private final Map<UUID, Object> currentFlags = new HashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionFlags.class);
 
-    public void init(List<Flag<?,?>> flags) {
-        for (Flag<?,?> flag : flags) {
-            currentFlags.put(flag.id(), flag.value());
+    private final Map<UUID, Boolean> currentFlags = new HashMap<>();
+
+    public void init(List<Flag<?>> flags) {
+        for (Flag<?> flag : flags) {
+            currentFlags.put(flag.id(), false);
         }
     }
 
-    public void setFlagValue(UUID id, Object value) {
-        currentFlags.put(id, value);
+    public void raiseFlagValue(UUID id) {
+        currentFlags.put(id, true);
     }
 
 
-    public List<Flag> getFlags(List flags) {
-        List result = new ArrayList<>();
-        for (Object flagObject : flags) {
-            Flag flag = (Flag) flagObject;
-            result.add( copyFlag(flag, currentFlags.get(flag.id()))); //new BaseFlag(flag.id(), "sessionFlag", currentFlags.get(flag.id())));
+    public List<Flag<?>> getFlags(List<Flag<?>> flags) {
+        List<Flag<?>> result = new ArrayList<>();
+        for (Flag<?> flag : flags) {
+            result.add(copyFlag(flag, currentFlags.get(flag.id()))); //new BaseFlag(flag.id(), "sessionFlag", currentFlags.get(flag.id())));
         }
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
-    private static Flag copyFlag(Flag flag, Object value ){
-        return new Flag() {
+    private static <R> Flag<R> copyFlag(Flag<R> flag, Boolean value) {
+        return new Flag<R>() {
+            @Override
+            public UUID id() {
+                return flag.id();
+            }
 
             @Override
             public String name() {
@@ -38,18 +46,51 @@ public class SessionFlags {
             }
 
             @Override
-            public Object value() {
-                return value;
+            public R content() {
+                return flag.content();
             }
 
             @Override
-            public Object data() {
-                return flag.data();
+            public boolean isRaised() {
+                return value;
             }
+        };
+    }
+
+    public boolean evaluate(Condition condition, GameTime currentTime) {
+        List<Flag<?>> requiredFlags = condition.consideredFlags();
+        List<Flag<?>> currentFlags = getFlags(requiredFlags);
+
+        //spezialFall:
+        if (condition.id().equals(Condition.DAY_TIME.id())
+                || condition.id().equals(Condition.NIGHT_TIME.id())) {
+            currentFlags = List.of(currentTimeFlag(currentTime));
+        }
+        return condition.evaluate(currentFlags);
+    }
+
+
+    private static Flag<GameTime> currentTimeFlag(GameTime currentTime) {
+        return new Flag<>() {
 
             @Override
             public UUID id() {
-                return flag.id();
+                return null;
+            }
+
+            @Override
+            public String name() {
+                return "GameTime Flag";
+            }
+
+            @Override
+            public GameTime content() {
+                return currentTime;
+            }
+
+            @Override
+            public boolean isRaised() {
+                return false;
             }
         };
     }

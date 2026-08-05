@@ -2,28 +2,25 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.condition;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
+import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 
 import java.util.List;
 import java.util.UUID;
 
-public record AndCondition (UUID id, String description, List<Flag> consideredFlags) implements Condition {
+public record AndCondition(UUID id, String description, List<Flag<?>> consideredFlags) implements Condition {
 
     @Override
-    public boolean evaluate(List<Flag> list) {
+    public boolean evaluate(List<Flag<?>> list) {
 
-            if (list == null || list.size() != 2) {
+        if (list == null || list.isEmpty()) {
             return false;
         }
-        return ((Flag<Boolean, ?>) list.getFirst()).value() && ((Flag<Boolean, ?>) list.getLast()).value();
 
+        for (Flag<?> flag : list) {
+            if (!flag.isRaised()) {
+                return false;
+            }
+        }
+        return true;
     }
-
-//    @Override
-//    public boolean evaluate(List<Flag> flags) {
-//        if (flags == null || flags.size() != 2) {
-//            return false;
-//        }
-//        return flags.getFirst().value() && flags.getLast().value();
-//    }
-
 }

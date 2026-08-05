@@ -51,17 +51,8 @@ public class GameEngine {
         progressChapter(session);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void progressChapter(Session session) {
-        List requiredFlags = session.getCurrentChapter().chapterFinishedCondition().consideredFlags();
-        List currentFlags = session.sessionFlags.getFlags(requiredFlags);
-
-        for(Object flagObject : currentFlags) {
-            Flag flag = (Flag) flagObject;
-            LOGGER.debug("Flag: {} is fulfilled? {}", flag.name(), flag.value());
-        }
-
-        boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
+        boolean isCurrentChapterOver = session.evaluate(session.getCurrentChapter().chapterFinishedCondition());
         LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
         if(isCurrentChapterOver) {
             session.moveToNextChapter();

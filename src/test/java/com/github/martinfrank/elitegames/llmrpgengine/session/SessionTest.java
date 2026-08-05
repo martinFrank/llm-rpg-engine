@@ -37,22 +37,6 @@ class SessionTest {
         return adventure.getLocation(id);
     }
 
-    private static GameTime gameTimeFlagValue(Session session) {
-        List flags = session.sessionFlags.getFlags(List.of(Flag.GAME_TIME_FLAG));
-        return ((Flag<GameTime,String>) flags.getFirst()).value();
-    }
-
-    @Test
-    void keepsTheGameTimeFlagInSyncWithTheCurrentTime() {
-        Session session = startedSession();
-        assertThat(gameTimeFlagValue(session)).isEqualTo(session.getCurrentTime());
-
-        session.setCurrentTime(GameTime.MORNING);
-        assertThat(gameTimeFlagValue(session)).isEqualTo(GameTime.MORNING);
-
-        session.setCurrentTime(GameTime.AT_NIGHT);
-        assertThat(gameTimeFlagValue(session)).isEqualTo(GameTime.AT_NIGHT);
-    }
 
     @Test
     void daytimeConditionsHoldInTheMorning() {

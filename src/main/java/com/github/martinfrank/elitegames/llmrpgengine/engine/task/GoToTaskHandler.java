@@ -3,7 +3,6 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +48,7 @@ public class GoToTaskHandler implements TaskHandler {
         }
         //wenn es bis jetzt kein reurn gab, ist was schief gelaufen
         LOGGER.debug("destination not reachable for GO_TO: '{}' (id: {})", verdict.target(), verdict.targetId());
-        session.chatHistory.narrator("dieser Ort ist euch nicht bekannt");
+        session.chatHistory.narrator("dieser Ort ist mir nicht bekannt");
     }
 
     private void setLocation(Session session, Location location) {
@@ -76,14 +74,16 @@ public class GoToTaskHandler implements TaskHandler {
 
     @SuppressWarnings("rawtypes")
     private void handleLocationTrigger(Session session, Location location, String direction) {
-        List<Trigger> triggers = session.getTriggers(location.triggers());
+        List<Trigger> locationTriggers = session.getTriggers().stream().filter( t -> location.triggers().contains(t.id())).toList();
+        List<Trigger> triggers = session.sessionTriggers.untriggered(locationTriggers);
         for (Trigger trigger : triggers) {
-            LOGGER.debug("handle on {} {} trigger on", direction, location.name());
-            List<FlagChange<?,?>> flagChanges = trigger.event().flagChanges();
-            if (flagChanges != null && !flagChanges.isEmpty()) {
-                for (FlagChange change : flagChanges) {
-                    LOGGER.debug("change flage {} to {}", change.flag().name(), change.newValue());
-                    session.sessionFlags.setFlagValue(change.flag().id(), change.newValue());
+            LOGGER.debug("handle on {} {} trigger", direction, location.name());
+
+            List<Flag<?>> flags = trigger.event().raisedFlags();
+            if (flags != null && !flags.isEmpty()) {
+                for (Flag flag : flags) {
+                    LOGGER.debug("raise flag {}", flag.name());
+                    session.sessionFlags.raiseFlagValue(flag.id());
                 }
             }
         }

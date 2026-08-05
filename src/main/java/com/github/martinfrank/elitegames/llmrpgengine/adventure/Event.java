@@ -1,12 +1,10 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.FlagChange;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public record Event (
-        List<FlagChange<?,?>> flagChanges,
+        List<Flag<?>> raisedFlags,
         String text, Location location,
         GameTime gameTime,
         List<Item> addedItems,
@@ -14,15 +12,15 @@ public record Event (
 
 
     public static class Builder {
-        private List<FlagChange<?,?>> flagChanges = new ArrayList<>();
+        private List<Flag<?>> raisedFlags = new ArrayList<>();
         private String text;
         private Location location;
         private GameTime gameTime;
         private List<Item> addedItems;
         private List<Item> removedItems;
 
-        public Builder flagChanges(List<FlagChange<?,?>> flagChanges) {
-            this.flagChanges = flagChanges;
+        public Builder raisedFlags(List<Flag<?>> flagChanges) {
+            this.raisedFlags = flagChanges;
             return this;
         }
         public Builder text(String text) {
@@ -46,7 +44,7 @@ public record Event (
             return this;
         }
         public Event build() {
-            return new Event(flagChanges, text, location, gameTime, addedItems, removedItems);
+            return new Event(raisedFlags, text, location, gameTime, addedItems, removedItems);
         }
     }
 

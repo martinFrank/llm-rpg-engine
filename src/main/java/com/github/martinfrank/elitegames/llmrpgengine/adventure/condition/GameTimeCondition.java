@@ -2,17 +2,20 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.condition;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 
 import java.util.List;
 import java.util.UUID;
 
-public record IsCondition(UUID id, String description, List<Flag<?>> consideredFlags) implements Condition {
+public record GameTimeCondition(UUID id, List<Flag<?>> consideredFlags, List<GameTime> times) implements Condition {
 
     @Override
     public boolean evaluate(List<Flag<?>> flags) {
         if (flags == null || flags.size() != 1) {
             return false;
         }
-        return flags.getFirst().isRaised();
+
+        GameTime time = (GameTime) flags.getFirst().content();
+        return  times.contains(time);
     }
 }

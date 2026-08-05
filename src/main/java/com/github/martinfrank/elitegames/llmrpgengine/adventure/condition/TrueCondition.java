@@ -9,12 +9,12 @@ import java.util.UUID;
 public record TrueCondition(UUID id) implements Condition {
 
     @Override
-    public boolean evaluate(List<Flag> flags) {
+    public boolean evaluate(List<Flag<?>> flags) {
         return true;
     }
 
     @Override
-    public List<Flag> consideredFlags() {
+    public List<Flag<?>> consideredFlags() {
         return List.of();
     }
 }
