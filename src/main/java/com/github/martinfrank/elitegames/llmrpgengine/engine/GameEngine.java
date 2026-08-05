@@ -1,6 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -34,8 +33,6 @@ public class GameEngine {
     /**
      * Interprets the player's input via the {@link VerdictAgent} and applies the
      * resulting scripted task to the session.
-     *
-     * @return the verdict that was produced and applied
      */
     public void handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);
@@ -51,17 +48,8 @@ public class GameEngine {
         progressChapter(session);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void progressChapter(Session session) {
-        List requiredFlags = session.getCurrentChapter().chapterFinishedCondition().consideredFlags();
-        List currentFlags = session.sessionFlags.getFlags(requiredFlags);
-
-        for(Object flagObject : currentFlags) {
-            Flag flag = (Flag) flagObject;
-            LOGGER.debug("Flag: {} is fulfilled? {}", flag.name(), flag.value());
-        }
-
-        boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
+        boolean isCurrentChapterOver = session.evaluate(session.getCurrentChapter().chapterFinishedCondition());
         LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
         if(isCurrentChapterOver) {
             session.moveToNextChapter();

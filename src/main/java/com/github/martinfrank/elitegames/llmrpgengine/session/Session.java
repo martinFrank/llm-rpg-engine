@@ -4,7 +4,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
-import com.github.martinfrank.elitegames.llmrpgengine.engine.GameEngine;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ public class Session {
     private Chapter currentChapter;
     private GameTime currentTime = GameTime.AFTERNOON;
     public final SessionFlags sessionFlags = new SessionFlags();
+    public final SessionTriggers sessionTriggers = new SessionTriggers();
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
@@ -55,29 +55,19 @@ public class Session {
         return currentTime;
     }
 
-    /**
-     * Advances the clock. The game-time flag is kept in sync, because that flag – not this field –
-     * is what the chapter conditions evaluate: it decides which locations are open and where the
-     * persons currently are.
-     */
     public void setCurrentTime(GameTime currentTime) {
         this.currentTime = currentTime;
-        setFlag(Flag.GAME_TIME_FLAG.id(), currentTime);
     }
 
     public Chapter getCurrentChapter() {
         return currentChapter;
     }
 
-    @SuppressWarnings({"rawtypes"})
     public List<Person> getCurrentPersons(Location location) {
         List<Person> result = new ArrayList<>();
         for (PersonCondition personCondition: currentChapter.personConditions()){
             if (personCondition.location().id().equals(location.id())) {
-                List flags = personCondition.condition().consideredFlags();
-                List<Flag> currentValues = sessionFlags.getFlags(flags);
-                Condition condition = personCondition.condition();
-                boolean evaluated = condition.evaluate(currentValues);
+                boolean evaluated = evaluate(personCondition.condition());
                 if (evaluated) {
                     result.add(personCondition.person());
                 }
@@ -86,20 +76,10 @@ public class Session {
         return result;
     }
 
-    public void setFlag(UUID id, Object value) {
-        sessionFlags.setFlagValue(id, value);
-    }
-
-
-    @SuppressWarnings({"rawtypes"})
     public Location getLocation(UUID id) {
         for(LocationCondition locationCondition: currentChapter.locationConditions() ){
             if (locationCondition.location().id().equals(id)) {
-
-                List flags = locationCondition.condition().consideredFlags();
-                List<Flag> currentValues = sessionFlags.getFlags(flags);
-                Condition condition = locationCondition.condition();
-                boolean evaluated = condition.evaluate(currentValues);
+                boolean evaluated = evaluate(locationCondition.condition());
                 if (evaluated) {
                     return locationCondition.location();
                 }
@@ -121,15 +101,11 @@ public class Session {
      * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
      * This is the set a TALK verdict's dialog must belong to.
      */
-    @SuppressWarnings({"rawtypes"})
     public List<Dialog> getAvailableDialogs(Person person) {
         List<Dialog> dialogs = new ArrayList<>();
         for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
             if (dialogCondition.person().id().equals(person.id())) {
-                List flags = dialogCondition.condition().consideredFlags();
-                List<Flag> currentValues = sessionFlags.getFlags(flags);
-                Condition condition = dialogCondition.condition();
-                if (condition.evaluate(currentValues)) {
+                if (evaluate(dialogCondition.condition())) {
                     dialogs.add(dialogCondition.dialog());
                 }
             }
@@ -155,7 +131,23 @@ public class Session {
         setCurrentTime(currentChapter.intro().startTime());
     }
 
-    public List<Trigger> getTriggers(List<UUID> triggers) {
-        return adventure.getTriggers().stream().filter( t -> triggers.contains(t.id())).toList();
+    public List<Trigger> getTriggers() {
+        return adventure.getTriggers();
+    }
+
+
+    public boolean evaluate(Condition condition) {
+        return  sessionFlags.evaluate(condition, currentTime);
+    }
+
+    public void handleEvent(Event event) {
+        LOGGER.debug("handle event: newLocation: {}, newTime: {}", event.location().name(), event.gameTime());
+        List<Flag<?>> flags = event.raisedFlags();
+        if (flags != null && !flags.isEmpty()) {
+            for (Flag<?> flag : flags) {
+                LOGGER.debug("raise flag {}", flag.name());
+                sessionFlags.raiseFlagValue(flag.id());
+            }
+        }
     }
 }

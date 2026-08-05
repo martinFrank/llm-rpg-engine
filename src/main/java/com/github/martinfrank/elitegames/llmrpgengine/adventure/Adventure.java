@@ -13,15 +13,13 @@ public interface Adventure {
     List<Dialog> getDialogs();
     List<Location> getLocations();
     List<Condition> getConditions();
-    List<Flag<?,?>> getFlags();
-    List<Knowledge> getKnowledges();
+    List<Flag<?>> getFlags();
     List<Trigger> getTriggers();
 
     Condition getCondition(UUID id);
     Location getLocation(UUID id);
     Person getPerson(UUID id);
-    Flag<?,?> getFlag(UUID id);
+    Flag<?> getFlag(UUID id);
     Dialog getDialog(UUID id);
-    Knowledge getKnowledge(UUID id);
     Trigger getTrigger(UUID id);
 }
