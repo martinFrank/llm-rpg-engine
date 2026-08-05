@@ -1,6 +1,5 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -34,8 +33,6 @@ public class GameEngine {
     /**
      * Interprets the player's input via the {@link VerdictAgent} and applies the
      * resulting scripted task to the session.
-     *
-     * @return the verdict that was produced and applied
      */
     public void handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);

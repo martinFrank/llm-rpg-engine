@@ -2,7 +2,6 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.condition;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
-import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 
 import java.util.List;
 import java.util.UUID;

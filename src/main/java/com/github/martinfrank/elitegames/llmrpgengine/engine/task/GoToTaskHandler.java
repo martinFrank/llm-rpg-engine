@@ -1,7 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Event;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;

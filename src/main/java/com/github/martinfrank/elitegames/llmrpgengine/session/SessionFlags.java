@@ -34,7 +34,7 @@ public class SessionFlags {
     }
 
     private static <R> Flag<R> copyFlag(Flag<R> flag, Boolean value) {
-        return new Flag<R>() {
+        return new Flag<>() {
             @Override
             public UUID id() {
                 return flag.id();
