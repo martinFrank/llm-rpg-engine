@@ -176,9 +176,12 @@ public class TalkTaskHandler implements TaskHandler {
 //        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
         for(Trigger trigger : triggers) {
             LOGGER.debug("execute trigger: {}", trigger.trigger());
-            for(FlagChange flagChange : trigger.flagChanges()) {
-                LOGGER.debug("execute trigger: {} set flag {} to {}", trigger.trigger(), flagChange.flag().name(), flagChange.newValue());
-                session.sessionFlags.setFlagValue(flagChange.flag().id(), flagChange.newValue());
+            List<FlagChange<?,?>> flagChanges = trigger.event().flagChanges();
+            if (flagChanges != null && !flagChanges.isEmpty()) {
+                for (FlagChange flagChange : flagChanges) {
+                    LOGGER.debug("execute trigger: {} set flag {} to {}", trigger.trigger(), flagChange.flag().name(), flagChange.newValue());
+                    session.sessionFlags.setFlagValue(flagChange.flag().id(), flagChange.newValue());
+                }
             }
         }
     }

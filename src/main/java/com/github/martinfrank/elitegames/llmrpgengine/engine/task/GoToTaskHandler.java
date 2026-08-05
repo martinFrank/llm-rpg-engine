@@ -79,9 +79,12 @@ public class GoToTaskHandler implements TaskHandler {
         List<Trigger> triggers = session.getTriggers(location.triggers());
         for (Trigger trigger : triggers) {
             LOGGER.debug("handle on {} {} trigger on", direction, location.name());
-            for (FlagChange change : trigger.flagChanges()) {
-                LOGGER.debug("change flage {} to {}", change.flag().name(), change.newValue());
-                session.sessionFlags.setFlagValue(change.flag().id(), change.newValue());
+            List<FlagChange<?,?>> flagChanges = trigger.event().flagChanges();
+            if (flagChanges != null && !flagChanges.isEmpty()) {
+                for (FlagChange change : flagChanges) {
+                    LOGGER.debug("change flage {} to {}", change.flag().name(), change.newValue());
+                    session.sessionFlags.setFlagValue(change.flag().id(), change.newValue());
+                }
             }
         }
     }

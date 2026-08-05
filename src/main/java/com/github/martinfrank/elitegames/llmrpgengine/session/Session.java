@@ -27,6 +27,7 @@ public class Session {
     private Chapter currentChapter;
     private GameTime currentTime = GameTime.AFTERNOON;
     public final SessionFlags sessionFlags = new SessionFlags();
+    public final SessionTriggers sessionTriggers = new SessionTriggers();
 
     public Session(Adventure adventure, Player player) {
         this.adventure = adventure;
