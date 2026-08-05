@@ -141,7 +141,7 @@ public class Session {
     }
 
     public void handleEvent(Event event) {
-        LOGGER.debug("handle event");
+        LOGGER.debug("handle event: newLocation: {}, newTime: {}", event.location().name(), event.gameTime());
         List<Flag<?>> flags = event.raisedFlags();
         if (flags != null && !flags.isEmpty()) {
             for (Flag<?> flag : flags) {

@@ -19,8 +19,12 @@ public record Event (
         private List<Item> addedItems;
         private List<Item> removedItems;
 
-        public Builder raisedFlags(List<Flag<?>> flagChanges) {
-            this.raisedFlags = flagChanges;
+        public Builder raisedFlags(List<Flag<?>> raisedFlags) {
+            this.raisedFlags = raisedFlags;
+            return this;
+        }
+        public Builder raisedFlag(Flag<?> flag) {
+            this.raisedFlags = List.of(flag);
             return this;
         }
         public Builder text(String text) {

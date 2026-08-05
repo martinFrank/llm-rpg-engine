@@ -624,18 +624,14 @@ public class Buchenhain implements Adventure {
                 new Trigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
                         "Bedrohung oder Gefahr für das Dorf",
                         new Event.Builder()
-                                .raisedFlags(List.of(
-                                        getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")) //flag wissen über monster
-                                ))
+                                .raisedFlag(getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f"))) //flag wissen über monster
                                 .build())
                 ,
                 //"wissen über die Bedrohung im Dorf"
                 new Trigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711"),
                         "Auftrag oder heikles Thema",
                         new Event.Builder()
-                                .raisedFlags(List.of(
-                                        getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")) //flag dorf-vorsteher besucht
-                                ))
+                                .raisedFlag(getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"))) //flag dorf-vorsteher besucht
                                 .build())
                 ,
                 //chapter 2
@@ -643,18 +639,14 @@ public class Buchenhain implements Adventure {
                 new Trigger(UUID.fromString("fff178be-41e9-44b3-ace6-5069132a53d1"),
                         "Weg zum Buchenwald",
                         new Event.Builder()
-                                .raisedFlags(List.of(
-                                        getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb")) //flag Weg zum Blumental bekannt
-                                ))
+                                .raisedFlag( getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb"))) //flag Weg zum Blumental bekannt
                                 .build())
                 ,
                 //"blumental betreten"
                 new Trigger(UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"),
                         "ENTER", //LEAVE
                         new Event.Builder()
-                                .raisedFlags(List.of(
-                                        getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693")) //flag Weg zum Blumental betreten
-                                ))
+                                .raisedFlag(getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693"))) //flag Weg zum Blumental betreten
                                 .build())
         );
     }
