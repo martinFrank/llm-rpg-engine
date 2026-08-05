@@ -8,6 +8,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails, String conversationHistory) {
@@ -30,7 +31,20 @@ public record NarratorContext (String purpose, String location, String persons, 
     }
 
     private static String extractDetails(Session session, Location location) {
-        return "";
+        StringBuilder details = new StringBuilder();
+        for (UUID destinationId: location.destinationIds()) {
+            Location destination = session.getLocation(destinationId);
+            if (destination != null) {
+                details.append(" - ")
+                        .append(destination.name())
+                        .append(": ")
+                        .append(StringNormalizer.normalize(destination.description())).append("\n");
+            }
+        }
+        if (details.isEmpty()) {
+            return "";
+        }
+        return "ZIEL-ORTE die von hier aus erreicht werden können:\n" + details;
     }
 
     private static String extractLocation(Location location) {

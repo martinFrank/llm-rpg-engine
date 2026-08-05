@@ -6,7 +6,7 @@ import java.util.UUID;
 public interface Adventure {
 
     String getPlotSummary();
-    Intro getIntro();
+    Metadata getMetadata();
     List<Chapter> getChapters();
     List<Person> getPersons();
     List<Item> getItems();
@@ -15,7 +15,7 @@ public interface Adventure {
     List<Condition> getConditions();
     List<Flag<?,?>> getFlags();
     List<Knowledge> getKnowledges();
-    List<Trigger> getKnowledgeTriggers();
+    List<Trigger> getTriggers();
 
     Condition getCondition(UUID id);
     Location getLocation(UUID id);
@@ -23,5 +23,5 @@ public interface Adventure {
     Flag<?,?> getFlag(UUID id);
     Dialog getDialog(UUID id);
     Knowledge getKnowledge(UUID id);
-    Trigger getKnowledgeTrigger(UUID id);
+    Trigger getTrigger(UUID id);
 }

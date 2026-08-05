@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 public record AndCondition (UUID id, String description, List<Flag> consideredFlags) implements Condition {
+
     @Override
-    public boolean evaluate(List list) {
+    public boolean evaluate(List<Flag> list) {
 
             if (list == null || list.size() != 2) {
             return false;

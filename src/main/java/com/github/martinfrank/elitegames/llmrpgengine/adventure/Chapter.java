@@ -12,16 +12,18 @@ public record Chapter(
         UUID id,
         String name,
         String summary,
+        Intro intro,
         List<LocationCondition> locationConditions,
         List<PersonCondition> personConditions,
-        List <DialogCondition> dialogConditions,
+        List<DialogCondition> dialogConditions,
         Condition chapterFinishedCondition) implements Identifiable {
 
     public static class Builder {
 
-        private UUID id = UUID.randomUUID();
+        private UUID id = null;
         private String name;
         private String summary;
+        private Intro intro;
         private List<LocationCondition> locations = new ArrayList<>();
         private List<PersonCondition> personConditions = new ArrayList<>();
         private List<DialogCondition> dialogConditions = new ArrayList<>();
@@ -39,6 +41,11 @@ public record Chapter(
 
         public Builder summary(String summary) {
             this.summary = summary;
+            return this;
+        }
+
+        public Builder intro(Intro intro) {
+            this.intro = intro;
             return this;
         }
 
@@ -63,11 +70,24 @@ public record Chapter(
         }
 
         public Chapter build() {
-            if(chapterFinishedCondition == null) {
+            if (this.id == null){
+                throw new IllegalStateException("chapter id cannot be null");
+            }
+            if (chapterFinishedCondition == null) {
                 throw new IllegalStateException("chapter finished condition cannot be null");
             }
-            return new Chapter(id, name, summary, locations, personConditions, dialogConditions, chapterFinishedCondition);
+            if (intro == null) {
+                throw new IllegalStateException("intro cannot be null");
+            }
+            return new Chapter(
+                    id,
+                    name,
+                    summary,
+                    intro,
+                    locations,
+                    personConditions,
+                    dialogConditions,
+                    chapterFinishedCondition);
         }
-
     }
 }

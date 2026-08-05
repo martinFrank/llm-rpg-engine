@@ -40,6 +40,7 @@ public class Buchenhain implements Adventure {
                 Chapter 2: Herausfinden der Ursache
                 - Die Helden untersuchen das Grab vom Druiden und sein Geist erscheint - er "erklärt" die Lage (inkl.
                 Ritual zur reinigung), kann die Kreaturen aber nicht mehr zurück halten
+                - Druide ist Gunver Eichblatt
                 - Danach werden die Helden von Kreatuern angegriffen
                 
                 Chapter 3a: Suche nach dem Horn
@@ -65,27 +66,15 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Intro getIntro() {
-        return new Intro(
-                "Abenteuer in Buchenwald",
-                "Martin Frank 2026",
-                """
-                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar
-                        wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen
-                        Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom
-                        Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus
-                        vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm
-                        später einen Besuch abstatten werdet. Danach verlässt er den Platz.
-                        """,
-                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),
-                GameTime.AFTERNOON
-        );
+    public Metadata getMetadata() {
+        return new Metadata("Abenteuer in Buchenwald", "Martin Frank 2026");
     }
 
     @Override
     public List<Chapter> getChapters() {
         return List.of(
                 new Chapter.Builder()
+                        .id(UUID.fromString("4660eb1f-b98e-4a24-9c84-d323b64d5dd4"))
                         .name("Probleme in Buchenwald")
                         .summary("""
                                 die Helden sollen vom dorf-vorsteher Ulf Stetten den Auftrag erhalten, die Ursache der
@@ -96,6 +85,19 @@ public class Buchenhain implements Adventure {
                                 sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das
                                 nächste Kapitel.
                                 """)
+                        .intro(new Intro(
+                                """
+                                        Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur
+                                        aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der
+                                        Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den
+                                        Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf
+                                        Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit
+                                        ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später
+                                        einen Besuch abstatten werdet. Danach verlässt er den Platz.
+                                        """,
+                                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),
+                                GameTime.AFTERNOON
+                        ))
                         .locationConditions(List.of(
                                 new LocationCondition(
                                         getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
@@ -116,10 +118,10 @@ public class Buchenhain implements Adventure {
                                 new LocationCondition(
                                         getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
-                                ,
-                                new LocationCondition(
-                                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
-                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"))) //nachdem mit dem Dorfvorsteher geredet wurde
+//                                , //diese Location habe ich ins nächste Chapter gepackt
+//                                new LocationCondition(
+//                                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
+//                                        getCondition(UUID.fromString("2beccf6d-6bfa-4924-a85c-48ddf0573a44"))) //nachdem mit dem Dorfvorsteher geredet wurde
                         ))
                         .personConditions(List.of(
                                 new PersonCondition(
@@ -164,6 +166,100 @@ public class Buchenhain implements Adventure {
                                         getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
                         ))
                         .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
+                        .build()
+                ,
+                new Chapter.Builder()
+                        .id(UUID.fromString("cc70b34b-92f6-4400-9ab9-04867b6a209d"))
+                        .name("Ursache der Probleme")
+                        .summary("""
+                                Die Helden sollen das Grab des Druiden Gunver Eichblatt finden. Wenn es finden wird sein
+                                Geist erscheinen und den Helden erklären, warum die Tiere das Dorf angreifen. Die Tiere
+                                sind erbost, weil sein Schutzzauber nicht mehr wirkt und die Tiere für das Böse anfällig
+                                werden. Der Zauber wirkt nicht mehr, weil das Horn von Silana gestohlen wurde, ein
+                                magisches Artefakt, das für den Zauber verwendet wurde.
+                                
+                                Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das
+                                Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber
+                                erneuert.
+                                """)
+                        .intro(new Intro(
+                                """
+                                        Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf
+                                        den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends
+                                        geworden. Ihr solltet heute Abend im Gasthaus übernachten. Morgen könnt ihr dann
+                                        den Weg zum Buchenwald suchen.
+                                        """,
+                                getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")),//marktplatz
+                                GameTime.IN_THE_EVENING
+                        ))
+                        .locationConditions(List.of(
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //dorf schmiede
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b")), //dorfladen
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new LocationCondition(
+                                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //Blumental
+                                        getCondition(UUID.fromString("54aa8d6b-49a5-4665-b9a2-5bf1d3fecd8c"))) // flag/knowhow über weg zum Blumental
+                        ))
+                        .personConditions(List.of(
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2")), //haus des ortsvorstehers
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getLocation(UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3")), //Schmiede
+                                        getCondition(UUID.fromString("aadac5f8-9046-488b-9e36-77079bc83392"))) //daytime condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //marktplatz
+                                        getCondition(UUID.fromString("19fffd1b-6b46-4980-81a7-7432ddb9a6f8"))) //evening time condition
+                                ,
+                                new PersonCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f")), //wirtshaus zum kl. Adler
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id())) //always there
+                        ))
+                        .dialogConditions(List.of(
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("4bdd45a1-33d0-4ea4-91af-86a53e53dc61")), //Kalgeria Mondläufer
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4")), //ulf stetten
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                                ,
+                                new DialogCondition(
+                                        getPerson(UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636")), //Rangolf Klingbeil
+                                        getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
+                                        getCondition(Condition.ALWAYS_TRUE_CONDITION.id()))
+                        ))
+                        .chapterFinishedCondition(getCondition(UUID.fromString("9661117e-163c-4cc6-940f-ed0d527fa9c5"))) //wissen über horndiebstahl und wissen über wiederherstellungs-ritual
                         .build()
 
         );
@@ -277,8 +373,8 @@ public class Buchenhain implements Adventure {
                                 machen.
                                 """,
                         List.of(
-                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")), //"wissen über die Bedrohung im Dorf
-                                getKnowledgeTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711")) //"wissen über Auftrag"
+                                getTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")), //"wissen über die Bedrohung im Dorf
+                                getTrigger(UUID.fromString("c92c0884-5af2-45c5-8927-03ae61f4c711")) //"wissen über Auftrag"
                         ))
                 ,
                 new Dialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826"),
@@ -297,7 +393,25 @@ public class Buchenhain implements Adventure {
                                 """,
 
                         List.of(
-                                getKnowledgeTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")) //"wissen über die Bedrohung im Dorf"
+                                getTrigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a")) //"wissen über die Bedrohung im Dorf"
+                        ))
+                ,
+                //chapter 2
+                new Dialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467"),
+                        "Weg zum Buchenwald",
+                        "dieser Dialog beschreibt den Weg zum Buchenwald",
+                        """
+                                Wenn die Helden über die den Weg zum Buchenwald reden, wird ihnen erzählt, dass über der
+                                Weg dahin über das Blumental führt. Im Blumental gibt es Wegweiser, der zum Buchenwald
+                                zeigt.
+                                
+                                Wenn die Helden fragen ob es noch weitere Orte im auf dem Weg gibt, so wird ihnen
+                                erzählt, dass der Wegweiser im Blumental auch noch zum Steinbruch umd Zum Pferdebauer
+                                führt.
+                                """,
+
+                        List.of(
+                                getTrigger(UUID.fromString("fff178be-41e9-44b3-ace6-5069132a53d1")) //"trigger zum wissen über den Weg zum Buchenwald"
                         ))
         );
     }
@@ -314,6 +428,12 @@ public class Buchenhain implements Adventure {
                                 spielen einige Kinder auf dem Dorfplatz aber ansonsten ist es ein
                                 ruhiger Ort
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"),//Haus des Dorfvorstehers
+                                UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3"), //Schmiede
+                                UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"), //Wirtshaus zum Adler
+                                UUID.fromString("9f3b7c21-5d84-4e0a-b6c7-1a2d3e4f5a6b"), //Der Dorfladen
+                                UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471"))) //Blumental
                         .build()
                 ,
                 new Location.Builder()
@@ -326,6 +446,8 @@ public class Buchenhain implements Adventure {
                                 und einfaches Reisegerät. Es riecht nach Leinöl und Räucherspeck, und
                                 über der Tür hängt eine hölzerne Tafel mit einem eingekerbten Korb.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build(),
                 new Location.Builder()
                         .id(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"))
@@ -338,6 +460,8 @@ public class Buchenhain implements Adventure {
                                 ins Arbeitszimmer geführt, könnt dabei aber auch noch einen Blick
                                 in die Küche werfen. Es duftet von dort nach deftigem Essen.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
@@ -351,6 +475,8 @@ public class Buchenhain implements Adventure {
                                 Bänken, hinter dem sich ein weiteres Tor öffnet, durch das man direkt
                                 in die Schmiede hineinkommt.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
@@ -363,17 +489,27 @@ public class Buchenhain implements Adventure {
                                 Eingangsbereich durch eine reich verzierte Holztür geschützt wird. Vor
                                 dem Gasthaus führt ein breiter, leicht abschüssiger Weg bis zum Marktplatz.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
                         .build()
                 ,
                 new Location.Builder()
                         .id(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471"))
                         .name("Blumental")
                         .description("""
-                                Dier Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich
-                                könnte man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf,
-                                dass es sich nicht rentiert, dort Landwirtschaft zu betreiben. Der Weg führt hier
-                                vom Dorf weiter in den Buchenwald hinein.
+                                Dieser Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich könnte
+                                man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf, dass es sich
+                                nicht rentiert, dort Landwirtschaft zu betreiben. Mitten im Tal gibt es ein Wegweiser,
+                                von hier aus kommt man zu vier verschiedenen orten: Zurück ins Dorf Buchenhain, zum
+                                alten Steinbruch, zum Pferdebauer und in den Buchenwald.
                                 """)
+                        .destinations(List.of(
+                                UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee"))) //Buchenhain Dorfplatz
+//                                UUID.fromString("xxx")), //Buchenwald
+//                                UUID.fromString("xxx")), //Pferdebauer
+//                                UUID.fromString("xxx"))), //alter Steinbruch
+                        .triggers(List.of(
+                                    UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"))) //location Trigger on Enter Blumental
                         .build()
         );
     }
@@ -410,11 +546,34 @@ public class Buchenhain implements Adventure {
                         List.of(
                                 getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //  knowledge über Bedrohung im Dorf
                                 getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")))) // hat mit dorf-vorsteher geredet
+                //chapter 2
+                ,
+                new IsCondition(
+                        UUID.fromString("54aa8d6b-49a5-4665-b9a2-5bf1d3fecd8c"),
+                        "prüft ob mit die spieler den Weg zum Blumental kennen",
+                        List.of(getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb")))) // flag/knowledge über weg zum Blumental
+                ,
+                new IsCondition(
+                        UUID.fromString("62a15028-bba2-41ef-b7a2-810a03a211e3"),
+                        "prüft ob mit die spieler wissen, dass sie das gestohlene Horn von Silena wieder besorgen müssen",
+                        List.of(getFlag(UUID.fromString("dd936532-6a33-4222-a98e-9c1b61bfd862")))) // knowledge über "gestohlenes horn"
+                ,
+                new IsCondition(
+                        UUID.fromString("1675c611-ce0b-4813-873f-34bebff19eac"),
+                        "prüft ob mit die spieler wissen, dass sie das Ritual der Wiederherstellung durchführen müssen",
+                        List.of(getFlag(UUID.fromString("f9024313-30f6-4c0c-a04b-b729a1384887")))) // knowledge über "Ritual der wiederherstellung"
+                ,
+                new AndCondition(
+                        UUID.fromString("9661117e-163c-4cc6-940f-ed0d527fa9c5"),
+                        "Chapfter 2 Finished Condition, muss wissen, dass horn gestohlen wurde und muss wissen, dass das Ritual der wiederherstellung durchgeführt werden muss",
+                        List.of(
+                                getFlag(UUID.fromString("dd936532-6a33-4222-a98e-9c1b61bfd862")), //  flag/knowledge das horn wurde geklaut
+                                getFlag(UUID.fromString("f9024313-30f6-4c0c-a04b-b729a1384887")))) // flag/Knowledge das ritual muss durchgeführt werden
         );
     }
 
     @Override
-    public List<Flag<?,?>> getFlags() {
+    public List<Flag<?, ?>> getFlags() {
         return List.of(
                 GAME_TIME_FLAG,
                 new BooleanFlag<>(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"),
@@ -425,6 +584,27 @@ public class Buchenhain implements Adventure {
                 new BooleanFlag<>(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f"),
                         "weiss, welche art monster es das dorf bedrohen",
                         getKnowledge(UUID.fromString("3f6adf43-57f0-4c93-9e54-0e6768e6b475")), //knowledge über Bedrohung im Dorf
+                        false)
+                //chapter 2 - suche nach der Ursache
+                ,
+                new BooleanFlag<>(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb"),
+                        "wissen, dass der weg zum Buchenwald über das Blumental geht",
+                        getKnowledge(UUID.fromString("ef1064c1-661d-4f8e-96ba-5070c32ba25a")), //knowledge über weg blumental nach buchenwald
+                        false)
+                ,
+                new BooleanFlag<>(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693"),
+                        "Flag, dass das Blumental betreten wurde",
+                        getLocation(UUID.fromString("5ea4584d-01ca-40fd-997c-66a9c6cbf471")), //location BLumental wurde betreten
+                        false)
+                ,
+                new BooleanFlag<>(UUID.fromString("dd936532-6a33-4222-a98e-9c1b61bfd862"),
+                        "wissen, dass das Horn der Silena gestohlen wurde",
+                        getKnowledge(UUID.fromString("56449e44-7095-49f6-afa7-14ec4b4d1974")), //knowledge über das Wissen, dass das Horn geklaut wurde
+                        false)
+                ,
+                new BooleanFlag<>(UUID.fromString("f9024313-30f6-4c0c-a04b-b729a1384887"),
+                        "wissen, dass der das Ritual der Wiederherstellung durchgeführt werden muss",
+                        getKnowledge(UUID.fromString("4dea0d2e-7b56-4b1e-8d2b-8e50e3f08fda")), //knowledge dass das Ritual durchgeführt werden muss
                         false)
         );
     }
@@ -437,13 +617,32 @@ public class Buchenhain implements Adventure {
                         """
                                 die Spieler wissen jetzt, dass Monster das Dorf angreifen. Es handelt sich um mutierte
                                 Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
-                                """
-                ),
+                                """ )
+                ,
                 new Knowledge(UUID.fromString("4d5f9db4-39ae-400e-9371-6030c08edafa"),
                         "Auftrag des Ortsvorstehers",
                         """
                                 die Spieler wissen jetzt, dass ihr Auftrag ist, dass sie die Ursache der Bedrohung des
                                 Dorf herausfinden sollen und die Bedrohung abwenden.
+                                """)
+                ,
+                new Knowledge(UUID.fromString("ef1064c1-661d-4f8e-96ba-5070c32ba25a"),
+                        "Weg zum Buchenwald",
+                        """
+                                die Spieler wissen jetzt, dass der Weg zum Buchenwald über das Blumental führt.
+                                """)
+                ,
+                new Knowledge(UUID.fromString("56449e44-7095-49f6-afa7-14ec4b4d1974"),
+                        "das Horn wurde geklaut",
+                        """
+                                die Spieler wissen jetzt, dass das Horn der Silena geklaut wurde.
+                                """
+                )
+                ,
+                new Knowledge(UUID.fromString("4dea0d2e-7b56-4b1e-8d2b-8e50e3f08fda"),
+                        "das Ritual der Wiederherstellung muss durchgeführt werden",
+                        """
+                                die Spieler wissen jetzt, dass das Ritual der Wiederherstellung durchgeführt werden muss.
                                 """
                 )
         );
@@ -451,13 +650,12 @@ public class Buchenhain implements Adventure {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Trigger> getKnowledgeTriggers() {
+    public List<Trigger> getTriggers() {
         return List.of(
                 new Trigger(UUID.fromString("409b408c-4b7a-4bcc-9a37-527d02bcdf7a"),
                         "Bedrohung oder Gefahr für das Dorf",
                         List.of(
                                 new FlagChange<>(
-                                        UUID.randomUUID(),
                                         (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f")), //flag wissen über monster
                                         true
                                 )
@@ -468,12 +666,31 @@ public class Buchenhain implements Adventure {
                         "Auftrag oder heikles Thema",
                         List.of(
                                 new FlagChange<>(
-                                        UUID.randomUUID(),
                                         (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b")), //flag dorf-vorsteher besucht
                                         true
                                 )
                         ))
-
+                ,
+                //chapter 2
+                //"wissen über den Weg"
+                new Trigger(UUID.fromString("fff178be-41e9-44b3-ace6-5069132a53d1"),
+                        "Weg zum Buchenwald",
+                        List.of(
+                                new FlagChange<>(
+                                        (Flag<Boolean, Knowledge>) getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb")), //flag Weg zum Blumental bekannt
+                                        true
+                                )
+                        ))
+                ,
+                //"blumental betreten"
+                new Trigger(UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"),
+                        "ENTER", //LEAVE
+                        List.of(
+                                new FlagChange<>(
+                                        (Flag<Boolean, Location>) getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693")), //flag Weg zum Blumental bekannt
+                                        true
+                                )
+                        ))
         );
     }
 
@@ -493,7 +710,7 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Flag<?,?> getFlag(UUID id) {
+    public Flag<?, ?> getFlag(UUID id) {
         return (Flag<?, ?>) Identifiable.find(id, getFlags());
     }
 
@@ -508,7 +725,8 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
-    public Trigger getKnowledgeTrigger(UUID id) {
-        return (Trigger) Identifiable.find(id, getKnowledgeTriggers());
+    public Trigger getTrigger(UUID id) {
+        return (Trigger) Identifiable.find(id, getTriggers());
     }
+
 }

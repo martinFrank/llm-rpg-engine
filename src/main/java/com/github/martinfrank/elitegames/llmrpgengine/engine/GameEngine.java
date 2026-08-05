@@ -63,6 +63,9 @@ public class GameEngine {
 
         boolean isCurrentChapterOver = session.getCurrentChapter().chapterFinishedCondition().evaluate(currentFlags);
         LOGGER.debug("is current chapter finished? {}", isCurrentChapterOver);
+        if(isCurrentChapterOver) {
+            session.moveToNextChapter();
+        }
     }
 
     /**
@@ -94,6 +97,7 @@ public class GameEngine {
             handler.execute(verdict, session);
         } else {
             LOGGER.info("No handler registered for task: {}", verdict.task());
+            //FIXME - narrator soll sagen, dass er es nicht verarbeiten kann
         }
     }
 }

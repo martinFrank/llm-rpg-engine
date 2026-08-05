@@ -16,6 +16,8 @@ import java.util.UUID;
 
 public class Session {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
+
     private final Adventure adventure;
     private final Player player;
     public final ChatHistory chatHistory = new ChatHistory();
@@ -33,14 +35,12 @@ public class Session {
     }
 
     public void start() {
-        chatHistory.narrator(adventure.getIntro().title());
-        chatHistory.narrator(adventure.getIntro().author());
-        chatHistory.narrator(adventure.getIntro().intro());
-        currentLocation = adventure.getIntro().startLocation();
+        chatHistory.narrator(adventure.getMetadata().title());
+        chatHistory.narrator(adventure.getMetadata().author());
         currentChapter = adventure.getChapters().getFirst();
-        // Via the setter, so the game-time flag starts out agreeing with the intro's start time
-        // instead of keeping whatever default the flag was initialised with.
-        setCurrentTime(adventure.getIntro().startTime());
+        chatHistory.narrator(currentChapter.intro().intro());
+        currentLocation = currentChapter.intro().startLocation();
+        setCurrentTime(currentChapter.intro().startTime());
     }
 
     public Location getCurrentLocation() {
@@ -137,4 +137,25 @@ public class Session {
         return dialogs;
     }
 
+    public void moveToNextChapter() {
+        //TODO diesen teil als methode ausgliedern, refactoring
+        int nextChapterIndex = -1;
+        for (int i = 0; i < adventure.getChapters().size(); i++){
+            if (adventure.getChapters().get(i).id().equals(currentChapter.id())){
+                nextChapterIndex = i + 1;
+                break;
+            }
+        }
+        if (nextChapterIndex == -1){
+            LOGGER.warn("index of next chapter could not be identified!");
+        }
+        currentChapter = adventure.getChapters().get(nextChapterIndex);
+        chatHistory.narrator(currentChapter.intro().intro());
+        currentLocation = currentChapter.intro().startLocation();
+        setCurrentTime(currentChapter.intro().startTime());
+    }
+
+    public List<Trigger> getTriggers(List<UUID> triggers) {
+        return adventure.getTriggers().stream().filter( t -> triggers.contains(t.id())).toList();
+    }
 }
