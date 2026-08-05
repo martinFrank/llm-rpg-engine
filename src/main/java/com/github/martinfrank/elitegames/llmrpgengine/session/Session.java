@@ -139,4 +139,15 @@ public class Session {
     public boolean evaluate(Condition condition) {
         return  sessionFlags.evaluate(condition, currentTime);
     }
+
+    public void handleEvent(Event event) {
+        LOGGER.debug("handle event");
+        List<Flag<?>> flags = event.raisedFlags();
+        if (flags != null && !flags.isEmpty()) {
+            for (Flag<?> flag : flags) {
+                LOGGER.debug("raise flag {}", flag.name());
+                sessionFlags.raiseFlagValue(flag.id());
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Event;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Trigger;
@@ -72,20 +73,13 @@ public class GoToTaskHandler implements TaskHandler {
         handleLocationTrigger(session, location, "ENTER");
     }
 
-    @SuppressWarnings("rawtypes")
     private void handleLocationTrigger(Session session, Location location, String direction) {
         List<Trigger> locationTriggers = session.getTriggers().stream().filter( t -> location.triggers().contains(t.id())).toList();
         List<Trigger> triggers = session.sessionTriggers.untriggered(locationTriggers);
         for (Trigger trigger : triggers) {
             LOGGER.debug("handle on {} {} trigger", direction, location.name());
-
-            List<Flag<?>> flags = trigger.event().raisedFlags();
-            if (flags != null && !flags.isEmpty()) {
-                for (Flag flag : flags) {
-                    LOGGER.debug("raise flag {}", flag.name());
-                    session.sessionFlags.raiseFlagValue(flag.id());
-                }
-            }
+            Event event = trigger.event();
+            session.handleEvent(event);
         }
     }
 }

@@ -168,17 +168,10 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     private void handleTalkTriggers(Session session, List<Trigger> triggers) {
-//        LOGGER.debug("Resolved triggers: {}", triggers.stream().map(Trigger::id).toList());
         List<Trigger> unTriggers = session.sessionTriggers.untriggered( triggers );
         for(Trigger trigger : unTriggers) {
             LOGGER.debug("execute trigger: {}", trigger.trigger());
-            List<Flag<?>> raiseFlags = trigger.event().raisedFlags();
-            if (raiseFlags != null && !raiseFlags.isEmpty()) {
-                for (Flag<?> raisedFlag : raiseFlags) {
-                    LOGGER.debug("execute trigger: {} raise flag {}", trigger.trigger(), raisedFlag.name());
-                    session.sessionFlags.raiseFlagValue(raisedFlag.id());
-                }
-            }
+            session.handleEvent(trigger.event());
         }
     }
 
