@@ -52,9 +52,15 @@ public record VerdictContext (String chapterSummary,
                 .collect(Collectors.joining("\n"));
     }
 
+    /**
+     * The place the player is standing right now – carrying its id, because it is a legal target:
+     * a question about the surroundings ("gibt es hier einen Schmied?") is an INVESTIGATE of this
+     * location. Without the id the agent would have to re-find the same place by name in the
+     * available-locations list.
+     */
     private static String extractLocation(Session session) {
         Location location = session.getCurrentLocation();
-        return location.name()+": "+StringNormalizer.normalize(location.description());
+        return location.name()+" (id: "+location.id()+"): "+StringNormalizer.normalize(location.description());
     }
 
     private static String extractChatHistory(Session session) {

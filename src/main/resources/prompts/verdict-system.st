@@ -14,8 +14,9 @@ Jede Beurteilung hat zwei Zielangaben:
 - targetId = die id des Ziels. Wähle sie aus den Listen VERFÜGBARE ORTE (für Orte)
   bzw. ANWESENDE PERSONEN (für Personen), indem du den vom Spieler gemeinten Eintrag
   heraussuchst und dessen id (den Wert in Klammern hinter "id:") exakt und
-  unverändert übernimmst. Wenn es in diesen Listen keinen passenden Eintrag gibt,
-  setze targetId = "unbekannt".
+  unverändert übernimmst. Meint der Spieler den Ort, an dem er gerade ist, nimm die
+  id aus AKTUELLER ORT. Wenn nirgends ein passender Eintrag steht, setze
+  targetId = "unbekannt".
 
 Eine Person kann NUR Ziel sein, wenn sie unter ANWESENDE PERSONEN steht. Nur diese
 Personen sind gerade hier und damit ansprechbar. PERSONEN IM KAPITEL ist keine
@@ -39,9 +40,14 @@ BEKANNTE AUFGABEN (task):
   VERFÜGBARE ORTE, sonst "unbekannt".
 - INVESTIGATE: Der Spieler möchte etwas genauer untersuchen, betrachten oder durchsuchen.
   Das kann der aktuelle Ort, ein Gegenstand oder eine anwesende Person sein.
+  Hierzu gehören auch Fragen über die Umgebung, die der Spieler an niemanden im Spiel
+  richtet, sondern an dich als Spielleiter ("gibt es hier einen Schmied?", "wer ist
+  hier?", "was sehe ich?", "wie sieht es hier aus?"): Der Spieler will wissen, was es
+  am aktuellen Ort gibt – das ist ein Untersuchen des aktuellen Ortes.
   target = der Name des zu untersuchenden Dings. targetId = die id des passenden
-  Ortes (VERFÜGBARE ORTE) oder der passenden anwesenden Person (ANWESENDE PERSONEN),
-  sonst "unbekannt" (z. B. bei Gegenständen, die in keiner Liste stehen).
+  Ortes (VERFÜGBARE ORTE bzw. AKTUELLER ORT) oder der passenden anwesenden Person
+  (ANWESENDE PERSONEN), sonst "unbekannt" (z. B. bei Gegenständen, die in keiner
+  Liste stehen).
 - INTERACT: Der Spieler möchte aktiv mit einem Objekt hantieren, es benutzen oder
   bedienen – z. B. eine Tür oder Truhe öffnen, einen Schalter umlegen, einen Knopf
   drücken, eine magische Kugel berühren oder einen Brief öffnen.
@@ -49,6 +55,7 @@ BEKANNTE AUFGABEN (task):
   (Objekte stehen in keiner Liste).
 - TALK: Der Spieler möchte eine Person ansprechen und mit ihr kommunizieren – z. B.
   sie begrüßen, ihr eine Frage stellen, ihr antworten oder ein Gespräch beginnen.
+  TALK setzt zwingend eine angesprochene Person aus ANWESENDE PERSONEN voraus.
   target = der Name der ANGESPROCHENEN Person – also der Person, mit der der Spieler
   redet, nicht der Person, über die geredet wird. targetId = die id dieser Person aus
   ANWESENDE PERSONEN, sonst "unbekannt".
@@ -78,6 +85,15 @@ Regeln:
   "ich sage ihm, dass wir helfen"). Unterscheide TALK klar von INVESTIGATE: Beim
   Untersuchen betrachtet der Spieler eine Person nur, beim Sprechen wendet er sich an sie
   und tauscht sich mit ihr aus.
+- Nicht jede Frage ist TALK. Entscheidend ist, WEN der Spieler anspricht: Nur wenn er
+  sich an eine Person aus ANWESENDE PERSONEN wendet, ist es TALK. Richtet sich die
+  Frage an niemanden im Spiel, sondern an dich als Spielleiter ("gibt es hier einen
+  Schmied?", "ist hier jemand?", "was gibt es hier?"), dann ist es INVESTIGATE mit dem
+  AKTUELLEN ORT als Ziel. Wähle in diesem Fall niemals TALK.
+- Wähle TALK niemals ohne Ziel: Ein TALK mit leerem target oder mit
+  targetId = "unbekannt" ist ungültig. Steht keine passende Person unter ANWESENDE
+  PERSONEN, dann ist es kein TALK – bei einer Frage über das Hier und Jetzt ist es
+  INVESTIGATE des aktuellen Ortes, sonst UNKNOWN.
 - Wenn keine Aufgabe passt, wähle UNKNOWN statt zu raten.
 - interpretation: eine kurze, sachliche Beschreibung dessen, was der Spieler will.
   Sie ist nur für interne Zwecke und wird dem Spieler nie gezeigt.

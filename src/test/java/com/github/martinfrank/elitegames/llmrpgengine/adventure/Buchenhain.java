@@ -11,8 +11,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.LocationFl
 import java.util.List;
 import java.util.UUID;
 
-//import static com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag.GAME_TIME_FLAG;
-
 public class Buchenhain implements Adventure {
 
     @Override

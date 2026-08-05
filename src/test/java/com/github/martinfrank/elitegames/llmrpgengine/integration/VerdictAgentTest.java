@@ -48,4 +48,18 @@ class VerdictAgentTest {
 
         engine.handleUserInput("sehen uns den markt genauer an", session);
     }
+
+    /**
+     * A question the player asks the game master, not a person: nobody is on the village square,
+     * so this must not become a TALK. Expected verdict: INVESTIGATE of the current location.
+     */
+    @Test
+    void testQuestionAboutTheSurroundings() {
+        Adventure adventure = new Buchenhain();
+        Player player = new Player("Thorsten");
+        Session session = new Session(adventure, player);
+        session.start();
+
+        engine.handleUserInput("gibt es hier einen schmied?", session);
+    }
 }
