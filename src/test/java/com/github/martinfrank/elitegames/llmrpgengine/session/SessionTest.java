@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
@@ -23,6 +24,8 @@ class SessionTest {
     private static final UUID SCHMIEDE = UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3");
     private static final UUID WIRTSHAUS = UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f");
     private static final UUID HAUS_DES_DORFVORSTEHERS = UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2");
+    private static final UUID ULF_STETTEN = UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4");
+    private static final UUID RANGOLF_KLINGBEIL = UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636");
 
     private final Buchenhain adventure = new Buchenhain();
 
@@ -59,6 +62,22 @@ class SessionTest {
         assertThat(session.getCurrentPersons(location(WIRTSHAUS))).extracting(Person::name)
                 .contains("Ulf Stetten");
         assertThat(session.getCurrentPersons(location(HAUS_DES_DORFVORSTEHERS))).isEmpty();
+    }
+
+    /**
+     * Gossip is a generic dialog: it belongs to no chapter and to no person, so the condition
+     * filter must never drop it. Without it a figure the current chapter scripts no dialog for
+     * would offer nothing to talk about at all.
+     */
+    @Test
+    void gossipIsAvailableForEveryPerson() {
+        Session session = startedSession();
+
+        // Ulf Stetten has a scripted dialog in chapter 1, Rangolf Klingbeil has none.
+        assertThat(session.getAvailableDialogs(adventure.getPerson(ULF_STETTEN))).extracting(Dialog::topic)
+                .containsExactly(Dialog.GOSSIP.topic(), "Auftrag des Ortsvorstehers");
+        assertThat(session.getAvailableDialogs(adventure.getPerson(RANGOLF_KLINGBEIL)))
+                .containsExactly(Dialog.GOSSIP);
     }
 
     @Test

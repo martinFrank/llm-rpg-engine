@@ -15,11 +15,14 @@ public interface Adventure {
     List<Condition> getConditions();
     List<Flag<?>> getFlags();
     List<Trigger> getTriggers();
+    List<Investigation> getInvestigations();
 
     Condition getCondition(UUID id);
     Location getLocation(UUID id);
     Person getPerson(UUID id);
+    Item getItem(UUID id);
     Flag<?> getFlag(UUID id);
     Dialog getDialog(UUID id);
     Trigger getTrigger(UUID id);
+    Investigation getInvestigation(UUID id);
 }

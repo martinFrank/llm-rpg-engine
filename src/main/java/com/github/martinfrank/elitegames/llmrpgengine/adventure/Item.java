@@ -1,4 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-public class Item {
+import java.util.UUID;
+
+public record Item(UUID id, String name, String description) implements Identifiable {
 }

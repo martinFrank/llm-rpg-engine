@@ -97,12 +97,13 @@ public class Session {
     }
 
     /**
-     * The dialogs the given person can currently talk about: their person-specific dialogs
-     * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
-     * This is the set a TALK verdict's dialog must belong to.
+     * The dialogs the given person can currently talk about: the generic dialogs
+     * ({@link Dialog#GENERIC}, e.g. gossip), which are never filtered out because everybody can
+     * always make small talk, plus their person-specific dialogs whose conditions evaluate to true
+     * in the current chapter. This is the set a TALK verdict's dialog must belong to.
      */
     public List<Dialog> getAvailableDialogs(Person person) {
-        List<Dialog> dialogs = new ArrayList<>();
+        List<Dialog> dialogs = new ArrayList<>(Dialog.GENERIC);
         for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
             if (dialogCondition.person().id().equals(person.id())) {
                 if (evaluate(dialogCondition.condition())) {
