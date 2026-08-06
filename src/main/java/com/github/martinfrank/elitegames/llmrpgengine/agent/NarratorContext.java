@@ -7,6 +7,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,6 +29,43 @@ public record NarratorContext (String purpose, String location, String persons, 
                 time,
                 interestingDetails,
                 chatHistory);
+    }
+
+    /**
+     * For a player taking a closer look at one person. The scene around them stays the same, but the
+     * only figure handed to the Narrator is the inspected one, so the description stays on them.
+     * <p>
+     * Only what is outwardly perceivable is passed on: appearance, plus the description that is
+     * common knowledge in the village. A person's {@code role} is an authoring note about their
+     * function in the plot ("Nebencharakter", "Auftraggeber dieses Abenteuers"), and
+     * {@code background}/{@code personality} are their history and inner life – none of that is
+     * revealed by looking at someone, so all three stay out of the prompt.
+     */
+    public static NarratorContext generateInspectPersonContext(Session session, Person person) {
+        return new NarratorContext(
+                "der Spieler betrachtet " + person.name() + " genauer und möchte wissen, was er an "
+                        + "dieser Person wahrnimmt. Beschreibe nur diese Person.",
+                extractLocation(session.getCurrentLocation()),
+                extractPerson(person),
+                extractTime(session.getCurrentTime()),
+                "",
+                extractChatHistory(session));
+    }
+
+    private static String extractPerson(Person person) {
+        List<String> traits = new ArrayList<>();
+        addTrait(traits, "Beschreibung", person.description());
+        addTrait(traits, "Aussehen", person.appearance());
+        if (traits.isEmpty()) {
+            return person.name();
+        }
+        return person.name() + " (" + String.join(", ", traits) + ")";
+    }
+
+    private static void addTrait(List<String> traits, String label, String value) {
+        if (value != null && !value.isBlank()) {
+            traits.add(label + ": " + StringNormalizer.normalize(value));
+        }
     }
 
     private static String extractDetails(Session session, Location location) {
@@ -75,6 +113,25 @@ public record NarratorContext (String purpose, String location, String persons, 
             case DAWN -> "Sonnenaufgang";
             case DUSK -> "Sonnenuntergang";
         };
+    }
+
+    /**
+     * For an input the engine cannot map onto any scripted task: the Narrator says – in character,
+     * without leaving the fiction – that this is not something the player can do here. The scene
+     * around the player is passed along so the refusal still sounds like part of the story.
+     */
+    public static NarratorContext generateUnknownTaskContext(Session session) {
+        Location location = session.getCurrentLocation();
+        return new NarratorContext(
+                "der Spieler hat etwas eingegeben, das sich im Spiel nicht umsetzen lässt. "
+                        + "Sage ihm in einem einzigen kurzen Satz aus der Erzählstimme, dass das "
+                        + "hier so nicht geht, ohne die Spielwelt zu verlassen und ohne ihm "
+                        + "Vorschläge zu machen. Beschreibe danach nichts weiter.",
+                extractLocation(location),
+                extractAvailablePersons(session, location),
+                extractTime(session.getCurrentTime()),
+                "",
+                extractChatHistory(session));
     }
 
     public static NarratorContext generateWalkToContext(Session session, Location location) {

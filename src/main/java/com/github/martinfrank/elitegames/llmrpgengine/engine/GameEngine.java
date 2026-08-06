@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.*;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -58,10 +59,12 @@ public class GameEngine {
 
     /**
      * Guardrail: reconcile the (possibly imperfect) verdict with the actual game state before it
-     * is applied. A {@link TaskType#TALK} whose target is not a person present here is redirected:
-     * if the target is actually a location it becomes {@link TaskType#INVESTIGATE} (looking around
-     * that place), otherwise {@link TaskType#UNKNOWN}. This keeps a mis-classified input from
-     * producing a dead turn (TALK against a location id would resolve to no conversation partner).
+     * is applied. A {@link TaskType#TALK} whose target is not a person present here has no
+     * conversation partner and would produce a dead turn, so it is redirected to
+     * {@link TaskType#INVESTIGATE}: of the location the target points at, or – when the target
+     * resolves to nothing at all – of the place the player is standing in. The latter is the
+     * common case for a question the player asks the game rather than a person ("gibt es hier
+     * einen Schmied?"): they want to know what is here, which is exactly looking around.
      */
     private Verdict sanitize(Verdict verdict, Session session) {
         if (verdict.task() != TaskType.TALK) {
@@ -71,12 +74,13 @@ public class GameEngine {
         if (pointsToPerson) {
             return verdict;
         }
-        boolean pointsToLocation = verdict.targetUuid().map(session::getLocation).isPresent();
-        TaskType fallback = pointsToLocation ? TaskType.INVESTIGATE : TaskType.UNKNOWN;
-        LOGGER.info("Guardrail: TALK without a present person (target='{}', id={}) -> {}",
-                verdict.target(), verdict.targetId(), fallback);
-        return new Verdict(verdict.interpretation(), fallback, verdict.target(), verdict.targetId(),
-                "", Verdict.UNKNOWN);
+        Location location = verdict.targetUuid()
+                .map(session::getLocation)
+                .orElseGet(session::getCurrentLocation);
+        LOGGER.info("Guardrail: TALK without a present person (target='{}', id={}) -> INVESTIGATE '{}'",
+                verdict.target(), verdict.targetId(), location.name());
+        return new Verdict(verdict.interpretation(), TaskType.INVESTIGATE,
+                location.name(), location.id().toString());
     }
 
     private void applyTask(Verdict verdict, Session session) {
@@ -84,8 +88,7 @@ public class GameEngine {
         if (handler != null) {
             handler.execute(verdict, session);
         } else {
-            LOGGER.info("No handler registered for task: {}", verdict.task());
-            //FIXME - narrator soll sagen, dass er es nicht verarbeiten kann
+            LOGGER.warn("No handler registered for task: {}", verdict.task());
         }
     }
 }
