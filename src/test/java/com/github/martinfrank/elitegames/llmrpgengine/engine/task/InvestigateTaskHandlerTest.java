@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,12 +31,31 @@ class InvestigateTaskHandlerTest {
     private static final String WIRTSHAUS = "603696b5-e1be-4f85-a0e1-1209147b8a3f";
     private static final String KALGERIA = "4bdd45a1-33d0-4ea4-91af-86a53e53dc61";
     private static final String KALGERIA_NAME = "Kalgeria Mondläufer";
+    private static final String MARKTPLATZ = "0a5df08a-2094-4fbf-a94f-ce6fd74ddfee";
+    /** "the key at the marketplace has not been found yet" – holds until the investigation succeeds. */
+    private static final UUID KEY_NOT_FOUND = UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7");
+    /**
+     * What the find has to be recognizable by in the Narrator's input. Matched case-insensitively:
+     * whether the adventure authors the discovery itself or the engine derives it from the event's
+     * item flags decides the wording, and the test is about the find reaching the Narrator at all.
+     */
+    private static final String KEY = "schlüssel";
 
+    private final Buchenhain adventure = new Buchenhain();
     private final NarratorAgent narratorAgent = mock(NarratorAgent.class);
     private final InvestigateTaskHandler handler = new InvestigateTaskHandler(narratorAgent);
 
+    /** A handler whose skill checks all succeed / all fail, so the outcome is not a coin flip. */
+    private InvestigateTaskHandler handlerThatAlwaysSucceeds() {
+        return new InvestigateTaskHandler(narratorAgent, () -> 0.0);
+    }
+
+    private InvestigateTaskHandler handlerThatAlwaysFails() {
+        return new InvestigateTaskHandler(narratorAgent, () -> 1.0);
+    }
+
     private Session startedSession() {
-        Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+        Session session = new Session(adventure, new Player("Thorsten"));
         session.start();
         when(narratorAgent.narrate(any(NarratorContext.class))).thenReturn("Du siehst dich um.");
         return session;
@@ -48,10 +68,30 @@ class InvestigateTaskHandlerTest {
         return session;
     }
 
+    /** A session in chapter 2, the chapter that hides the key at the marketplace. */
+    private Session sessionAtTheMarketplace() {
+        Session session = startedSession();
+        session.moveToNextChapter();
+        session.setCurrentLocation(session.getLocation(UUID.fromString(MARKTPLATZ)));
+        return session;
+    }
+
+    private Verdict investigateTheMarketplace() {
+        return new Verdict("Der Spieler durchsucht den Marktplatz.", TaskType.INVESTIGATE,
+                "Marktplatz", MARKTPLATZ);
+    }
+
     /** What the handler asked the Narrator to describe. */
     private NarratorContext narratedContext() {
         ArgumentCaptor<NarratorContext> context = ArgumentCaptor.forClass(NarratorContext.class);
         verify(narratorAgent).narrate(context.capture());
+        return context.getValue();
+    }
+
+    /** What the handler asked the Narrator to describe on the last of several turns. */
+    private NarratorContext lastNarratedContext() {
+        ArgumentCaptor<NarratorContext> context = ArgumentCaptor.forClass(NarratorContext.class);
+        verify(narratorAgent, atLeastOnce()).narrate(context.capture());
         return context.getValue();
     }
 
@@ -138,6 +178,95 @@ class InvestigateTaskHandlerTest {
                 .contains(KALGERIA_NAME)
                 .doesNotContain("Ulf Stetten")
                 .doesNotContain("Rangolf Klingbeil");
+    }
+
+    @Test
+    void aSuccessfulSkillCheckFiresTheInvestigationsEvent() {
+        Session session = sessionAtTheMarketplace();
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isTrue();
+
+        handlerThatAlwaysSucceeds().execute(investigateTheMarketplace(), session);
+
+        // The trigger's event raises the item flag, which is exactly what "key not found" negates.
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isFalse();
+        // ... and the Narrator is told about the find, or the player never learns of it.
+        assertThat(narratedContext().interestingDetails()).containsIgnoringCase(KEY);
+    }
+
+    @Test
+    void aFailedSkillCheckChangesNothingAndGivesNothingAway() {
+        Session session = sessionAtTheMarketplace();
+
+        handlerThatAlwaysFails().execute(investigateTheMarketplace(), session);
+
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isTrue();
+        // A description hinting at the key would hand the player the discovery they just failed at.
+        assertThat(narratedContext().interestingDetails()).doesNotContainIgnoringCase(KEY);
+        // The turn still answers: looking around is never silent.
+        assertThat(session.chatHistory.getLatestEntries(1).getFirst().statement())
+                .isEqualTo("Du siehst dich um.");
+    }
+
+    @Test
+    void aFailedInvestigationCanBeRepeated() {
+        Session session = sessionAtTheMarketplace();
+
+        handlerThatAlwaysFails().execute(investigateTheMarketplace(), session);
+        handlerThatAlwaysSucceeds().execute(investigateTheMarketplace(), session);
+
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isFalse();
+        assertThat(lastNarratedContext().interestingDetails()).containsIgnoringCase(KEY);
+    }
+
+    @Test
+    void whatWasFoundOnceIsNotFoundAgain() {
+        Session session = sessionAtTheMarketplace();
+        InvestigateTaskHandler alwaysSucceeds = handlerThatAlwaysSucceeds();
+
+        alwaysSucceeds.execute(investigateTheMarketplace(), session);
+        alwaysSucceeds.execute(investigateTheMarketplace(), session);
+
+        // The second look describes the marketplace as it is now – without finding the key twice.
+        assertThat(lastNarratedContext().interestingDetails()).doesNotContainIgnoringCase(KEY);
+    }
+
+    @Test
+    void anInvestigationIsOnlyMadeWhereTheChapterHidesSomething() {
+        Session session = sessionAtTheMarketplace();
+
+        // The key lies at the marketplace; searching the inn must not turn it up.
+        handlerThatAlwaysSucceeds().execute(new Verdict("Der Spieler durchsucht das Wirtshaus.",
+                TaskType.INVESTIGATE, "Wirtshaus zum kleinen Adler", WIRTSHAUS), session);
+
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isTrue();
+        assertThat(narratedContext().interestingDetails()).doesNotContainIgnoringCase(KEY);
+    }
+
+    @Test
+    void theKeyIsFoundInEveryChapterThatHidesIt() {
+        // The marketplace hides the key from chapter 1 on, so the very first look can turn it up.
+        Session session = startedSession();
+
+        handlerThatAlwaysSucceeds().execute(investigateTheMarketplace(), session);
+
+        assertThat(session.evaluate(adventure.getCondition(KEY_NOT_FOUND))).isFalse();
+        assertThat(narratedContext().interestingDetails()).containsIgnoringCase(KEY);
+    }
+
+    /**
+     * A discovery carried over into the next chapter stays made: the chapter scripts the same
+     * investigation again, but its condition no longer holds once the key has been found.
+     */
+    @Test
+    void aFindCarriesOverIntoTheNextChapter() {
+        Session session = startedSession();
+        InvestigateTaskHandler alwaysSucceeds = handlerThatAlwaysSucceeds();
+        alwaysSucceeds.execute(investigateTheMarketplace(), session);
+
+        session.moveToNextChapter();
+        alwaysSucceeds.execute(investigateTheMarketplace(), session);
+
+        assertThat(lastNarratedContext().interestingDetails()).doesNotContainIgnoringCase(KEY);
     }
 
     @Test

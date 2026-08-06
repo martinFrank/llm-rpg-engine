@@ -17,10 +17,20 @@ public record NarratorContext (String purpose, String location, String persons, 
 
 
     public static NarratorContext generateInspectLocationContext(Session session, Location location) {
+        return generateInspectLocationContext(session, location, "");
+    }
+
+    /**
+     * @param discoveries what the player's investigation turned up here (see
+     *                    {@link #withDiscoveries}), or empty when it turned up nothing. Only
+     *                    successful discoveries are passed in – what the player failed to find
+     *                    must not reach the Narrator, or the description gives the secret away.
+     */
+    public static NarratorContext generateInspectLocationContext(Session session, Location location, String discoveries) {
         String persons = extractAvailablePersons(session, location);
         String locationString = extractLocation(location);
         String time = extractTime(session.getCurrentTime());
-        String interestingDetails = extractDetails(session, location);
+        String interestingDetails = withDiscoveries(extractDetails(session, location), discoveries);
         String chatHistory = extractChatHistory(session);
         return new NarratorContext(
                 "der Spieler untersucht einen Ort und möchte Details über diesen Ort wissen",
@@ -29,6 +39,17 @@ public record NarratorContext (String purpose, String location, String persons, 
                 time,
                 interestingDetails,
                 chatHistory);
+    }
+
+    /**
+     * Appends what the player discovered to the details of the scene, prominently enough that the
+     * Narrator actually tells them about it instead of burying it in the scenery.
+     */
+    private static String withDiscoveries(String details, String discoveries) {
+        if (discoveries == null || discoveries.isBlank()) {
+            return details;
+        }
+        return details + "\nDAS FINDET DER SPIELER BEI SEINER SUCHE - erzähle ihm unbedingt davon:\n" + discoveries;
     }
 
     /**
@@ -42,13 +63,18 @@ public record NarratorContext (String purpose, String location, String persons, 
      * revealed by looking at someone, so all three stay out of the prompt.
      */
     public static NarratorContext generateInspectPersonContext(Session session, Person person) {
+        return generateInspectPersonContext(session, person, "");
+    }
+
+    /** @param discoveries see {@link #generateInspectLocationContext(Session, Location, String)} */
+    public static NarratorContext generateInspectPersonContext(Session session, Person person, String discoveries) {
         return new NarratorContext(
                 "der Spieler betrachtet " + person.name() + " genauer und möchte wissen, was er an "
                         + "dieser Person wahrnimmt. Beschreibe nur diese Person.",
                 extractLocation(session.getCurrentLocation()),
                 extractPerson(person),
                 extractTime(session.getCurrentTime()),
-                "",
+                withDiscoveries("", discoveries),
                 extractChatHistory(session));
     }
 

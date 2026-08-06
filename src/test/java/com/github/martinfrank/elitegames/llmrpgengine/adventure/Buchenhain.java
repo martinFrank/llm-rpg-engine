@@ -165,12 +165,12 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
                                         Condition.ALWAYS_TRUE)
                         ))
-//                        .itemConditions(List.of(
-//                                new ItemLocationCondition(
-//                                        getItem(UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932")) //Kleiner Schlüssel aus Metall
-//                                        getLocation()
-//                                )
-//                                        )
+                        .investigateConditions(List.of (
+                                new InvestigateCondition<>(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getInvestigation(UUID.fromString("fca6ecb7-84e5-4f4a-8a90-467a5832c75d")), //untersuche marktplatz, finde schlüssel
+                                        getCondition(UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7")) //condition: NOT found the key
+                                )))
                         .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
                         .build()
                 ,
@@ -268,6 +268,7 @@ public class Buchenhain implements Adventure {
                         .investigateConditions(List.of (
                                 new InvestigateCondition<>(
                                         getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getInvestigation(UUID.fromString("fca6ecb7-84e5-4f4a-8a90-467a5832c75d")), //untersuche marktplatz, finde schlüssel
                                         getCondition(UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7")) //condition: NOT found the key
                                 )))
                         .chapterFinishedCondition(getCondition(UUID.fromString("9661117e-163c-4cc6-940f-ed0d527fa9c5"))) //wissen über horndiebstahl und wissen über wiederherstellungs-ritual
@@ -592,7 +593,7 @@ public class Buchenhain implements Adventure {
                 new NotCondition(
                         UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7"),
                         "die Spieler haben den SChlüssel am Maktplatz noch NICHT gefunden",
-                        List.of(getFlag(UUID.fromString("f9024313-30f6-4c0c-a04b-b729a1384887")))) // knowledge über "Ritual der wiederherstellung"
+                        List.of(getFlag(UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831")))) // itemflag "schlüssel gefunden"
         );
     }
 
@@ -683,6 +684,10 @@ public class Buchenhain implements Adventure {
                         "Untersuche den Marktplatz",
                         new Event.Builder()
                                 .raisedFlag(getFlag(UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831"))) //item flag schlüssel gefunden
+                                .text("Als die Helden auf den Boden blicken, finden sie einen kleinen schlüssel aus metall")
+                                .addedItems(List.of(
+                                        getItem(UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932")) //item kleiner schlüssel aus metall
+                                ))
                                 .build())
                 ,
                 //chapter 2
