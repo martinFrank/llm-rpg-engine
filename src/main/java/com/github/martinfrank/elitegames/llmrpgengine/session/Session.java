@@ -181,8 +181,5 @@ public class Session {
                 sessionFlags.raiseFlagValue(flag.id());
             }
         }
-//        if(event.text() != null && !event.text().isEmpty()) {
-//            chatHistory.narrator(event.text());
-//        }
     }
 }
