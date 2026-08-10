@@ -173,13 +173,13 @@ public class InvestigateTaskHandler implements TaskHandler {
     }
 
     /**
-     * What the Narrator is told about a discovery. An adventure can author it as the event's text;
+     * What the Narrator is told about a discovery. An adventure can author it as the event's description;
      * without one the items the event's flags stand for are described, so a find is never silent
      * just because nobody wrote a sentence for it.
      */
     private static String describe(Event event) {
-        if (event.text() != null && !event.text().isBlank()) {
-            return StringNormalizer.normalize(event.text());
+        if (event.description() != null && !event.description().isBlank()) {
+            return StringNormalizer.normalize(event.description());
         }
         if (event.raisedFlags() == null) {
             return "";

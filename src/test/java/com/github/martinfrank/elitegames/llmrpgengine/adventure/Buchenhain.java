@@ -684,7 +684,7 @@ public class Buchenhain implements Adventure {
                         "Untersuche den Marktplatz",
                         new Event.Builder()
                                 .raisedFlag(getFlag(UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831"))) //item flag schlüssel gefunden
-                                .text("Als die Helden auf den Boden blicken, finden sie einen kleinen schlüssel aus metall")
+                                .description("Als die Helden auf den Boden blicken, finden sie einen kleinen schlüssel aus metall")
                                 .addedItems(List.of(
                                         getItem(UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932")) //item kleiner schlüssel aus metall
                                 ))
@@ -696,12 +696,14 @@ public class Buchenhain implements Adventure {
                         "Weg zum Buchenwald",
                         new Event.Builder()
                                 .raisedFlag( getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb"))) //flag Weg zum Blumental bekannt
+                                .description("Die helden lernen, welcher weg zum Buchenhain führt")
                                 .build())
                 ,
                 //"blumental betreten"
                 new Trigger(UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"),
                         "ENTER", //LEAVE
                         new Event.Builder()
+                                .description("die helden betreten zum ersten mal das Blumental und sind davon sehr angetan")
                                 .raisedFlag(getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693"))) //flag Weg zum Blumental betreten
                                 .build())
         );

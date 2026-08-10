@@ -255,7 +255,7 @@ public class TalkTaskHandler implements TaskHandler {
      * agent can only invent a smith when the player asks for one.
      * <p>
      * All texts go through {@link StringNormalizer} because the adventure authors them as wrapped
-     * text blocks; unnormalized they would arrive in the prompt broken mid-sentence.
+     * description blocks; unnormalized they would arrive in the prompt broken mid-sentence.
      */
     private String createCommonKnowledge(Session session) {
         StringBuilder commonKnowledge = new StringBuilder("BEKANNTE PERSONEN:\n");
