@@ -96,7 +96,7 @@ public class TalkTaskHandler implements TaskHandler {
         }
 
         Dialog dialog = resolveDialog(verdict, session, person);
-        if (dialog != null) {
+        if (dialog != null && !Dialog.GENERIC.contains(dialog)) {
             LOGGER.debug("Player talks to {} about dialog '{}'", person.name(), dialog.topic());
         } else {
             LOGGER.debug("Player makes small talk (gossip) with {}", person.name());
@@ -105,8 +105,9 @@ public class TalkTaskHandler implements TaskHandler {
     }
 
     /**
-     * Resolves the scripted dialog the player's input matched, or {@code null} when no dialog
-     * matched (small talk / gossip).
+     * Resolves the dialog the player's input matched, or {@code null} when no dialog matched at
+     * all. Small talk is itself a dialog ({@link Dialog#GOSSIP}), so it can be matched like any
+     * other; its context tells the agent to carry the conversation with the history.
      * <p>
      * Guardrail: the dialog id is only accepted when it belongs to <em>this</em> person's
      * available dialogs. A verdict that points at a dialog the person cannot talk about (e.g.
@@ -254,7 +255,7 @@ public class TalkTaskHandler implements TaskHandler {
      * agent can only invent a smith when the player asks for one.
      * <p>
      * All texts go through {@link StringNormalizer} because the adventure authors them as wrapped
-     * text blocks; unnormalized they would arrive in the prompt broken mid-sentence.
+     * description blocks; unnormalized they would arrive in the prompt broken mid-sentence.
      */
     private String createCommonKnowledge(Session session) {
         StringBuilder commonKnowledge = new StringBuilder("BEKANNTE PERSONEN:\n");

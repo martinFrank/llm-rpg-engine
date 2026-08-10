@@ -5,7 +5,7 @@ import java.util.List;
 
 public record Event (
         List<Flag<?>> raisedFlags,
-        String text, Location location,
+        String description, Location location,
         GameTime gameTime,
         List<Item> addedItems,
         List<Item> removedItems) {
@@ -13,7 +13,7 @@ public record Event (
 
     public static class Builder {
         private List<Flag<?>> raisedFlags = new ArrayList<>();
-        private String text;
+        private String description;
         private Location location;
         private GameTime gameTime;
         private List<Item> addedItems;
@@ -27,8 +27,8 @@ public record Event (
             this.raisedFlags = List.of(flag);
             return this;
         }
-        public Builder text(String text) {
-            this.text = text;
+        public Builder description(String text) {
+            this.description = text;
             return this;
         }
         public Builder location(Location location) {
@@ -48,7 +48,7 @@ public record Event (
             return this;
         }
         public Event build() {
-            return new Event(raisedFlags, text, location, gameTime, addedItems, removedItems);
+            return new Event(raisedFlags, description, location, gameTime, addedItems, removedItems);
         }
     }
 

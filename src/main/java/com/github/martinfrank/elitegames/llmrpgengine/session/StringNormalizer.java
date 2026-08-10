@@ -3,7 +3,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.session;
 public class StringNormalizer {
 
     /**
-     * Collapses wrapped text lines of a paragraph into a single line (line breaks
+     * Collapses wrapped description lines of a paragraph into a single line (line breaks
      * become spaces), while keeping blank lines that separate paragraphs. Leading
      * and trailing blank lines are dropped.
      */

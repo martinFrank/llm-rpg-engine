@@ -111,7 +111,7 @@ class TalkTaskHandlerTest {
         String knowledge = capturedCommonKnowledge(sessionAtTheInn());
 
         // The list prefix, not the bare name: a person's own name may well occur inside their
-        // personality or role text (Rangolf's does).
+        // personality or role description (Rangolf's does).
         assertThat(knowledge)
                 .containsOnlyOnce(" - Ulf Stetten:")
                 .containsOnlyOnce(" - Rangolf Klingbeil:")
@@ -138,7 +138,7 @@ class TalkTaskHandlerTest {
     void keepsAuthoredTextBlocksOnOneLinePerParagraph() {
         String knowledge = capturedCommonKnowledge(sessionAtTheInn());
 
-        // The adventure authors descriptions as wrapped text blocks; unnormalized they would
+        // The adventure authors descriptions as wrapped description blocks; unnormalized they would
         // arrive in the prompt broken mid-sentence.
         assertThat(knowledge).contains("Er wurde gewählt weil er ein breites Vertrauen in der Bevölkerung geniesst.");
     }

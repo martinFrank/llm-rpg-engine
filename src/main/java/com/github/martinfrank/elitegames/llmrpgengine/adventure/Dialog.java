@@ -17,4 +17,11 @@ public record Dialog(UUID id, String topic, String summary, String context, List
             List.of()
     );
 
+    /**
+     * Dialogs that belong to no adventure and to no chapter: every person can always talk about
+     * them, so they are added to the available dialogs regardless of any condition (see
+     * {@code Session#getAvailableDialogs}). An adventure must not list them in its own dialogs.
+     */
+    public static final List<Dialog> GENERIC = List.of(GOSSIP);
+
 }

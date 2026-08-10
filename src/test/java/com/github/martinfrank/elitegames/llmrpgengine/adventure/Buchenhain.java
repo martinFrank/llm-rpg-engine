@@ -1,10 +1,13 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.InvestigateCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.AndCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.IsCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.condition.NotCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.ItemFlag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.KnowledgeFlag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.LocationFlag;
 
@@ -162,6 +165,12 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("7975bb9c-72f0-4038-a5f7-591241275826")), //dialog über Monster
                                         Condition.ALWAYS_TRUE)
                         ))
+                        .investigateConditions(List.of (
+                                new InvestigateCondition<>(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getInvestigation(UUID.fromString("fca6ecb7-84e5-4f4a-8a90-467a5832c75d")), //untersuche marktplatz, finde schlüssel
+                                        getCondition(UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7")) //condition: NOT found the key
+                                )))
                         .chapterFinishedCondition(getCondition(UUID.fromString("83c10e5c-d2bc-4a96-a4e7-19e37f9928dc")))
                         .build()
                 ,
@@ -256,6 +265,12 @@ public class Buchenhain implements Adventure {
                                         getDialog(UUID.fromString("270ebaa5-08a9-4314-9e8c-7720a9c6f467")), //dialog weg zum buchenwald
                                         Condition.ALWAYS_TRUE)
                         ))
+                        .investigateConditions(List.of (
+                                new InvestigateCondition<>(
+                                        getLocation(UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee")), //marktplatz
+                                        getInvestigation(UUID.fromString("fca6ecb7-84e5-4f4a-8a90-467a5832c75d")), //untersuche marktplatz, finde schlüssel
+                                        getCondition(UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7")) //condition: NOT found the key
+                                )))
                         .chapterFinishedCondition(getCondition(UUID.fromString("9661117e-163c-4cc6-940f-ed0d527fa9c5"))) //wissen über horndiebstahl und wissen über wiederherstellungs-ritual
                         .build()
 
@@ -344,13 +359,34 @@ public class Buchenhain implements Adventure {
 
     @Override
     public List<Item> getItems() {
-        return List.of();
+        return List.of(
+                new Item(
+                        UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932"),
+                        "ein kleiner Schlüssel aus Eisen",
+                        """
+                                Entwickelt im traditionellen Stil, handelt es sich bei diesem kleinen Schlüssel um ein
+                                solides Werkzeug aus hochwertigem Eisen. Er weist eine robuste Verarbeitung mit glatter
+                                Oberfläche auf und ist durch seine geschmiedete Form eindeutig erkennbar.
+                                """
+                ),
+                new Item(
+                        UUID.fromString("1e2fab70-c647-415e-a05c-7fc0ddaab4f7"),
+                        "ein silbener Ring mit einen kleinen Rubin",
+                        """
+                                Der silberne Ring ist ein elegantes Schmuckstück mit einem kleinen rot glühenden Rubin
+                                im Mittelpunkt. Sein schlankes Band hat eine feine Glanzlinie und passt perfekt zu allen
+                                Stilrichtungen. Mit seinem feinen, glänzenden Schimmer wird der silbenerene Ring das
+                                ideale Accessoires für jede Gelegenheit. Der kleine Rubin bietet ein bezauberndes
+                                Aussehen und verleiht dem Ring einen edlen Touch.
+                                """
+                )
+        );
     }
 
     @Override
     public List<Dialog> getDialogs() {
         return List.of(
-                Dialog.GOSSIP,
+                // Dialog.GENERIC (gossip) is not listed here: the engine always adds it.
                 new Dialog(UUID.fromString("16797009-af8d-4cda-9d1f-a2e7629e7e2e"),
                         "Auftrag des Ortsvorstehers",
                         "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt",
@@ -553,6 +589,11 @@ public class Buchenhain implements Adventure {
                         List.of(
                                 getFlag(UUID.fromString("dd936532-6a33-4222-a98e-9c1b61bfd862")), //  flag/knowledge das horn wurde geklaut
                                 getFlag(UUID.fromString("f9024313-30f6-4c0c-a04b-b729a1384887")))) // flag/Knowledge das ritual muss durchgeführt werden
+                ,
+                new NotCondition(
+                        UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7"),
+                        "die Spieler haben den SChlüssel am Maktplatz noch NICHT gefunden",
+                        List.of(getFlag(UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831")))) // itemflag "schlüssel gefunden"
         );
     }
 
@@ -612,6 +653,12 @@ public class Buchenhain implements Adventure {
                                 """
                                         die Spieler wissen jetzt, dass das Ritual der Wiederherstellung durchgeführt werden muss.
                                         """))
+                ,
+                //itemflag schlüssel-marktplatz gefunden
+                new ItemFlag(
+                        UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831"),
+                        "signalisiert, ob der schlüssel gefunden wurde",
+                        getItem(UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932")))
 
         );
     }
@@ -632,22 +679,48 @@ public class Buchenhain implements Adventure {
                                 .raisedFlag(getFlag(UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b"))) //flag dorf-vorsteher besucht
                                 .build())
                 ,
+                //trigger für untersuche marktplatz / finde schlüssel
+                new Trigger(UUID.fromString("5461b3aa-4ca3-49d7-8c35-ce3503e40689"),
+                        "Untersuche den Marktplatz",
+                        new Event.Builder()
+                                .raisedFlag(getFlag(UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831"))) //item flag schlüssel gefunden
+                                .description("Als die Helden auf den Boden blicken, finden sie einen kleinen schlüssel aus metall")
+                                .addedItems(List.of(
+                                        getItem(UUID.fromString("05775032-5102-4355-baad-39f0c1f2c932")) //item kleiner schlüssel aus metall
+                                ))
+                                .build())
+                ,
                 //chapter 2
                 //"wissen über den Weg"
                 new Trigger(UUID.fromString("fff178be-41e9-44b3-ace6-5069132a53d1"),
                         "Weg zum Buchenwald",
                         new Event.Builder()
                                 .raisedFlag( getFlag(UUID.fromString("56ad8098-64e0-4a3b-8775-1b2af08c76bb"))) //flag Weg zum Blumental bekannt
+                                .description("Die helden lernen, welcher weg zum Buchenhain führt")
                                 .build())
                 ,
                 //"blumental betreten"
                 new Trigger(UUID.fromString("f732bc8a-14ed-4f09-9df2-baef6f7a9867"),
                         "ENTER", //LEAVE
                         new Event.Builder()
+                                .description("die helden betreten zum ersten mal das Blumental und sind davon sehr angetan")
                                 .raisedFlag(getFlag(UUID.fromString("eab94d20-440a-473b-8984-5b48f5e78693"))) //flag Weg zum Blumental betreten
                                 .build())
         );
     }
+
+    @Override
+    public List<Investigation> getInvestigations() {
+        return List.of(
+                new Investigation(
+                        UUID.fromString("fca6ecb7-84e5-4f4a-8a90-467a5832c75d"),
+                        "investigate the market Place, find the key",
+                        new SkillCheck(),
+                        getTrigger(UUID.fromString("5461b3aa-4ca3-49d7-8c35-ce3503e40689"))
+                )
+        );
+    }
+
 
     @Override
     public Condition getCondition(UUID id) {
@@ -665,6 +738,11 @@ public class Buchenhain implements Adventure {
     }
 
     @Override
+    public Item getItem(UUID id) {
+        return (Item) Identifiable.find(id, getItems());
+    }
+
+    @Override
     public Flag<?> getFlag(UUID id) {
         return (Flag<?>) Identifiable.find(id, getFlags());
     }
@@ -677,5 +755,10 @@ public class Buchenhain implements Adventure {
     @Override
     public Trigger getTrigger(UUID id) {
         return (Trigger) Identifiable.find(id, getTriggers());
+    }
+
+    @Override
+    public Investigation getInvestigation(UUID id) {
+        return (Investigation) Identifiable.find(id, getInvestigations());
     }
 }

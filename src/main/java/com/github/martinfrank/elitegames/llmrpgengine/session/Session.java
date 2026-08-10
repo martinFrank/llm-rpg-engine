@@ -2,6 +2,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.*;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.InvestigateCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -97,12 +98,13 @@ public class Session {
     }
 
     /**
-     * The dialogs the given person can currently talk about: their person-specific dialogs
-     * (whose conditions evaluate to true in the current chapter) plus the common gossip dialogs.
-     * This is the set a TALK verdict's dialog must belong to.
+     * The dialogs the given person can currently talk about: the generic dialogs
+     * ({@link Dialog#GENERIC}, e.g. gossip), which are never filtered out because everybody can
+     * always make small talk, plus their person-specific dialogs whose conditions evaluate to true
+     * in the current chapter. This is the set a TALK verdict's dialog must belong to.
      */
     public List<Dialog> getAvailableDialogs(Person person) {
-        List<Dialog> dialogs = new ArrayList<>();
+        List<Dialog> dialogs = new ArrayList<>(Dialog.GENERIC);
         for (DialogCondition dialogCondition : currentChapter.dialogConditions()) {
             if (dialogCondition.person().id().equals(person.id())) {
                 if (evaluate(dialogCondition.condition())) {
@@ -111,6 +113,30 @@ public class Session {
             }
         }
         return dialogs;
+    }
+
+    /**
+     * What a closer look at the given subject – a {@link Location} or a {@link Person} – can turn
+     * up right now: the investigations the current chapter scripts for exactly this subject and
+     * whose condition holds.
+     * <p>
+     * Guardrail: the subject is matched by id, so an investigation authored for another place or
+     * figure can never be run here, and the condition is what stops a discovery from being made a
+     * second time (typically "not found yet"). A condition without an investigation is skipped
+     * rather than handed out as {@code null}.
+     */
+    public List<Investigation> getAvailableInvestigations(Identifiable subject) {
+        List<Investigation> investigations = new ArrayList<>();
+        for (InvestigateCondition<?> investigateCondition : currentChapter.investigateConditions()) {
+            if (investigateCondition.investigation() == null) {
+                LOGGER.warn("investigate condition for '{}' has no investigation - ignored", investigateCondition.subject());
+                continue;
+            }
+            if (investigateCondition.subject().id().equals(subject.id()) && evaluate(investigateCondition.condition())) {
+                investigations.add(investigateCondition.investigation());
+            }
+        }
+        return investigations;
     }
 
     public void moveToNextChapter() {
@@ -140,8 +166,14 @@ public class Session {
         return  sessionFlags.evaluate(condition, currentTime);
     }
 
+    /**
+     * Applies what an event changes about the session. An event only carries what it actually
+     * changes, so every part of it is optional – reading one unconditionally (as the log line once
+     * did with the location) turns a perfectly normal flag-only event into a crash.
+     */
     public void handleEvent(Event event) {
-        LOGGER.debug("handle event: newLocation: {}, newTime: {}", event.location().name(), event.gameTime());
+        LOGGER.debug("handle event: newLocation: {}, newTime: {}",
+                event.location() == null ? "-" : event.location().name(), event.gameTime());
         List<Flag<?>> flags = event.raisedFlags();
         if (flags != null && !flags.isEmpty()) {
             for (Flag<?> flag : flags) {

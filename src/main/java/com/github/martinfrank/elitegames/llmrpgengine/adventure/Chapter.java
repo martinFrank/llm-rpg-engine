@@ -1,6 +1,7 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.DialogCondition;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.InvestigateCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCondition;
 
@@ -16,6 +17,7 @@ public record Chapter(
         List<LocationCondition> locationConditions,
         List<PersonCondition> personConditions,
         List<DialogCondition> dialogConditions,
+        List<InvestigateCondition<?>>  investigateConditions,
         Condition chapterFinishedCondition) implements Identifiable {
 
     public static class Builder {
@@ -27,7 +29,9 @@ public record Chapter(
         private List<LocationCondition> locations = new ArrayList<>();
         private List<PersonCondition> personConditions = new ArrayList<>();
         private List<DialogCondition> dialogConditions = new ArrayList<>();
-        private Condition chapterFinishedCondition = null; //FIXME
+        private List<InvestigateCondition<?>> investigateConditions = new ArrayList<>();
+        private Condition chapterFinishedCondition = null;
+
 
         public Builder id(UUID id) {
             this.id = id;
@@ -64,6 +68,11 @@ public record Chapter(
             return this;
         }
 
+        public Builder investigateConditions(List<InvestigateCondition<?>> investigateConditions) {
+            this.investigateConditions = investigateConditions;
+            return this;
+        }
+
         public Builder chapterFinishedCondition(Condition chapterFinishedCondition) {
             this.chapterFinishedCondition = chapterFinishedCondition;
             return this;
@@ -87,6 +96,7 @@ public record Chapter(
                     locations,
                     personConditions,
                     dialogConditions,
+                    investigateConditions,
                     chapterFinishedCondition);
         }
     }
