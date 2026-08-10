@@ -1,7 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface Adventure {
 
@@ -17,12 +16,22 @@ public interface Adventure {
     List<Trigger> getTriggers();
     List<Investigation> getInvestigations();
 
-    Condition getCondition(UUID id);
-    Location getLocation(UUID id);
-    Person getPerson(UUID id);
-    Item getItem(UUID id);
-    Flag<?> getFlag(UUID id);
-    Dialog getDialog(UUID id);
-    Trigger getTrigger(UUID id);
-    Investigation getInvestigation(UUID id);
+    Condition getCondition(Id id);
+    Location getLocation(Id id);
+    Person getPerson(Id id);
+    Item getItem(Id id);
+    Flag<?> getFlag(Id id);
+    Dialog getDialog(Id id);
+    Trigger getTrigger(Id id);
+    Investigation getInvestigation(Id id);
+
+    /** Convenience for the authoring side, so an adventure can reference by literal id. */
+    default Condition getCondition(String id) { return getCondition(Id.of(id)); }
+    default Location getLocation(String id) { return getLocation(Id.of(id)); }
+    default Person getPerson(String id) { return getPerson(Id.of(id)); }
+    default Item getItem(String id) { return getItem(Id.of(id)); }
+    default Flag<?> getFlag(String id) { return getFlag(Id.of(id)); }
+    default Dialog getDialog(String id) { return getDialog(Id.of(id)); }
+    default Trigger getTrigger(String id) { return getTrigger(Id.of(id)); }
+    default Investigation getInvestigation(String id) { return getInvestigation(Id.of(id)); }
 }

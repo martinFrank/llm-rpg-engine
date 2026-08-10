@@ -3,10 +3,10 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.flags;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 //zeigt an, ob die location betreten wurde
-public record LocationFlag(UUID id, String name, Location content) implements Flag<Location> {
+public record LocationFlag(Id id, String name, Location content) implements Flag<Location> {
 
     @Override
     public boolean isRaised() {

@@ -5,9 +5,9 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
-public record GameTimeCondition(UUID id, List<Flag<?>> consideredFlags, List<GameTime> times) implements Condition {
+public record GameTimeCondition(Id id, List<Flag<?>> consideredFlags, List<GameTime> times) implements Condition {
 
     @Override
     public boolean evaluate(List<Flag<?>> flags) {

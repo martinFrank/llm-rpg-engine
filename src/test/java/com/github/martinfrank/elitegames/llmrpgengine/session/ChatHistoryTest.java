@@ -71,7 +71,10 @@ class ChatHistoryTest {
     @Test
     void attributesAnNpcLineToThePersonWhoSaidIt() {
         ChatHistory history = new ChatHistory();
-        Person wirtin = new Person.Builder().name("Kalgeria Mondläufer").build();
+        Person wirtin = new Person.Builder()
+                .id("person.kalgeria-mondlaeufer")
+                .name("Kalgeria Mondläufer")
+                .build();
 
         history.player("ich frage die Wirtin nach dem Schmied");
         history.npc(wirtin, "Gewiss, es gibt einen Schmied im Dorf.");

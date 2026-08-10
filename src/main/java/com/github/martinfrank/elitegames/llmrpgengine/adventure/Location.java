@@ -1,23 +1,26 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
-public record Location (UUID id, String name, String description, List<UUID> destinationIds, List<UUID> triggers) implements Identifiable{
+public record Location (Id id, String name, String description, List<Id> destinationIds, List<Id> triggerIds) implements Identifiable{
 
 
     public static class Builder {
-        private UUID id = UUID.randomUUID();
+        private Id id = null;
         private String name;
         private String description;
-        private List<UUID> destinationIds = new ArrayList<>();
-        private List<UUID> triggers = new ArrayList<>();
+        private List<Id> destinationIds = new ArrayList<>();
+        private List<Id> triggerIds = new ArrayList<>();
 
-        public Builder id(UUID id) {
+        public Builder id(Id id) {
             this.id = id;
             return this;
+        }
+        public Builder id(String id) {
+            return id(Id.of(id));
         }
         public Builder name(String name) {
             this.name = name;
@@ -27,17 +30,25 @@ public record Location (UUID id, String name, String description, List<UUID> des
             this.description = description;
             return this;
         }
-        public Builder destinations(List<UUID> destinationIds) {
+        public Builder destinations(List<Id> destinationIds) {
             this.destinationIds = destinationIds;
             return this;
         }
-        public Location build() {
-            return new Location(id, name, description, destinationIds, triggers);
+        public Builder destinations(String... destinationIds) {
+            return destinations(Arrays.stream(destinationIds).map(Id::of).toList());
         }
-
-        public Builder triggers(List<UUID> triggers) {
-            this.triggers = triggers;
+        public Builder triggers(List<Id> triggerIds) {
+            this.triggerIds = triggerIds;
             return this;
+        }
+        public Builder triggers(String... triggerIds) {
+            return triggers(Arrays.stream(triggerIds).map(Id::of).toList());
+        }
+        public Location build() {
+            if (id == null) {
+                throw new IllegalStateException("location id cannot be null (name: " + name + ")");
+            }
+            return new Location(id, name, description, destinationIds, triggerIds);
         }
     }
 

@@ -1,12 +1,11 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import java.util.List;
-import java.util.UUID;
 
-public record Dialog(UUID id, String topic, String summary, String context, List<Trigger> knowledgeTriggers) implements Identifiable {
+public record Dialog(Id id, String topic, String summary, String context, List<Trigger> knowledgeTriggers) implements Identifiable {
 
     public static final Dialog GOSSIP = new Dialog(
-        UUID.fromString("094cea8c-afc8-4e09-a670-3b52f7d38607"),
+        Id.of("dialog.small-talk"),
             "Small talk",
             "Belangslose Themen",
             """

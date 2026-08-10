@@ -1,19 +1,14 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import java.util.List;
-import java.util.UUID;
-
+/**
+ * Anything an adventure can reference by {@link Id}.
+ * <p>
+ * Resolving an id is not done here: {@link BaseAdventure} indexes everything once and looks it up
+ * in that index. A {@code find(id, list)} helper on this interface is what made every reference a
+ * walk over a freshly rebuilt list.
+ */
 public interface Identifiable {
 
-    UUID id();
-
-    static Identifiable find(UUID id, List<? extends Identifiable> identifiables) {
-        for (Identifiable identifiable : identifiables) {
-            if (identifiable.id().equals(id)) {
-                return identifiable;
-            }
-        }
-        return null;
-    }
+    Id id();
 
 }

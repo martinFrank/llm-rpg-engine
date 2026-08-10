@@ -31,7 +31,7 @@ class NarratorAgentTest {
 
     @Test
     void testWalkToInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
@@ -41,7 +41,7 @@ class NarratorAgentTest {
 
     @Test
     void testInvestigateInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();

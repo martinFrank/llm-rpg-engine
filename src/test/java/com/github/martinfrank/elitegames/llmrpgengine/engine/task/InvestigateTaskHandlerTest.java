@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
@@ -11,7 +12,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,12 +29,12 @@ import static org.mockito.Mockito.when;
  */
 class InvestigateTaskHandlerTest {
 
-    private static final String WIRTSHAUS = "603696b5-e1be-4f85-a0e1-1209147b8a3f";
-    private static final String KALGERIA = "4bdd45a1-33d0-4ea4-91af-86a53e53dc61";
+    private static final String WIRTSHAUS = "location.wirtshaus-zum-adler";
+    private static final String KALGERIA = "person.kalgeria-mondlaeufer";
     private static final String KALGERIA_NAME = "Kalgeria Mondläufer";
-    private static final String MARKTPLATZ = "0a5df08a-2094-4fbf-a94f-ce6fd74ddfee";
+    private static final String MARKTPLATZ = "location.dorfplatz";
     /** "the key at the marketplace has not been found yet" – holds until the investigation succeeds. */
-    private static final UUID KEY_NOT_FOUND = UUID.fromString("df939c07-4445-45a2-a086-99d406ee14e7");
+    private static final Id KEY_NOT_FOUND = Id.of("condition.schluessel-noch-nicht-gefunden");
     /**
      * What the find has to be recognizable by in the Narrator's input. Matched case-insensitively:
      * whether the adventure authors the discovery itself or the engine derives it from the event's
@@ -41,7 +42,7 @@ class InvestigateTaskHandlerTest {
      */
     private static final String KEY = "schlüssel";
 
-    private final Buchenhain adventure = new Buchenhain();
+    private final Adventure adventure = new Buchenhain().build();
     private final NarratorAgent narratorAgent = mock(NarratorAgent.class);
     private final InvestigateTaskHandler handler = new InvestigateTaskHandler(narratorAgent);
 
@@ -64,7 +65,7 @@ class InvestigateTaskHandlerTest {
     /** A session standing in the inn, where the innkeeper is present at any time of day. */
     private Session sessionAtTheInn() {
         Session session = startedSession();
-        session.setCurrentLocation(session.getLocation(UUID.fromString(WIRTSHAUS)));
+        session.setCurrentLocation(session.getLocation(Id.of(WIRTSHAUS)));
         return session;
     }
 
@@ -72,7 +73,7 @@ class InvestigateTaskHandlerTest {
     private Session sessionAtTheMarketplace() {
         Session session = startedSession();
         session.moveToNextChapter();
-        session.setCurrentLocation(session.getLocation(UUID.fromString(MARKTPLATZ)));
+        session.setCurrentLocation(session.getLocation(Id.of(MARKTPLATZ)));
         return session;
     }
 
@@ -132,7 +133,7 @@ class InvestigateTaskHandlerTest {
         Session session = startedSession();
 
         handler.execute(new Verdict("Der Spieler untersucht etwas.", TaskType.INVESTIGATE,
-                "Mondbasis", "00000000-0000-0000-0000-000000000000"), session);
+                "Mondbasis", "location.mondbasis"), session);
 
         assertThat(narratedLocation()).contains("Buchenhain Dorfplatz");
     }

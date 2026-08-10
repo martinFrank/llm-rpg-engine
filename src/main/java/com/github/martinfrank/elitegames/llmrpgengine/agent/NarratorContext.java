@@ -9,7 +9,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 import java.util.stream.Collectors;
 
 public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails, String conversationHistory) {
@@ -96,7 +96,7 @@ public record NarratorContext (String purpose, String location, String persons, 
 
     private static String extractDetails(Session session, Location location) {
         StringBuilder details = new StringBuilder();
-        for (UUID destinationId: location.destinationIds()) {
+        for (Id destinationId: location.destinationIds()) {
             Location destination = session.getLocation(destinationId);
             if (destination != null) {
                 details.append(" - ")

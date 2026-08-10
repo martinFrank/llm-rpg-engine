@@ -1,7 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
-import java.util.UUID;
 
-public record Trigger(UUID id, String trigger, Event event) implements Identifiable{
+public record Trigger(Id id, String trigger, Event event) implements Identifiable{
 
 }

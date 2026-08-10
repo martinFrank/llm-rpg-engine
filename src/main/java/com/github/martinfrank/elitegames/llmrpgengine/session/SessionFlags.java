@@ -6,13 +6,15 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
+
 import java.util.*;
 
 public class SessionFlags {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionFlags.class);
 
-    private final Map<UUID, Boolean> currentFlags = new HashMap<>();
+    private final Map<Id, Boolean> currentFlags = new HashMap<>();
 
     public void init(List<Flag<?>> flags) {
         for (Flag<?> flag : flags) {
@@ -20,7 +22,7 @@ public class SessionFlags {
         }
     }
 
-    public void raiseFlagValue(UUID id) {
+    public void raiseFlagValue(Id id) {
         currentFlags.put(id, true);
     }
 
@@ -36,7 +38,7 @@ public class SessionFlags {
     private static <R> Flag<R> copyFlag(Flag<R> flag, Boolean value) {
         return new Flag<>() {
             @Override
-            public UUID id() {
+            public Id id() {
                 return flag.id();
             }
 
@@ -74,7 +76,7 @@ public class SessionFlags {
         return new Flag<>() {
 
             @Override
-            public UUID id() {
+            public Id id() {
                 return null;
             }
 
