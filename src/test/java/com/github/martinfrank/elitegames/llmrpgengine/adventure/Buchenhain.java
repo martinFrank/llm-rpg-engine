@@ -44,7 +44,7 @@ public class Buchenhain extends BaseAdventure {
 
                 Chapter 3a: Suche nach dem Horn
                 - Personen befragung (hinweise, unwichtig, falsch und korrekt)
-                - Hinweis: zuerst kamen sie zum Schmied (korrekt)
+                - Hinweis: zuerst kamen die monster zum Schmied (korrekt)
                 - Der Schmied gesteht und erklärt den Weg zum Horn (tiefe Mine)
 
                 Chapter 3b: Suche nach dem Ritual
