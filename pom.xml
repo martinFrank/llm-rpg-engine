@@ -45,6 +45,14 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Adventures are YAML files: block scalars keep the long descriptions readable,
+             and a diff of one stays reviewable. JSON (for the editor's API) needs nothing
+             extra - it is the same Jackson with a different factory. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+
         <!-- LLM: Spring AI + Ollama (local LLMs) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>

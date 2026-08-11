@@ -31,7 +31,7 @@ public final class AdventureValidator {
      * That recovery is only safe while no two ids are close enough to be confused, which is what
      * this rule turns from a hope into a checked property.
      */
-    private static final int MIN_ID_DISTANCE = 3;
+    public static final int MIN_ID_DISTANCE = 3;
 
     private final Adventure adventure;
     private final List<String> errors = new ArrayList<>();

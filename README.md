@@ -10,3 +10,5 @@ and Spring AI (Ollama / local LLMs).
 
 - [Abenteuer schreiben](docs/abenteuer-schreiben.md) – Aufbau eines Abenteuers,
   ID-Konventionen, Validator, Rezepte und Fallstricke
+- [Der Editor](docs/editor.md) – Übersichten und Formulare, aus dem Modell abgeleitet
+  (`mvn spring-boot:run`, dann `/editor/index.html`)

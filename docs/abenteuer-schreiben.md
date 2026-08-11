@@ -398,17 +398,20 @@ ist der kleinste sinnvolle nächste Schritt.
 **Streuung.** Eine Spielidee liegt über bis zu sechs `define`-Blöcke verteilt (siehe das
 Gegenstands-Rezept). Autoren-Begriffe oberhalb des Modells — etwa ein `discovery(...)`,
 das Item, Flag, Trigger, Investigation und Bedingung als eine Einheit erzeugt — würden das
-zusammenziehen. Das ist eine **Modell**-Entscheidung und gilt unabhängig davon, ob die
-Autorenschicht am Ende eine Java-DSL oder ein YAML-Format wird.
+zusammenziehen. Das ist eine **Modell**-Entscheidung und bleibt auch mit dem Editor offen.
 
-**DSL oder YAML — noch nicht entschieden.** Die beiden schließen sich weitgehend aus:
+**DSL oder YAML — entschieden: YAML plus Editor.** Siehe [Der Editor](editor.md). Eine
+Java-DSL wird es nicht geben.
 
-- GUI-Editor für Nicht-Programmierer → externes Format (YAML/JSON) plus Loader; eine
-  Java-DSL wäre dann Ballast
-- komfortableres Java-Authoring → DSL; das externe Format wäre dann Ballast
-
-Die Entscheidung hängt daran, was der `feature/editor`-Branch werden soll. Solange sie
-offen ist, lohnen sich nur Verbesserungen, die für beide Wege gelten.
+> **Achtung: dieses Dokument beschreibt nicht mehr, wie man ein Abenteuer schreibt.**
+> Das Referenzabenteuer ist seit August 2026 eine Datei —
+> `src/main/resources/adventures/buchenhain.yaml` — und wird im Editor bearbeitet.
+> `BaseAdventure` und die `defineX()`-Methoden gibt es weiter, aber nur noch für
+> Test-Fixtures wie `TinyAdventure` und als Fundament, auf dem `DocumentAdventure` aufsetzt.
+>
+> Was hier über **IDs**, die **Bausteine**, den **Validator**, die **Rezepte** und die
+> **Fallstricke** steht, gilt unverändert — das ist das Modell, nicht seine Schreibweise.
+> Nur die Java-Beispiele sind jetzt die Sicht des Loaders und nicht die des Autors.
 
 ---
 

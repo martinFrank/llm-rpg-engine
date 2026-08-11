@@ -1,11 +1,17 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public record Location (Id id, String name, String description, List<Id> destinationIds, List<Id> triggerIds) implements Identifiable{
+public record Location (
+        Id id,
+        String name,
+        String description,
+        @Ref(Location.class) List<Id> destinationIds,
+        @Ref(Trigger.class) List<Id> triggerIds) implements Identifiable{
 
 
     public static class Builder {
