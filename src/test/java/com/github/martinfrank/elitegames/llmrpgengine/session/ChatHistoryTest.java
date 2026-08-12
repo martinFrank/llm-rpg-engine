@@ -92,4 +92,47 @@ class ChatHistoryTest {
         assertThat(history.getLatestEntries(1)).extracting(ChatEntry::actor)
                 .containsExactly("Narrator");
     }
+
+    @Test
+    void theGameMastersAsideIsAttributedToTheGameMaster() {
+        ChatHistory history = new ChatHistory();
+
+        history.gameMaster("Es ist Nachmittag.");
+
+        assertThat(history.getLatestEntries(1)).containsExactly(
+                new ChatEntry("Spielleiter", "Es ist Nachmittag.", ChatEntry.Kind.META));
+    }
+
+    /**
+     * Asking about the game state must not push the plot out of the agents' context window: the
+     * meta entries are skipped, not counted towards the requested length.
+     */
+    @Test
+    void metaEntriesAreLeftOutOfTheStoryEntries() {
+        ChatHistory history = new ChatHistory();
+        history.player("ich gehe zum wirtshaus");
+        history.narrator("Ihr betretet das Wirtshaus.");
+        history.playerQuestion("wie spät ist es?");
+        history.gameMaster("Es ist Nachmittag.");
+        history.playerQuestion("wo bin ich?");
+        history.gameMaster("Ihr seid hier: Wirtshaus zum kleinen Adler");
+
+        assertThat(history.getLatestStoryEntries(2)).extracting(ChatEntry::statement)
+                .containsExactly("ich gehe zum wirtshaus", "Ihr betretet das Wirtshaus.");
+        // The player still gets to see all of it.
+        assertThat(history.getLatestEntries(6)).hasSize(6);
+    }
+
+    /**
+     * The game master's answers are assembled line by line by the engine, so they are the one
+     * kind of entry that must not be run through the normalizer.
+     */
+    @Test
+    void theGameMastersEnumerationKeepsItsLineBreaks() {
+        ChatHistory history = new ChatHistory();
+
+        history.gameMaster("Von hier aus könnt ihr gehen:\n - Der Dorfladen\n - Die Dorf Schmiede");
+
+        assertThat(history.getLatestEntries(1).getFirst().statement().lines()).hasSize(3);
+    }
 }

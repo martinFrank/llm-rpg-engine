@@ -88,6 +88,44 @@ public class Session {
         return null;
     }
 
+    /**
+     * The places that can be reached from the given location right now.
+     * <p>
+     * Guardrail: every destination is resolved through {@link #getLocation(Id)}, so a place the
+     * current chapter does not carry – or whose condition does not hold, e.g. a shop that is closed
+     * at night – is silently left out instead of being offered as a way that then refuses to be
+     * walked. This is what makes the list safe to show the player.
+     */
+    public List<Location> getReachableLocations(Location from) {
+        List<Location> reachable = new ArrayList<>();
+        for (Id destinationId : from.destinationIds()) {
+            Location destination = getLocation(destinationId);
+            if (destination != null) {
+                reachable.add(destination);
+            }
+        }
+        return reachable;
+    }
+
+    /**
+     * Everything the player has found out so far, in the order the adventure declares it.
+     * <p>
+     * The knowledge has to be read back through {@link #sessionFlags}: an authored
+     * {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.KnowledgeFlag} is only
+     * a template and reports {@code isRaised() == false} forever, while whether the player actually
+     * knows the thing is session state. Asking the adventure's flag directly yields an empty result
+     * no matter how far the player has come.
+     */
+    public List<Knowledge> getKnownKnowledge() {
+        List<Knowledge> known = new ArrayList<>();
+        for (Flag<?> flag : sessionFlags.getFlags(adventure.getFlags())) {
+            if (flag.isRaised() && flag.content() instanceof Knowledge knowledge) {
+                known.add(knowledge);
+            }
+        }
+        return known;
+    }
+
     public Person getPerson(Id id) {
         List<Person> personsHere = getCurrentPersons(currentLocation);
         Optional<Person> desiredPerson = personsHere.stream()

@@ -34,6 +34,12 @@ public class GameEngine {
     /**
      * Interprets the player's input via the {@link VerdictAgent} and applies the
      * resulting scripted task to the session.
+     * <p>
+     * A {@link TaskType#ASK_GAME_MASTER} question is not a move in the game and is therefore not
+     * played out as one: it is logged as a question rather than as a turn of the story, and the
+     * chapter is not re-examined afterwards. Nothing about the session changed, so there is nothing
+     * a question could have completed – and treating it as a turn would let the player wonder why
+     * asking for the time advanced the plot.
      */
     public void handleUserInput(String userInput, Session session) {
         VerdictContext context = VerdictContext.generate(session);
@@ -44,9 +50,17 @@ public class GameEngine {
         LOGGER.info("Duration verdict evaluation: {} ms", duration);
         LOGGER.debug("Verdict: {}", verdict);
         verdict = sanitize(verdict, session);
-        session.chatHistory.player(userInput);
+
+        boolean isQuestionToTheGameMaster = verdict.task() == TaskType.ASK_GAME_MASTER;
+        if (isQuestionToTheGameMaster) {
+            session.chatHistory.playerQuestion(userInput);
+        } else {
+            session.chatHistory.player(userInput);
+        }
         applyTask(verdict, session);
-        progressChapter(session);
+        if (!isQuestionToTheGameMaster) {
+            progressChapter(session);
+        }
     }
 
     private void progressChapter(Session session) {

@@ -250,7 +250,7 @@ public class TalkTaskHandler implements TaskHandler {
     private TalkContext buildContext(Session session, Person person, Dialog dialog, String statement) {
         String talkTo = person.name() + " (Beschreibung: " + StringNormalizer.normalize(person.description()) + ")";
         String location = session.getCurrentLocation().name();
-        String chatHistory = session.chatHistory.getLatestEntries(CHAT_HISTORY_LENGTH).stream()
+        String chatHistory = session.chatHistory.getLatestStoryEntries(CHAT_HISTORY_LENGTH).stream()
                 .map(ChatEntry::toString)
                 .collect(Collectors.joining("\n"));
         String talkHistory = session.talkHistory.getTalk(person.id(), TALK_HISTORY_LENGTH).stream()

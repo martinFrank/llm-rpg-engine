@@ -9,7 +9,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 import java.util.stream.Collectors;
 
 public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails, String conversationHistory) {
@@ -96,14 +95,11 @@ public record NarratorContext (String purpose, String location, String persons, 
 
     private static String extractDetails(Session session, Location location) {
         StringBuilder details = new StringBuilder();
-        for (Id destinationId: location.destinationIds()) {
-            Location destination = session.getLocation(destinationId);
-            if (destination != null) {
-                details.append(" - ")
-                        .append(destination.name())
-                        .append(": ")
-                        .append(StringNormalizer.normalize(destination.description())).append("\n");
-            }
+        for (Location destination : session.getReachableLocations(location)) {
+            details.append(" - ")
+                    .append(destination.name())
+                    .append(": ")
+                    .append(StringNormalizer.normalize(destination.description())).append("\n");
         }
         if (details.isEmpty()) {
             return "";
@@ -123,22 +119,13 @@ public record NarratorContext (String purpose, String location, String persons, 
     }
 
     private static String extractChatHistory(Session session) {
-        return session.chatHistory.getLatestEntries(5).stream()
+        return session.chatHistory.getLatestStoryEntries(5).stream()
                 .map(ChatEntry::toString)
                 .collect(Collectors.joining("\n"));
     }
 
     private static String extractTime(GameTime time) {
-        return switch (time){
-            case AFTERNOON -> "nachmittag";
-            case IN_THE_EVENING -> "abends";
-            case AT_NIGHT -> "nachts";
-            case HIGH_NOON -> "mittags";
-            case MIDNIGHT -> "mitternachts";
-            case MORNING -> "morgens";
-            case DAWN -> "Sonnenaufgang";
-            case DUSK -> "Sonnenuntergang";
-        };
+        return time.promptLabel();
     }
 
     /**
@@ -157,6 +144,30 @@ public record NarratorContext (String purpose, String location, String persons, 
                 extractAvailablePersons(session, location),
                 extractTime(session.getCurrentTime()),
                 "",
+                extractChatHistory(session));
+    }
+
+    /**
+     * For a question the player put to the game master about their own situation – where they are,
+     * which ways are open, who is with them, what time it is, what they already know.
+     * <p>
+     * The answer itself is not left to the Narrator: {@code facts} is assembled from the session
+     * beforehand and handed over as the binding content, and the Narrator only puts it into words.
+     * Asked to answer such a question from the scene alone, it would name a fifth path that does
+     * not exist or invent an hour of the day for a world that only knows times of day. The scene
+     * fields still travel along, so the answer sounds like part of the story rather than a readout.
+     *
+     * @param question what the player wants to know, phrased for the AUFGABE field
+     * @param facts    the complete, truthful answer, which the prompt treats as binding
+     */
+    public static NarratorContext generateGameMasterAnswerContext(Session session, String question, String facts) {
+        Location location = session.getCurrentLocation();
+        return new NarratorContext(
+                question,
+                extractLocation(location),
+                extractAvailablePersons(session, location),
+                extractTime(session.getCurrentTime()),
+                "AUSKUNFT (vollständig und verbindlich, jede Angabe daraus gehört in die Antwort):\n" + facts,
                 extractChatHistory(session));
     }
 

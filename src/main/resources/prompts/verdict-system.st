@@ -40,6 +40,9 @@ dialogId = "unbekannt".
   Wenn kein Dialog inhaltlich zur Eingabe passt (der Spieler macht nur Small Talk /
   Tratsch), setze dialogId = "unbekannt" und dialogTopic = leer.
 
+Schließlich hat jede Beurteilung die Angabe facet. Sie ist NUR bei der Aufgabe
+ASK_GAME_MASTER relevant; bei allen anderen Aufgaben setze facet = UNSPECIFIED.
+
 BEKANNTE AUFGABEN (task):
 - GO_TO: Der Spieler möchte sich an einen anderen Ort begeben.
   target = der Name des Zielortes. targetId = die id des passenden Ortes aus
@@ -47,9 +50,10 @@ BEKANNTE AUFGABEN (task):
 - INVESTIGATE: Der Spieler möchte etwas genauer untersuchen, betrachten oder durchsuchen.
   Das kann der aktuelle Ort, ein Gegenstand oder eine anwesende Person sein.
   Hierzu gehören auch Fragen über die Umgebung, die der Spieler an niemanden im Spiel
-  richtet, sondern an dich als Spielleiter ("gibt es hier einen Schmied?", "wer ist
-  hier?", "was sehe ich?", "wie sieht es hier aus?"): Der Spieler will wissen, was es
-  am aktuellen Ort gibt – das ist ein Untersuchen des aktuellen Ortes.
+  richtet, sondern an dich als Spielleiter, und die er nur beantwortet bekommt, indem
+  er sich umsieht ("gibt es hier einen Schmied?", "was sehe ich?", "wie sieht es hier
+  aus?"): Der Spieler will wissen, was es am aktuellen Ort gibt – das ist ein
+  Untersuchen des aktuellen Ortes.
   target = der Name des zu untersuchenden Dings. targetId = die id des passenden
   Ortes (VERFÜGBARE ORTE bzw. AKTUELLER ORT) oder der passenden anwesenden Person
   (ANWESENDE PERSONEN), sonst "unbekannt" (z. B. bei Gegenständen, die in keiner
@@ -72,6 +76,21 @@ BEKANNTE AUFGABEN (task):
   MÖGLICHE GESPRÄCHSTHEMEN denjenigen aus, dessen Thema am besten zur Eingabe passt,
   und trage dessen id in dialogId ein. Passt kein Dialog (nur Small Talk / Tratsch),
   setze dialogId = "unbekannt".
+- ASK_GAME_MASTER: Der Spieler handelt nicht in der Spielwelt, sondern stellt dir als
+  Spielleiter eine Frage über den Stand des Spiels, um sich zu orientieren.
+  target = leer. targetId = "unbekannt". Trage in facet ein, welche Auskunft er will:
+  - WHERE_AM_I: wo er sich befindet ("wo bin ich?", "an welchem ort sind wir?").
+  - WHERE_CAN_I_GO: welche Wege von hier fortführen ("wohin kann ich gehen?",
+    "welche orte kann ich von hier erreichen?").
+  - WHO_IS_HERE: wer gerade hier ist ("wer ist hier?", "ist hier jemand?",
+    "mit wem kann ich reden?").
+  - WHAT_TIME_IS_IT: welche Tageszeit gerade ist ("wie spät ist es?", "ist es schon
+    dunkel?", "welche tageszeit haben wir?").
+  - WHAT_DO_I_KNOW: was sein Auftrag ist und was er bereits herausgefunden hat
+    ("was war eigentlich meine aufgabe?", "was weiss ich schon?", "worum ging es
+    nochmal?", "was habe ich bisher erfahren?").
+  - UNSPECIFIED: er fragt nach dem Stand des Spiels, aber keine der obigen Auskünfte
+    trifft es.
 - UNKNOWN: Die Eingabe passt zu keiner bekannten Aufgabe.
   target = leer. targetId = "unbekannt".
 
@@ -91,11 +110,21 @@ Regeln:
   "ich sage ihm, dass wir helfen"). Unterscheide TALK klar von INVESTIGATE: Beim
   Untersuchen betrachtet der Spieler eine Person nur, beim Sprechen wendet er sich an sie
   und tauscht sich mit ihr aus.
+- Wähle ASK_GAME_MASTER, wenn der Spieler eine Auskunft über den Stand des Spiels
+  abruft, die bereits feststeht: Ort, Wege, anwesende Personen, Tageszeit, Auftrag und
+  Wissen. Er will sich orientieren und nicht handeln – die Spielwelt verändert sich
+  durch seine Frage nicht.
+- Unterscheide ASK_GAME_MASTER klar von INVESTIGATE. Beides kann eine Frage an dich als
+  Spielleiter sein: ASK_GAME_MASTER beantwortest du aus dem Stand des Spiels, während
+  INVESTIGATE ein Umsehen in der Spielwelt ist, bei dem der Spieler die Szene
+  beschrieben bekommt oder etwas entdeckt. Wähle ASK_GAME_MASTER nur, wenn genau eine
+  der facet-Auskünfte die Frage vollständig beantwortet; sonst INVESTIGATE.
 - Nicht jede Frage ist TALK. Entscheidend ist, WEN der Spieler anspricht: Nur wenn er
   sich an eine Person aus ANWESENDE PERSONEN wendet, ist es TALK. Richtet sich die
-  Frage an niemanden im Spiel, sondern an dich als Spielleiter ("gibt es hier einen
-  Schmied?", "ist hier jemand?", "was gibt es hier?"), dann ist es INVESTIGATE mit dem
-  AKTUELLEN ORT als Ziel. Wähle in diesem Fall niemals TALK.
+  Frage an niemanden im Spiel, sondern an dich als Spielleiter, dann ist es
+  ASK_GAME_MASTER, wenn eine der facet-Auskünfte sie beantwortet ("wer ist hier?",
+  "wie spät ist es?"), und sonst INVESTIGATE mit dem AKTUELLEN ORT als Ziel ("gibt es
+  hier einen Schmied?", "was gibt es hier?"). Wähle in diesem Fall niemals TALK.
 - Wähle TALK niemals ohne Ziel: Ein TALK mit leerem target oder mit
   targetId = "unbekannt" ist ungültig. Steht keine passende Person unter ANWESENDE
   PERSONEN, dann ist es kein TALK – bei einer Frage über das Hier und Jetzt ist es
@@ -111,5 +140,7 @@ Regeln:
   Person das Ziel (wenn der Spieler mit ihr redet) oder targetId = "unbekannt".
 - Erfinde auch niemals eine dialogId. Übernimm sie ausschließlich aus MÖGLICHE
   GESPRÄCHSTHEMEN; passt kein Dialog, dann "unbekannt".
+- Erfinde ebenso niemals einen facet-Wert. Verwende ausschließlich einen der oben bei
+  ASK_GAME_MASTER aufgezählten; bei jeder anderen Aufgabe UNSPECIFIED.
 
 Antworte ausschließlich im geforderten strukturierten Format.
