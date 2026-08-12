@@ -449,6 +449,9 @@ chapters:
   - person: person.alastair-fiegler
     location: location.dorfladen
     condition: condition.tagsueber
+  - person: person.alastair-fiegler
+    location: location.wirtshaus-zum-adler
+    condition: condition.nachts
   dialogConditions:
   - person: person.ulf-stetten
     dialog: dialog.auftrag-des-ortsvorstehers
@@ -501,6 +504,12 @@ chapters:
   - person: person.kalgeria-mondlaeufer
     location: location.wirtshaus-zum-adler
     condition: condition.immer-wahr
+  - person: person.alastair-fiegler
+    location: location.dorfladen
+    condition: condition.tagsueber
+  - person: person.alastair-fiegler
+    location: location.dorfschmiede
+    condition: condition.nachts
   dialogConditions:
   - person: person.kalgeria-mondlaeufer
     dialog: dialog.weg-zum-buchenwald
