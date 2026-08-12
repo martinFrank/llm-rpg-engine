@@ -111,88 +111,116 @@ locations:
   triggerIds: []
 - id: location.blumental
   name: Blumental
-  description: |
-    Dieser Ort heisst Blumental, weil hier wirklich viele Blumen wachsen. Eigentlich könnte
-    man hier gut Ackerbau betreiben, aber das Tal liegt zu weit weg vom Dorf, dass es sich
-    nicht rentiert, dort Landwirtschaft zu betreiben. Mitten im Tal gibt es ein Wegweiser,
-    von hier aus kommt man zu vier verschiedenen orten: Zurück ins Dorf Buchenhain, zum
-    alten Steinbruch, zum Pferdebauer und in den Buchenwald.
+  description: "Dieser Ort heisst Blumental, weil hier wirklich viele Blumen wachsen.\
+    \ Eigentlich könnte man hier gut Ackerbau betreiben, aber das Tal liegt zu weit\
+    \ weg vom Dorf, dass es sich nicht rentiert, dort Landwirtschaft zu betreiben.\
+    \ Mitten im Tal gibt es ein Wegweiser, von hier aus kommt man zu vier verschiedenen\
+    \ orten: Zurück ins Dorf Buchenhain, zum alten Steinbruch, zum Pferdebauer und\
+    \ in den Buchenwald. "
   destinationIds:
   - location.dorfplatz
+  - location.waldrand
   triggerIds:
   - trigger.blumental-betreten
+- id: location.waldrand
+  name: Buchenwald Waldrand
+  description: "Der Waldrand ist ein wunderschönes Bild aus grünen Baumwipfeln und\
+    \ dichten Sträuchern. Er tritt scharf gegen das hellere Gelb der Felder und die\
+    \ klare Blau des Himmels hervor. An der Tiefe des Waldes vereinen sich weißblü\
+    hende Waldmeisterbüschel mit dem zarten Duft von Wildrosen, während Vögel in den\
+    \ Bäumen singen."
+  destinationIds:
+  - location.blumental
+  - location.tief-im-wald
+  triggerIds: []
+- id: location.tief-im-wald
+  name: Tief im Buchenwald
+  description: "Ein tief dunkler Wald voller riesige Bäume mit schwarzen Rinden, die\
+    \ sich hoch in den Himmel erheben. Es herrscht eine düstere Atmosphäre. Der immergrü\
+    ne Unterwuchs ist so dicht, dass die Sonne nur in wenigen Stellen durchblickt.\
+    \ Die riesigen Baumstämme stehen wie schwarze Säulen und ihre Wurzeln verflechten\
+    \ sich miteinander, was eine spannende Illusion von unerreichbarer Tiefe erzeugt.\
+    \ Der Boden ist mit Moos bedeckt, der einen kühlen und feuchten Geruch ausstrahlt."
+  destinationIds:
+  - location.waldrand
+  triggerIds: []
 persons:
 - id: person.ulf-stetten
   name: Ulf Stetten
-  description: |
+  description: |-
     Er ist der Dorfvorsteher. Er wurde gewählt weil er ein breites Vertrauen
     in der Bevölkerung geniesst. Er ist gütig und weise.
   role: |
     Er ist der Auftraggeber dieses Abenteuers. Er bittet die Helden initial
-    um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden
-    bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er
-    verfügbar hat, falls er danach gefragt wird.
-  appearance: |
-    Er ist ein älterer Mann mit wachen Augen. Er trägt schöne traditionelle Kleidung.
-    Er ist 1.80, gross und sieht noch sportlich & fit aus. Er lächelt oft und gerne.
-  background: |
-    Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
-  personality: |
-    Er ist ein herzensguter Mensch, der sich sehr für das Allgemeinwohl einsetzt.
+    um Hilfe, um wieder für Ruhe im Dorf zu sorgen. Weiterhin versucht er den Helden bei allen Möglichkeiten zu helfen und ihnen alle Informationen geben, die er verfügbar hat, falls er danach gefragt wird.
+  appearance: "Er ist ein älterer Mann mit wachen Augen. Er trägt schöne traditionelle\
+    \ Kleidung. Er ist 1.80, gross und sieht noch sportlich & fit aus. Er lächelt\
+    \ oft und gerne."
+  background: Ulf Stetten wohnt schon seit seiner Geburt im Dorf Buchenhain.
+  personality: "Er ist ein herzensguter Mensch, der sich sehr für das Allgemeinwohl\
+    \ einsetzt."
 - id: person.rangolf-klingbeil
   name: Rangolf Klingbeil
-  description: |
+  description: |-
     Er ist der Schmied des Dorfes. Er sieht zwar sehr schlank und
-    schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die
-    Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
-  role: |
+    schmächtig aus, aber seine Hammerschläge sind kräftig und präzise. Er hat die Schmiede von seinem Vater übernommen und seine Qualität ist im Dorf sehr geschätzt.
+  role: |-
     Er ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den
     Spieler Waffen, Rüstungen und Gegenstände zu verkaufen.
-  appearance: |
-    Er ist ein Mann im mittleren Alter, mit längeren strähnigen blonden Haaren. Er ist
-    nur von durchschnittlicher Grösse und für einen Schmied nicht sehr stark gebaut.
-    Er schafft es nicht, Augenkontakt mit Gesprächspartner aufzubauen, sondern sieht
-    immer wieder auf den Boden. Er trägt gewöhnliche Kleidung, blaue Hosen, ein weisses
-    Hemd und einen Armreif aus Metall.
-  background: |
-    Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain. Er hat die
-    Schmiede seines Vaters übernommen.
-  personality: |
-    Rangolf Klingbeil wirkt oft nervös und unsicher, aber er ist loyal und gutherzig
+  appearance: "Er ist ein Mann im mittleren Alter, mit längeren strähnigen blonden\
+    \ Haaren. Er ist nur von durchschnittlicher Grösse und für einen Schmied nicht\
+    \ sehr stark gebaut. Er schafft es nicht, Augenkontakt mit Gesprächspartner aufzubauen,\
+    \ sondern sieht immer wieder auf den Boden. Er trägt gewöhnliche Kleidung, blaue\
+    \ Hosen, ein weisses\nHemd und einen Armreif aus Metall. "
+  background: Rangolf Klingbeil wohnt schon seit seiner Geburt im Dorf Buchenhain.
+    Er hat die Schmiede seines Vaters übernommen.
+  personality: "Rangolf Klingbeil wirkt oft nervös und unsicher, aber er ist loyal\
+    \ und gutherzig"
 - id: person.kalgeria-mondlaeufer
   name: Kalgeria Mondläufer
-  description: |
+  description: |-
     Sie betreibt das Gasthaus in Buchenhain. Sie strahlt alleine durch
     ihre Präsenz eine angenehme Atmosphäre aus.
-  role: |
+  role: |-
     Sie ist ein Nebencharakter im Abenteuer. Ihre Aufgabe ist es, den
-    Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus
-    für die Spieler eine Übernachtungsmöglichkeit.
-  appearance: |
-    Die Wirtin ist eine dicke, freundliche Frau mit roten Wangen und einem Lächeln,
-    das ihre Grübchen hervorhebt. Sie hat ihr Haar in einen dicken Zopf geflochten
-    und trägt ein blau-gestreiftes Leinenkleid, das mit weißen Spitzen besetzt ist.
-    Mit ihrer warmen Stimme begrüßt sie jeden Gast bei der Tür und fragt nach seinem
-    Wunsch, während sie mit geschickten Händen Bierkrüge füllt oder Suppen serviert.
-  background: |
-    Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf Buchenhain
-    gezogen und führt seit dem die Kneipe.
-  personality: Sie redet gerne, lacht viel und hat fast immer gute Laune.
+    Spieler Essen/Proviant und Trinken zu verkaufen. Zusätzlich bietet ihr Gasthaus für die Spieler eine Übernachtungsmöglichkeit.
+  appearance: "Die Wirtin ist eine dicke, freundliche Frau mit roten Wangen und einem\
+    \ Lächeln, das ihre Grübchen hervorhebt. Sie hat ihr Haar in einen dicken Zopf\
+    \ geflochten und trägt ein blau-gestreiftes Leinenkleid, das mit weißen Spitzen\
+    \ besetzt ist. Mit ihrer warmen Stimme begrüßt sie jeden Gast bei der Tür und\
+    \ fragt nach seinem Wunsch, während sie mit geschickten Händen Bierkrüge füllt\
+    \ oder Suppen serviert."
+  background: Vor 10 Jahren ist Kalgeria Mondläufer aus der Baronstadt in das Dorf
+    Buchenhain gezogen und führt seit dem die Kneipe.
+  personality: "Sie redet gerne, lacht viel und hat fast immer gute Laune. "
+- id: person.alastair-fiegler
+  name: Alastair Fiegler
+  description: "Er ist der Bauer, der auch den Laden im Dorf betreibt. Er hat für\
+    \ so einen kleinen Ort aber eine recht gute Auswahl an Waren und kann die Helden\
+    \ mit den wichtigsten Sachen versorgen."
+  role: "Er ist ein Nebencharakter im Abenteuer. Seine Aufgabe ist es, den\nSpieler\
+    \ Nahrung und Gebrauchsgegenstände zu verkaufen. "
+  appearance: "Er hat rundliches Gesicht mit leicht ovalem Antlitzund sein Haare sind\
+    \ kurz geschnitten. Er trägt ein schweres Gewand, eine Tunika, und einen Mantel\
+    \ aus Wolle. Er ist groß, mit etwas fester Statur, was auf von der des Feldarbeit\
+    \ kommt."
+  background: Er ist mit seiner Frau glücklich verheiratet und hat drei Töchter.
+  personality: Er ist sehr gemütlich und kennt das Wort Eile gar nicht. Bei ihm geht
+    alles sehr entspannt zu.
 items:
 - id: item.eisenschluessel
   name: ein kleiner Schlüssel aus Eisen
-  description: |
-    Entwickelt im traditionellen Stil, handelt es sich bei diesem kleinen Schlüssel um ein
-    solides Werkzeug aus hochwertigem Eisen. Er weist eine robuste Verarbeitung mit glatter
-    Oberfläche auf und ist durch seine geschmiedete Form eindeutig erkennbar.
+  description: "Entwickelt im traditionellen Stil, handelt es sich bei diesem kleinen\
+    \ Schlüssel um ein solides Werkzeug aus hochwertigem Eisen. Er weist eine robuste\
+    \ Verarbeitung mit glatter Oberfläche auf und ist durch seine geschmiedete Form\
+    \ eindeutig erkennbar."
 - id: item.silberring-mit-rubin
   name: ein silbener Ring mit einen kleinen Rubin
-  description: |
-    Der silberne Ring ist ein elegantes Schmuckstück mit einem kleinen rot glühenden Rubin
-    im Mittelpunkt. Sein schlankes Band hat eine feine Glanzlinie und passt perfekt zu allen
-    Stilrichtungen. Mit seinem feinen, glänzenden Schimmer wird der silbenerene Ring das
-    ideale Accessoires für jede Gelegenheit. Der kleine Rubin bietet ein bezauberndes
-    Aussehen und verleiht dem Ring einen edlen Touch.
+  description: "Der silberne Ring ist ein elegantes Schmuckstück mit einem kleinen\
+    \ rot glühenden Rubin im Mittelpunkt. Sein schlankes Band hat eine feine Glanzlinie\
+    \ und passt perfekt zu allen Stilrichtungen. Mit seinem feinen, glänzenden Schimmer\
+    \ wird der silberne Ring das ideale Accessoires für jede Gelegenheit. Der kleine\
+    \ Rubin bietet ein bezauberndes Aussehen und verleiht dem Ring einen edlen Touch. "
 flags:
 - type: KnowledgeFlag
   id: flag.auftrag-erhalten
@@ -204,7 +232,7 @@ flags:
       Dorf herausfinden sollen und die Bedrohung abwenden.
 - type: KnowledgeFlag
   id: flag.kennt-bedrohung
-  name: weiss, welche art monster es das dorf bedrohen
+  name: "weiss, welche art monster es das dorf bedrohen"
   content:
     name: wissen über die Bedrohung im Dorf
     knowledge: |
@@ -212,32 +240,32 @@ flags:
       Tiere aus dem Wald, die Nachts über das Dorf belagern. Sie kommen aus dem Buchenwald.
 - type: KnowledgeFlag
   id: flag.kennt-weg-zum-blumental
-  name: wissen, dass der Weg zum Buchenwald über das Blumental geht
+  name: "wissen, dass der Weg zum Buchenwald über das Blumental geht"
   content:
     name: Weg zum Buchenwald
     knowledge: |
       die Spieler wissen jetzt, dass der Weg zum Buchenwald über das Blumental führt.
 - type: LocationFlag
   id: flag.blumental-betreten
-  name: Flag, dass das Blumental betreten wurde
+  name: "Flag, dass das Blumental betreten wurde"
   content: location.blumental
 - type: KnowledgeFlag
   id: flag.kennt-horndiebstahl
-  name: Wissen, dass das Horn der Silena gestohlen wurde
+  name: "Wissen, dass das Horn der Silena gestohlen wurde"
   content:
     name: das Horn der Silena wurde geklaut
     knowledge: |
       die Spieler wissen jetzt, dass das Horn der Silena geklaut wurde.
 - type: KnowledgeFlag
   id: flag.kennt-ritual
-  name: Wissen, dass der das Ritual der Wiederherstellung durchgeführt werden muss
+  name: "Wissen, dass der das Ritual der Wiederherstellung durchgeführt werden muss"
   content:
     name: das Ritual der Wiederherstellung muss durchgeführt werden
     knowledge: |
       die Spieler wissen jetzt, dass das Ritual der Wiederherstellung durchgeführt werden muss.
 - type: ItemFlag
   id: flag.schluessel-gefunden
-  name: signalisiert, ob der schlüssel gefunden wurde
+  name: "signalisiert, ob der schlüssel gefunden wurde"
   content: item.eisenschluessel
 triggers:
 - id: trigger.bedrohung-fuer-das-dorf
@@ -277,7 +305,7 @@ triggers:
   event:
     raisedFlags:
     - flag.kennt-weg-zum-blumental
-    description: Die helden lernen, welcher weg zum Buchenhain führt
+    description: "Die helden lernen, welcher weg zum Buchenhain führt"
     location: null
     gameTime: null
     addedItems: null
@@ -296,56 +324,38 @@ triggers:
 dialogs:
 - id: dialog.auftrag-des-ortsvorstehers
   topic: Auftrag des Ortsvorstehers
-  summary: |
-    dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden am Anfang des Abenteuers gibt
-  context: |
-    Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht
-    grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr
-    herausfindet, wieso die Monster das Dorf angreifen und bittet euch, die Bedrohung zu
-    beenden.
+  summary: "dieser Dialog beschreibt den Auftrag, den der Dorfvorsteher den Helden\
+    \ am Anfang des Abenteuers gibt."
+  context: |-
+    Wenn die Helden über den Auftrag reden wird der Dorfvorsteher erzählen, dass über Nacht grauenhaft mutierte Tiere um das Dorf schleichen. Der Dorfvorsteher möchte, dass ihr herausfindet, wieso die Monster das Dorf angreifen und bittet euch, die Bedrohung zu beenden.
 
-    Wenn die Helden fragen, welche Monster das Dorf bedrohen, erfahren die Helden, dass
-    Wölfe, gross wie Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den
-    Adern gefrieren lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot
-    leuchtenden Augen das Dorf bedrohen. hier darf auch noch ähnliches dazu erfunden werden.
+    Wenn die Helden fragen, welche Monster das Dorf bedrohen, erfahren die Helden, dass Wölfe, gross wie Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den Adern gefrieren lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot leuchtenden Augen das Dorf bedrohen. hier darf auch noch ähnliches dazu erfunden werden.
 
-    Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend
-    beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das
-    machen.
+    Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das machen.
   knowledgeTriggers:
   - trigger.bedrohung-fuer-das-dorf
   - trigger.auftrag-erhalten
 - id: dialog.gefahr-fuer-das-dorf
   topic: Gefahr für das Dorf
-  summary: dieser Dialog beschreibt die Gefahr, in der sich das Dorf Buchenhain befindet
+  summary: "dieser Dialog beschreibt die Gefahr, in der sich das Dorf Buchenhain befindet"
   context: |
-    Wenn die Helden über die Gefahr für das Dorf reden, wird ihnen erzählt, dass über Nacht
-    grauenhaft mutierte Tiere um das Dorf schleichen. Die Monster sind Wölfe, gross wie
-    Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den Adern gefrieren
-    lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot leuchtenden Augen
-    das Dorf bedrohen. Hier darf auch noch ähnliches dazu erfunden werden.
+    Wenn die Helden über die Gefahr für das Dorf reden, wird ihnen erzählt, dass über Nacht grauenhaft mutierte Tiere um das Dorf schleichen. Die Monster sind Wölfe, gross wie Rinder, mit glühenden Augen, Füchse, deren Rufe einem das Blut in den Adern gefrieren lassen, Raben grösser und schwärzer wie alles was man kennt, mit rot leuchtenden Augen das Dorf bedrohen. Hier darf auch noch ähnliches dazu erfunden werden.
 
-    Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend
-    beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das
-    machen.
+    Wenn die Helden fragen wo die Monster her kommen, so erfahren sie, dass man am abend beobachten kann, dass die Monster aus dem Buchenwald kommen. Keiner weiss, warum sie das machen.
   knowledgeTriggers:
   - trigger.bedrohung-fuer-das-dorf
 - id: dialog.weg-zum-buchenwald
   topic: Weg zum Buchenwald
   summary: dieser Dialog beschreibt den Weg zum Buchenwald
-  context: |
-    Wenn die Helden über die den Weg zum Buchenwald reden, wird ihnen erzählt, dass über der
-    Weg dahin über das Blumental führt. Im Blumental gibt es Wegweiser, der zum Buchenwald
-    zeigt.
+  context: |-
+    Wenn die Helden über die den Weg zum Buchenwald reden, wird ihnen erzählt, dass über der Weg dahin über das Blumental führt. Im Blumental gibt es Wegweiser, der zum Buchenwald zeigt.
 
-    Wenn die Helden fragen ob es noch weitere Orte im auf dem Weg gibt, so wird ihnen
-    erzählt, dass der Wegweiser im Blumental auch noch zum Steinbruch umd Zum Pferdebauer
-    führt.
+    Wenn die Helden fragen ob es noch weitere Orte im auf dem Weg gibt, so wird ihnen erzählt, dass der Wegweiser im Blumental auch noch zum Steinbruch und zum Pferdebauer führt.
   knowledgeTriggers:
   - trigger.weg-zum-buchenwald
 investigations:
 - id: investigation.marktplatz-schluessel
-  name: investigate the market Place, find the key
+  name: "investigate the market Place, find the key"
   check:
     successChance: 0.5
   trigger: trigger.marktplatz-untersuchen
@@ -357,7 +367,7 @@ conditions:
   - flag.auftrag-erhalten
 - type: IsCondition
   id: condition.kennt-bedrohung
-  description: prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht
+  description: "prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht"
   consideredFlags:
   - flag.kennt-bedrohung
 - type: AndCondition
@@ -401,22 +411,12 @@ chapters:
 - id: chapter.probleme-in-buchenwald
   name: Probleme in Buchenwald
   summary: |
-    die Helden sollen vom dorf-vorsteher Ulf Stetten den Auftrag erhalten, die Ursache der
-    Probleme des Dorfes herauszufinden und zu beseitigen. Das schaffen die Helden einfach,
-    indem sie den Dorf-Vorsteher in seinem Haus besuchen.
+    die Helden sollen vom dorf-vorsteher Ulf Stetten den Auftrag erhalten, die Ursache der Probleme des Dorfes herauszufinden und zu beseitigen. Das schaffen die Helden einfach, indem sie den Dorf-Vorsteher in seinem Haus besuchen.
 
-    Die Helden können auch noch beim Laden und  beim Schmied Ausrüstung kaufen. Wenn die
-    sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das
-    nächste Kapitel.
+    Die Helden können auch noch beim Laden und  beim Schmied Ausrüstung kaufen. Wenn die sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das nächste Kapitel.
   intro:
     intro: |
-      Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur
-      aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der
-      Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den
-      Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf
-      Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit
-      ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später
-      einen Besuch abstatten werdet. Danach verlässt er den Platz.
+      Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später einen Besuch abstatten werdet. Danach verlässt er den Platz.
     startLocation: location.dorfplatz
     startTime: AFTERNOON
   locationConditions:
@@ -446,6 +446,9 @@ chapters:
   - person: person.kalgeria-mondlaeufer
     location: location.wirtshaus-zum-adler
     condition: condition.immer-wahr
+  - person: person.alastair-fiegler
+    location: location.dorfladen
+    condition: condition.tagsueber
   dialogConditions:
   - person: person.ulf-stetten
     dialog: dialog.auftrag-des-ortsvorstehers
@@ -461,21 +464,12 @@ chapters:
 - id: chapter.ursache-der-probleme
   name: Ursache der Probleme
   summary: |
-    Die Helden sollen das Grab des Druiden Gunver Eichblatt finden. Wenn es finden wird sein
-    Geist erscheinen und den Helden erklären, warum die Tiere das Dorf angreifen. Die Tiere
-    sind erbost, weil sein Schutzzauber nicht mehr wirkt und die Tiere für das Böse anfällig
-    werden. Der Zauber wirkt nicht mehr, weil das Horn von Silana gestohlen wurde, ein
-    magisches Artefakt, das für den Zauber verwendet wurde.
+    Die Helden sollen das Grab des Druiden Gunver Eichblatt finden. Wenn es finden wird sein Geist erscheinen und den Helden erklären, warum die Tiere das Dorf angreifen. Die Tiere sind erbost, weil sein Schutzzauber nicht mehr wirkt und die Tiere für das Böse anfällig werden. Der Zauber wirkt nicht mehr, weil das Horn von Silana gestohlen wurde, ein magisches Artefakt, das für den Zauber verwendet wurde.
 
-    Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das
-    Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber
-    erneuert.
+    Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber erneuert.
   intro:
     intro: |
-      Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf
-      den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends
-      geworden. Ihr solltet heute Abend im Gasthaus übernachten. Morgen könnt ihr dann
-      den Weg zum Buchenwald suchen.
+      Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends geworden. Ihr solltet heute Abend im Gasthaus übernachten. Morgen könnt ihr dann den Weg zum Buchenwald suchen.
     startLocation: location.dorfplatz
     startTime: IN_THE_EVENING
   locationConditions:
