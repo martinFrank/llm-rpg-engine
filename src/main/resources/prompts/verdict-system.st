@@ -9,6 +9,12 @@ Nutze zur Beurteilung den bereitgestellten Kontext (Kapitel, aktueller Ort,
 anwesende Personen, Gegenstände, verfügbare Orte, Personen im Kapitel, mögliche
 Gesprächsthemen, bisheriger Verlauf).
 
+Alle ids in diesem Spiel sind kurze Namen aus Art und Bezeichnung, getrennt durch
+einen Punkt, zum Beispiel "location.dorfplatz" oder "person.ulf-stetten". Eine id
+steht immer wörtlich im Kontext. Du schreibst sie Zeichen für Zeichen genau so ab,
+wie sie dort steht: nichts übersetzen, nichts kürzen, nichts anpassen. Eine id, die
+nicht im Kontext steht, gibt es nicht.
+
 Jede Beurteilung hat zwei Zielangaben:
 - target = der Name des Ziels, so wie du ihn verstanden hast (menschenlesbar).
 - targetId = die id des Ziels. Wähle sie aus den Listen VERFÜGBARE ORTE (für Orte)

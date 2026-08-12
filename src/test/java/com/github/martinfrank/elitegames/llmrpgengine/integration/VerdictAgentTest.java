@@ -31,7 +31,7 @@ class VerdictAgentTest {
 
     @Test
     void testWalkToInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
@@ -41,7 +41,7 @@ class VerdictAgentTest {
 
     @Test
     void testInvestigateInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();
@@ -55,7 +55,7 @@ class VerdictAgentTest {
      */
     @Test
     void testQuestionAboutTheSurroundings() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();

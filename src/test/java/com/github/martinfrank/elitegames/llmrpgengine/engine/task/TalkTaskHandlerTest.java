@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TalkContext;
@@ -12,7 +13,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 import org.mockito.ArgumentCaptor;
 
@@ -30,16 +31,22 @@ import static org.mockito.Mockito.when;
 class TalkTaskHandlerTest {
 
     /** The inn, where the innkeeper is present at any time of day. */
-    private static final UUID WIRTSHAUS = UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f");
-    private static final String KALGERIA = "4bdd45a1-33d0-4ea4-91af-86a53e53dc61";
+    private static final Id WIRTSHAUS = Id.of("location.wirtshaus-zum-adler");
+    private static final String KALGERIA = "person.kalgeria-mondlaeufer";
     private static final String KALGERIA_NAME = "Kalgeria Mondläufer";
+
+    /** The one dialog the innkeeper can talk about in chapter 1, and the trigger it can fire. */
+    private static final String DIALOG_GEFAHR = "dialog.gefahr-fuer-das-dorf";
+    private static final String TRIGGER_BEDROHUNG = "trigger.bedrohung-fuer-das-dorf";
+    private static final String CONDITION_KENNT_BEDROHUNG = "condition.kennt-bedrohung";
 
     private final TalkAgent talkAgent = mock(TalkAgent.class);
     private final TalkTaskHandler handler = new TalkTaskHandler(talkAgent);
+    private final Adventure adventure = new Buchenhain().build();
 
     /** A session standing in the inn, with the player's question as the latest chat entry. */
     private Session sessionAtTheInn() {
-        Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+        Session session = new Session(adventure, new Player("Thorsten"));
         session.start();
         session.setCurrentLocation(session.getLocation(WIRTSHAUS));
         session.chatHistory.player("ich begrüße die Wirtin");
@@ -49,6 +56,24 @@ class TalkTaskHandlerTest {
     /** Talking to the innkeeper about nothing scripted: gossip, so no dialog needs to resolve. */
     private static Verdict gossipWithKalgeria() {
         return new Verdict("Der Spieler begrüßt die Wirtin.", TaskType.TALK, KALGERIA_NAME, KALGERIA);
+    }
+
+    /** Asking the innkeeper about the danger, i.e. the exchange that can grant that knowledge. */
+    private static Verdict askKalgeriaAboutTheDanger() {
+        return new Verdict("Der Spieler fragt nach der Gefahr.", TaskType.TALK,
+                KALGERIA_NAME, KALGERIA, "Gefahr für das Dorf", DIALOG_GEFAHR);
+    }
+
+    /** A reply that claims the danger was talked about, reporting the trigger id as given. */
+    private void stubReplyReporting(String triggerId) {
+        when(talkAgent.talk(any(TalkContext.class))).thenReturn(new TalkResponse(
+                "Wölfe, gross wie Rinder, streifen ums Dorf!",
+                List.of(new TalkResponse.TriggeredTrigger("Bedrohung für das Dorf", triggerId))));
+    }
+
+    /** Whether the players now know what threatens the village – the flag the trigger raises. */
+    private boolean knowsAboutTheDanger(Session session) {
+        return session.evaluate(adventure.getCondition(CONDITION_KENNT_BEDROHUNG));
     }
 
     @Test
@@ -71,7 +96,7 @@ class TalkTaskHandlerTest {
 
         handler.execute(gossipWithKalgeria(), session);
 
-        assertThat(session.talkHistory.getTalk(UUID.fromString(KALGERIA)))
+        assertThat(session.talkHistory.getTalk(Id.of(KALGERIA)))
                 .extracting(entry -> entry.actor() + ": " + entry.statement())
                 .containsExactly(
                         "Player: ich begrüße die Wirtin",
@@ -144,6 +169,67 @@ class TalkTaskHandlerTest {
     }
 
     @Test
+    void anExactlyReportedTriggerGrantsItsKnowledge() {
+        Session session = sessionAtTheInn();
+        stubReplyReporting(TRIGGER_BEDROHUNG);
+
+        handler.execute(askKalgeriaAboutTheDanger(), session);
+
+        assertThat(knowsAboutTheDanger(session)).isTrue();
+    }
+
+    /**
+     * The reason the fuzzy match exists at all: a local model drops or doubles a character often
+     * enough that discarding the id would cost the player knowledge they actually earned.
+     */
+    @Test
+    void aTriggerIdOffByOneCharacterStillGrantsItsKnowledge() {
+        Session session = sessionAtTheInn();
+        stubReplyReporting(TRIGGER_BEDROHUNG + "s");
+
+        handler.execute(askKalgeriaAboutTheDanger(), session);
+
+        assertThat(knowsAboutTheDanger(session)).isTrue();
+    }
+
+    /**
+     * Where the recovery stops. Two characters off is no longer provably the intended id – with
+     * ids 3 apart it could sit halfway between two of them – so it is dropped. The player simply
+     * asks again; granting the wrong knowledge could not be taken back.
+     */
+    @Test
+    void aTriggerIdTwoCharactersOffIsNotRecovered() {
+        Session session = sessionAtTheInn();
+        stubReplyReporting(TRIGGER_BEDROHUNG + "sx");
+
+        handler.execute(askKalgeriaAboutTheDanger(), session);
+
+        assertThat(knowsAboutTheDanger(session)).isFalse();
+    }
+
+    @Test
+    void anInventedTriggerIdGrantsNothing() {
+        Session session = sessionAtTheInn();
+        stubReplyReporting("trigger.der-geheime-schatz");
+
+        handler.execute(askKalgeriaAboutTheDanger(), session);
+
+        assertThat(knowsAboutTheDanger(session)).isFalse();
+    }
+
+    /** The reply still reaches the player even when the reported trigger was thrown away. */
+    @Test
+    void anUnrecoverableTriggerDoesNotSwallowTheReply() {
+        Session session = sessionAtTheInn();
+        stubReplyReporting("trigger.der-geheime-schatz");
+
+        handler.execute(askKalgeriaAboutTheDanger(), session);
+
+        assertThat(session.chatHistory.getLatestEntries(1)).containsExactly(
+                new ChatEntry(KALGERIA_NAME, "Wölfe, gross wie Rinder, streifen ums Dorf!"));
+    }
+
+    @Test
     void leavesNoTraceInTheTalkHistoryWhenTheAgentDeliversNoReply() {
         Session session = sessionAtTheInn();
         when(talkAgent.talk(any(TalkContext.class)))
@@ -152,6 +238,6 @@ class TalkTaskHandlerTest {
         handler.execute(gossipWithKalgeria(), session);
 
         // The person must not "remember" a turn that never produced an answer.
-        assertThat(session.talkHistory.getTalk(UUID.fromString(KALGERIA))).isEmpty();
+        assertThat(session.talkHistory.getTalk(Id.of(KALGERIA))).isEmpty();
     }
 }

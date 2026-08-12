@@ -7,10 +7,9 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.PersonCo
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public record Chapter(
-        UUID id,
+        Id id,
         String name,
         String summary,
         Intro intro,
@@ -22,7 +21,7 @@ public record Chapter(
 
     public static class Builder {
 
-        private UUID id = null;
+        private Id id = null;
         private String name;
         private String summary;
         private Intro intro;
@@ -33,9 +32,13 @@ public record Chapter(
         private Condition chapterFinishedCondition = null;
 
 
-        public Builder id(UUID id) {
+        public Builder id(Id id) {
             this.id = id;
             return this;
+        }
+
+        public Builder id(String id) {
+            return id(Id.of(id));
         }
 
         public Builder name(String name) {

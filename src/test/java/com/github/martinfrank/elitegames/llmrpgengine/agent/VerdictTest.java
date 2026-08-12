@@ -2,13 +2,13 @@ package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Verifies that {@link Verdict#targetUuid()} robustly turns the agent's targetId string
- * into a UUID, tolerating the "unbekannt" fallback and malformed LLM output.
+ * Verifies that {@link Verdict#resolvedTargetId()} robustly turns the agent's targetId string
+ * into an {@link Id}, tolerating the "unbekannt" fallback and malformed LLM output.
  */
 class VerdictTest {
 
@@ -17,34 +17,34 @@ class VerdictTest {
     }
 
     @Test
-    void parsesValidUuid() {
-        UUID id = UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2");
+    void parsesValidId() {
+        Id id = Id.of("location.haus-des-dorfvorstehers");
 
-        assertThat(withTargetId(id.toString()).targetUuid()).contains(id);
+        assertThat(withTargetId(id.toString()).resolvedTargetId()).contains(id);
     }
 
     @Test
     void trimsSurroundingWhitespace() {
-        UUID id = UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2");
+        Id id = Id.of("location.haus-des-dorfvorstehers");
 
-        assertThat(withTargetId("  " + id + "  ").targetUuid()).contains(id);
+        assertThat(withTargetId("  " + id + "  ").resolvedTargetId()).contains(id);
     }
 
     @Test
     void unknownYieldsEmpty() {
-        assertThat(withTargetId("unbekannt").targetUuid()).isEmpty();
-        assertThat(withTargetId("UNBEKANNT").targetUuid()).isEmpty();
+        assertThat(withTargetId("unbekannt").resolvedTargetId()).isEmpty();
+        assertThat(withTargetId("UNBEKANNT").resolvedTargetId()).isEmpty();
     }
 
     @Test
     void blankOrNullYieldsEmpty() {
-        assertThat(withTargetId("").targetUuid()).isEmpty();
-        assertThat(withTargetId("   ").targetUuid()).isEmpty();
-        assertThat(withTargetId(null).targetUuid()).isEmpty();
+        assertThat(withTargetId("").resolvedTargetId()).isEmpty();
+        assertThat(withTargetId("   ").resolvedTargetId()).isEmpty();
+        assertThat(withTargetId(null).resolvedTargetId()).isEmpty();
     }
 
     @Test
     void malformedIdYieldsEmpty() {
-        assertThat(withTargetId("Haus des Dorfvorstehers").targetUuid()).isEmpty();
+        assertThat(withTargetId("Haus des Dorfvorstehers").resolvedTargetId()).isEmpty();
     }
 }

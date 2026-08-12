@@ -3,9 +3,9 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.flags;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Item;
 
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
-public record ItemFlag (UUID id, String name, Item content) implements Flag<Item> {
+public record ItemFlag (Id id, String name, Item content) implements Flag<Item> {
 
     @Override
     public boolean isRaised() {

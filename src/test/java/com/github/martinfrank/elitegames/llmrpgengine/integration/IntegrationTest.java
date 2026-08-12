@@ -10,7 +10,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.UUID;
 
 /**
  * Full integration test that talks to a REAL Ollama instance — no mocks.
@@ -31,7 +30,7 @@ class IntegrationTest {
 
     @Test
     void testWalkToInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
@@ -41,7 +40,7 @@ class IntegrationTest {
 
     @Test
     void testInvestigateInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();
@@ -51,7 +50,7 @@ class IntegrationTest {
 
     @Test
     void testInvestigateTavernInput() {
-        Adventure buchenhain = new Buchenhain();
+        Adventure buchenhain = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(buchenhain, player);
         session.start();
@@ -61,7 +60,7 @@ class IntegrationTest {
         session.setCurrentTime(GameTime.IN_THE_EVENING);
 
         //zum gasthaus gehen
-        Location gasthaus = buchenhain.getLocation(UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f"));
+        Location gasthaus = buchenhain.getLocation(Id.of("location.wirtshaus-zum-adler"));
         session.chatHistory.player("wir gehen zum Wirtshaus");
         session.chatHistory.narrator(gasthaus.description());
         session.setCurrentLocation(gasthaus);
@@ -71,7 +70,7 @@ class IntegrationTest {
 
     @Test
     void testTalkToMajorInput() {
-        Adventure buchenhain = new Buchenhain();
+        Adventure buchenhain = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(buchenhain, player);
         session.start();
@@ -81,7 +80,7 @@ class IntegrationTest {
         session.setCurrentTime(GameTime.AFTERNOON);
 
         //zum gasthaus gehen
-        Location vorsteherhaus = buchenhain.getLocation(UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2"));
+        Location vorsteherhaus = buchenhain.getLocation(Id.of("location.haus-des-dorfvorstehers"));
         session.chatHistory.player("wir gehen zum Haus des Ortsvorstehers");
         session.chatHistory.narrator(vorsteherhaus.description());
         session.setCurrentLocation(vorsteherhaus);

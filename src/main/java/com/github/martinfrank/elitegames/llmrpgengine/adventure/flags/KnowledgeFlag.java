@@ -3,9 +3,9 @@ package com.github.martinfrank.elitegames.llmrpgengine.adventure.flags;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Knowledge;
 
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
-public record KnowledgeFlag (UUID id, String name, Knowledge content) implements Flag<Knowledge> {
+public record KnowledgeFlag (Id id, String name, Knowledge content) implements Flag<Knowledge> {
 
     @Override
     public boolean isRaised() {

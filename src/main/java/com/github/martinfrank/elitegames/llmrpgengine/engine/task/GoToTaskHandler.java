@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 /**
- * Moves the player to the location resolved from {@link Verdict#targetUuid()}. If the
+ * Moves the player to the location resolved from {@link Verdict#resolvedTargetId()}. If the
  * verdict carries no resolvable location id, the current location is left unchanged.
  */
 @Component
@@ -38,7 +38,7 @@ public class GoToTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> id = verdict.targetUuid();
+        Optional<Id> id = verdict.resolvedTargetId();
         if (id.isPresent()) {
             Location location = session.getLocation(id.get());
             if (location != null) {
@@ -73,7 +73,7 @@ public class GoToTaskHandler implements TaskHandler {
     }
 
     private void handleLocationTrigger(Session session, Location location, String direction) {
-        List<Trigger> locationTriggers = session.getTriggers().stream().filter( t -> location.triggers().contains(t.id())).toList();
+        List<Trigger> locationTriggers = session.getTriggers().stream().filter( t -> location.triggerIds().contains(t.id())).toList();
         List<Trigger> triggers = session.sessionTriggers.untriggered(locationTriggers);
         for (Trigger trigger : triggers) {
             LOGGER.debug("handle on {} {} trigger", direction, location.name());

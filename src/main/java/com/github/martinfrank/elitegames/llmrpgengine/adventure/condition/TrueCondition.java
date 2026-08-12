@@ -4,9 +4,9 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
-public record TrueCondition(UUID id) implements Condition {
+public record TrueCondition(Id id) implements Condition {
 
     @Override
     public boolean evaluate(List<Flag<?>> flags) {

@@ -16,13 +16,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * Verifies that GO_TO resolves its destination via the verdict's targetId (a UUID from
+ * Verifies that GO_TO resolves its destination via the verdict's targetId (an id from
  * the available-locations list) and leaves the location unchanged when nothing resolves.
  */
 class GoToTaskHandlerTest {
 
-    private static final String DORFPLATZ = "0a5df08a-2094-4fbf-a94f-ce6fd74ddfee";
-    private static final String HAUS_DES_DORFVORSTEHERS = "b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2";
+    private static final String DORFPLATZ = "location.dorfplatz";
+    private static final String HAUS_DES_DORFVORSTEHERS = "location.haus-des-dorfvorstehers";
 
     /** A move narrates the arrival, so the handler needs an agent – stubbed, no LLM in a unit test. */
     private final NarratorAgent narratorAgent = mock(NarratorAgent.class);
@@ -33,7 +33,7 @@ class GoToTaskHandlerTest {
     }
 
     private Session startedSession() {
-        Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+        Session session = new Session(new Buchenhain().build(), new Player("Thorsten"));
         session.start();
         return session;
     }
@@ -76,9 +76,9 @@ class GoToTaskHandlerTest {
     void staysWhenTargetIdIsNotAKnownLocation() {
         Session session = startedSession();
 
-        // A syntactically valid but unknown UUID must not move the player.
+        // A well-formed but unknown id must not move the player.
         handler.execute(new Verdict("Irgendwohin.", TaskType.GO_TO,
-                "Nirgendwo", "00000000-0000-0000-0000-000000000000"), session);
+                "Nirgendwo", "location.mondbasis"), session);
 
         assertThat(session.getCurrentLocation().name()).isEqualTo("Buchenhain Dorfplatz");
         verifyNoInteractions(narratorAgent);

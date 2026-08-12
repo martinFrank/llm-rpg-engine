@@ -1,7 +1,8 @@
 package com.github.martinfrank.elitegames.llmrpgengine.agent;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
+
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * The result of the {@link VerdictAgent}: its understanding of what the player's
@@ -42,29 +43,28 @@ public record Verdict(
     }
 
     /**
-     * The resolved target as a UUID, or empty if it is {@value #UNKNOWN}, blank, or not a
-     * valid UUID. Handlers use this to look the target up in the session/adventure.
+     * The resolved target as an {@link Id}, or empty if it is {@value #UNKNOWN}, blank, or not a
+     * well-formed id. Handlers use this to look the target up in the session/adventure.
+     * <p>
+     * Named apart from the {@link #targetId()} record component on purpose: that one is the raw
+     * string the agent reported, this one is what could be made of it.
      */
-    public Optional<UUID> targetUuid() {
-        return toUuid(targetId);
+    public Optional<Id> resolvedTargetId() {
+        return toId(targetId);
     }
 
     /**
-     * The matched dialog as a UUID, or empty if it is {@value #UNKNOWN}, blank, or not a
-     * valid UUID. Empty means the player only makes small talk (gossip) with no scripted dialog.
+     * The matched dialog as an {@link Id}, or empty if it is {@value #UNKNOWN}, blank, or not a
+     * well-formed id. Empty means the player only makes small talk (gossip) with no scripted dialog.
      */
-    public Optional<UUID> dialogUuid() {
-        return toUuid(dialogId);
+    public Optional<Id> resolvedDialogId() {
+        return toId(dialogId);
     }
 
-    private static Optional<UUID> toUuid(String value) {
+    private static Optional<Id> toId(String value) {
         if (value == null || value.isBlank() || UNKNOWN.equalsIgnoreCase(value.strip())) {
             return Optional.empty();
         }
-        try {
-            return Optional.of(UUID.fromString(value.strip()));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
+        return Id.parse(value);
     }
 }
