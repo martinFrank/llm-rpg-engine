@@ -2,7 +2,12 @@ package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Chapter;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Intro;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.TinyAdventure;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Knowledge;
@@ -144,5 +149,55 @@ class SessionTest {
         session.sessionFlags.raiseFlagValue(SCHLUESSEL_GEFUNDEN);
 
         assertThat(session.getKnownKnowledge()).isEmpty();
+    }
+
+    /**
+     * A chapter that names no start location continues where the player is.
+     * <p>
+     * Copying the intro over unconditionally put them nowhere and the clock at no time, and every
+     * later read of the session then failed on a {@code null} that had nothing to do with where it
+     * surfaced – the page rendering the state, several turns after the chapter had turned over.
+     */
+    @Test
+    void aChapterWithoutAStartLocationContinuesWhereThePlayerIs() {
+        Session session = new Session(twoChapters(), new Player("Thorsten"));
+        session.start();
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
+
+        session.moveToNextChapter();
+
+        assertThat(session.getCurrentChapter().name()).isEqualTo("Zweites Kapitel");
+        assertThat(session.getCurrentLocation()).isNotNull()
+                .extracting(Location::name).isEqualTo("Dorfplatz");
+        assertThat(session.getCurrentTime()).isEqualTo(GameTime.IN_THE_EVENING);
+    }
+
+    /** Two chapters over one place, the second of which does not say where or when it begins. */
+    private static Adventure twoChapters() {
+        Location dorfplatz = TinyAdventure.location("location.dorfplatz", "Dorfplatz");
+        return new TinyAdventure() {
+            @Override protected List<Location> defineLocations() {
+                return List.of(dorfplatz);
+            }
+
+            @Override protected List<Chapter> defineChapters() {
+                return List.of(
+                        chapter("chapter.eins", "Erstes Kapitel",
+                                new Intro("es geht los", dorfplatz, GameTime.AFTERNOON), dorfplatz),
+                        chapter("chapter.zwei", "Zweites Kapitel",
+                                new Intro("weiter geht es", null, null), dorfplatz));
+            }
+        }.build();
+    }
+
+    private static Chapter chapter(String id, String name, Intro intro, Location open) {
+        return new Chapter.Builder()
+                .id(id)
+                .name(name)
+                .summary("egal")
+                .intro(intro)
+                .locationConditions(List.of(new LocationCondition(open, Condition.ALWAYS_TRUE)))
+                .chapterFinishedCondition(Condition.ALWAYS_TRUE)
+                .build();
     }
 }

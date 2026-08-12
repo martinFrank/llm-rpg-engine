@@ -39,8 +39,28 @@ public class Session {
         chatHistory.narrator(adventure.getMetadata().author());
         currentChapter = adventure.getChapters().getFirst();
         chatHistory.narrator(currentChapter.intro().intro());
-        currentLocation = currentChapter.intro().startLocation();
-        setCurrentTime(currentChapter.intro().startTime());
+        continueIn(currentChapter.intro());
+    }
+
+    /**
+     * Where a chapter picks the player up.
+     * <p>
+     * An intro only carries what it actually changes, so a chapter that names no start location –
+     * or no start time – continues where the previous one left off, which is the common case: a
+     * chapter usually turns on the same spot the last one ended on. Copying the intro over
+     * unconditionally instead put the player nowhere and the clock at no time, and every later read
+     * of the session then failed on a {@code null} that had nothing to do with where it surfaced.
+     * <p>
+     * The first chapter has nothing to continue from, so a missing start location there is an error
+     * of the adventure – see {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.AdventureValidator}.
+     */
+    private void continueIn(Intro intro) {
+        if (intro.startLocation() != null) {
+            currentLocation = intro.startLocation();
+        }
+        if (intro.startTime() != null) {
+            setCurrentTime(intro.startTime());
+        }
     }
 
     /** Which adventure is being played – its title and who wrote it. */
@@ -195,8 +215,7 @@ public class Session {
         }
         currentChapter = adventure.getChapters().get(nextChapterIndex);
         chatHistory.narrator(currentChapter.intro().intro());
-        currentLocation = currentChapter.intro().startLocation();
-        setCurrentTime(currentChapter.intro().startTime());
+        continueIn(currentChapter.intro());
     }
 
     public List<Trigger> getTriggers() {
