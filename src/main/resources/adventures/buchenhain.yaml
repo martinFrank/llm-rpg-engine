@@ -370,12 +370,10 @@ conditions:
   description: "prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht"
   consideredFlags:
   - flag.kennt-bedrohung
-- type: AndCondition
+- type: IsCondition
   id: condition.kapitel-eins-abgeschlossen
-  description: |
-    Chapter 1 Finished Condition, muss den auftrag haben UND muss über Monster bescheid wissen
+  description: "Chapter 1 Finished Condition, muss den auftrag haben"
   consideredFlags:
-  - flag.kennt-bedrohung
   - flag.auftrag-erhalten
 - type: IsCondition
   id: condition.kennt-weg-zum-blumental
@@ -472,9 +470,9 @@ chapters:
     Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber erneuert.
   intro:
     intro: |
-      Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends geworden. Ihr solltet heute Abend im Gasthaus übernachten. Morgen könnt ihr dann den Weg zum Buchenwald suchen.
-    startLocation: location.dorfplatz
-    startTime: IN_THE_EVENING
+      Kapitel 2; Die Suche nach der Ursache - Ihr habt also von Ulf Stetten den Auftrag erhalten, herauszufinden warum die wilden Tiere das Dorf bedrohen, und bestenfalls auch noch die Ursache zu unterbinden.
+    startLocation: null
+    startTime: null
   locationConditions:
   - location: location.dorfplatz
     condition: condition.immer-wahr
