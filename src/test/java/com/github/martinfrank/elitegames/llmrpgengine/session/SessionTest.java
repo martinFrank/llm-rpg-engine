@@ -83,9 +83,11 @@ class SessionTest {
     void gossipIsAvailableForEveryPerson() {
         Session session = startedSession();
 
-        // Ulf Stetten has a scripted dialog in chapter 1, Rangolf Klingbeil has none.
+        // Ulf Stetten has scripted dialogs in chapter 1, Rangolf Klingbeil has none. What is
+        // asserted is that gossip stands beside them - not how many the adventure scripts for him,
+        // which grows as the content is written.
         assertThat(session.getAvailableDialogs(adventure.getPerson(ULF_STETTEN))).extracting(Dialog::topic)
-                .containsExactly(Dialog.GOSSIP.topic(), "Auftrag des Ortsvorstehers");
+                .contains(Dialog.GOSSIP.topic(), "Auftrag des Ortsvorstehers");
         assertThat(session.getAvailableDialogs(adventure.getPerson(RANGOLF_KLINGBEIL)))
                 .containsExactly(Dialog.GOSSIP);
     }

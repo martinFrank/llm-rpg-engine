@@ -454,6 +454,9 @@ chapters:
   - person: person.ulf-stetten
     dialog: dialog.auftrag-des-ortsvorstehers
     condition: condition.immer-wahr
+  - person: person.ulf-stetten
+    dialog: dialog.gefahr-fuer-das-dorf
+    condition: condition.immer-wahr
   - person: person.kalgeria-mondlaeufer
     dialog: dialog.gefahr-fuer-das-dorf
     condition: condition.immer-wahr
@@ -517,6 +520,12 @@ chapters:
     condition: condition.immer-wahr
   - person: person.rangolf-klingbeil
     dialog: dialog.weg-zum-buchenwald
+    condition: condition.immer-wahr
+  - person: person.kalgeria-mondlaeufer
+    dialog: dialog.gefahr-fuer-das-dorf
+    condition: condition.immer-wahr
+  - person: person.ulf-stetten
+    dialog: dialog.gefahr-fuer-das-dorf
     condition: condition.immer-wahr
   investigateConditions:
   - subject: location.dorfplatz
