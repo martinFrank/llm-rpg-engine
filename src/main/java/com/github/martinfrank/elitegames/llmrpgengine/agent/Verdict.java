@@ -20,6 +20,9 @@ import java.util.UUID;
  * @param dialogId       for {@link TaskType#TALK}: the id of the matched dialog, picked from
  *                       the dialog-topics list, or {@value #UNKNOWN} when no dialog matched
  *                       and the player only makes small talk (gossip)
+ * @param facet          for {@link TaskType#ASK_GAME_MASTER}: which fact about the game state
+ *                       the player asks for; {@link GameMasterFacet#UNSPECIFIED} for every
+ *                       other task
  */
 public record Verdict(
         String interpretation,
@@ -27,7 +30,8 @@ public record Verdict(
         String target,
         String targetId,
         String dialogTopic,
-        String dialogId
+        String dialogId,
+        GameMasterFacet facet
 ) {
 
     /** Value the agent uses for {@link #targetId()}/{@link #dialogId()} when nothing could be resolved. */
@@ -39,6 +43,15 @@ public record Verdict(
      */
     public Verdict(String interpretation, TaskType task, String target, String targetId) {
         this(interpretation, task, target, targetId, "", UNKNOWN);
+    }
+
+    /**
+     * Convenience constructor for a task that carries a dialog but no game-master facet, i.e.
+     * {@link TaskType#TALK}.
+     */
+    public Verdict(String interpretation, TaskType task, String target, String targetId,
+                   String dialogTopic, String dialogId) {
+        this(interpretation, task, target, targetId, dialogTopic, dialogId, GameMasterFacet.UNSPECIFIED);
     }
 
     /**
@@ -55,6 +68,14 @@ public record Verdict(
      */
     public Optional<UUID> dialogUuid() {
         return toUuid(dialogId);
+    }
+
+    /**
+     * The facet asked for, never {@code null}: a model that simply omits the field leaves it unset,
+     * and an unspecified question is answered with an overview rather than with a crash.
+     */
+    public GameMasterFacet facetOrUnspecified() {
+        return facet == null ? GameMasterFacet.UNSPECIFIED : facet;
     }
 
     private static Optional<UUID> toUuid(String value) {

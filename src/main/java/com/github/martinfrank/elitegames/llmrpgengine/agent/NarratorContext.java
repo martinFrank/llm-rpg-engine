@@ -9,7 +9,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.StringNormalizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public record NarratorContext (String purpose, String location, String persons, String time, String interestingDetails, String conversationHistory) {
@@ -96,14 +95,11 @@ public record NarratorContext (String purpose, String location, String persons, 
 
     private static String extractDetails(Session session, Location location) {
         StringBuilder details = new StringBuilder();
-        for (UUID destinationId: location.destinationIds()) {
-            Location destination = session.getLocation(destinationId);
-            if (destination != null) {
-                details.append(" - ")
-                        .append(destination.name())
-                        .append(": ")
-                        .append(StringNormalizer.normalize(destination.description())).append("\n");
-            }
+        for (Location destination : session.getReachableLocations(location)) {
+            details.append(" - ")
+                    .append(destination.name())
+                    .append(": ")
+                    .append(StringNormalizer.normalize(destination.description())).append("\n");
         }
         if (details.isEmpty()) {
             return "";
@@ -123,22 +119,13 @@ public record NarratorContext (String purpose, String location, String persons, 
     }
 
     private static String extractChatHistory(Session session) {
-        return session.chatHistory.getLatestEntries(5).stream()
+        return session.chatHistory.getLatestStoryEntries(5).stream()
                 .map(ChatEntry::toString)
                 .collect(Collectors.joining("\n"));
     }
 
     private static String extractTime(GameTime time) {
-        return switch (time){
-            case AFTERNOON -> "nachmittag";
-            case IN_THE_EVENING -> "abends";
-            case AT_NIGHT -> "nachts";
-            case HIGH_NOON -> "mittags";
-            case MIDNIGHT -> "mitternachts";
-            case MORNING -> "morgens";
-            case DAWN -> "Sonnenaufgang";
-            case DUSK -> "Sonnenuntergang";
-        };
+        return time.promptLabel();
     }
 
     /**

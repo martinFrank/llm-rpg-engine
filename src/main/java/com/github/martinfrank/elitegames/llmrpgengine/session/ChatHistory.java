@@ -18,17 +18,41 @@ public class ChatHistory {
 
     private static final String NARRATOR = "Narrator";
     private static final String PLAYER = "Player";
+    private static final String GAME_MASTER = "Spielleiter";
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatHistory.class);
 
     private final List<ChatEntry> chatEntries = new ArrayList<>();
 
     /** Records prose told by the narrator: everything that is not a person speaking. */
     public void narrator(String statement) {
-        add(NARRATOR, statement);
+        add(NARRATOR, statement, ChatEntry.Kind.STORY);
     }
 
     public void player(String statement) {
-        add(PLAYER, statement);
+        add(PLAYER, statement, ChatEntry.Kind.STORY);
+    }
+
+    /**
+     * Records a question the player put to the game master rather than an action in the game.
+     * It is logged as {@link ChatEntry.Kind#META}, so the player still sees it but the agents do
+     * not mistake it for a turn of the story.
+     */
+    public void playerQuestion(String statement) {
+        add(PLAYER, statement, ChatEntry.Kind.META);
+    }
+
+    /**
+     * Records the game master's answer to such a question: a plain statement of fact about the
+     * game state, not narration, and therefore {@link ChatEntry.Kind#META}.
+     * <p>
+     * This is the one line that is stored verbatim. {@link StringNormalizer} is there to unwrap
+     * prose an author or a model wrapped across lines, but a game-master answer is assembled line
+     * by line by the engine – normalizing it would pull its enumerations of places and figures into
+     * a single run-on line. Whatever authored text it quotes has already been normalized on the way
+     * in.
+     */
+    public void gameMaster(String statement) {
+        addVerbatim(GAME_MASTER, statement, ChatEntry.Kind.META);
     }
 
     /**
@@ -40,16 +64,42 @@ public class ChatHistory {
     }
 
     private void add(String actor, String statement) {
-        String normalized = StringNormalizer.normalize(statement);
-        ChatEntry entry = new ChatEntry(actor, normalized);
+        add(actor, statement, ChatEntry.Kind.STORY);
+    }
+
+    private void add(String actor, String statement, ChatEntry.Kind kind) {
+        addVerbatim(actor, StringNormalizer.normalize(statement), kind);
+    }
+
+    private void addVerbatim(String actor, String statement, ChatEntry.Kind kind) {
+        ChatEntry entry = new ChatEntry(actor, statement, kind);
         LOGGER.info(entry.toString());
         chatEntries.add(entry);
     }
 
 
+    /** Every kind of entry, newest last – what the player gets to see. */
     public List<ChatEntry> getLatestEntries(int length) {
-        int from = Math.max(0, chatEntries.size() - length);
-        return new ArrayList<>(chatEntries.subList(from, chatEntries.size()));
+        return latest(chatEntries, length);
+    }
+
+    /**
+     * The story only, newest last – what the agents get as context.
+     * <p>
+     * Meta entries are skipped rather than counted and dropped: with a plain tail of the log, three
+     * questions in a row about the time of day would push the whole plot out of a five-entry
+     * context window, and the narrator would pick up a conversation about bookkeeping.
+     */
+    public List<ChatEntry> getLatestStoryEntries(int length) {
+        List<ChatEntry> story = chatEntries.stream()
+                .filter(entry -> entry.kind() == ChatEntry.Kind.STORY)
+                .toList();
+        return latest(story, length);
+    }
+
+    private static List<ChatEntry> latest(List<ChatEntry> entries, int length) {
+        int from = Math.max(0, entries.size() - length);
+        return new ArrayList<>(entries.subList(from, entries.size()));
     }
 
     @Override

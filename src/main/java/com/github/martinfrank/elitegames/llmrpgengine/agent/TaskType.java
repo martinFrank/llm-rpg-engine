@@ -33,6 +33,18 @@ public enum TaskType {
      */
     TALK,
 
+    /**
+     * The player asks the game master about the state of the game rather than acting in the
+     * fiction – "wo bin ich?", "wohin kann ich gehen?", "wie spät ist es?", "was war meine
+     * Aufgabe?". Parameter {@code facet}: which fact is being asked for, see
+     * {@link GameMasterFacet}; {@code target} and {@code targetId} stay empty.
+     * <p>
+     * This is deliberately not an {@link #INVESTIGATE}: looking around is game mechanics – it
+     * rolls the chapter's skill checks and can use up a one-time discovery – while asking what
+     * time it is must never cost the player anything.
+     */
+    ASK_GAME_MASTER,
+
     /** Fallback: the input could not be mapped to any known task. */
     UNKNOWN
 }

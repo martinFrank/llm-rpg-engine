@@ -1,12 +1,14 @@
 package com.github.martinfrank.elitegames.llmrpgengine.engine;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.GameMasterFacet;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.VerdictAgent;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.VerdictContext;
 import com.github.martinfrank.elitegames.llmrpgengine.engine.task.TaskHandler;
+import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ class GameEngineTest {
     private static final String WIRTSHAUS = "603696b5-e1be-4f85-a0e1-1209147b8a3f";
     private static final String KALGERIA = "4bdd45a1-33d0-4ea4-91af-86a53e53dc61";
     private static final String DIALOG_UEBER_MONSTER = "7975bb9c-72f0-4038-a5f7-591241275826";
+    private static final String AUFTRAG_ERHALTEN = "8d824f02-f2ef-4ee2-93f7-89b7e69fef7b";
+    private static final String BEDROHUNG_BEKANNT = "9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f";
 
     /** Records the verdict its task was dispatched with, instead of playing it out. */
     private static final class RecordingHandler implements TaskHandler {
@@ -55,8 +59,9 @@ class GameEngineTest {
     private final RecordingHandler talk = new RecordingHandler(TaskType.TALK);
     private final RecordingHandler investigate = new RecordingHandler(TaskType.INVESTIGATE);
     private final RecordingHandler unknown = new RecordingHandler(TaskType.UNKNOWN);
+    private final RecordingHandler askGameMaster = new RecordingHandler(TaskType.ASK_GAME_MASTER);
     private final GameEngine engine = new GameEngine(verdictAgent, mock(NarratorAgent.class),
-            List.of(talk, investigate, unknown));
+            List.of(talk, investigate, unknown, askGameMaster));
 
     private Session startedSession() {
         Session session = new Session(new Buchenhain(), new Player("Thorsten"));
@@ -139,5 +144,53 @@ class GameEngineTest {
 
         assertThat(session.chatHistory.getLatestEntries(1).getFirst().statement())
                 .isEqualTo("sieh dich um");
+    }
+
+    @Test
+    void recordsAQuestionToTheGameMasterAsMetaRatherThanAsATurn() {
+        Session session = startedSession();
+        stubVerdict(gameMasterQuestion());
+
+        engine.handleUserInput("wie spät ist es?", session);
+
+        assertThat(askGameMaster.received).isNotNull();
+        assertThat(session.chatHistory.getLatestEntries(1).getFirst())
+                .satisfies(entry -> {
+                    assertThat(entry.statement()).isEqualTo("wie spät ist es?");
+                    assertThat(entry.kind()).isEqualTo(ChatEntry.Kind.META);
+                });
+        // ... and it therefore never reaches the agents as part of the story.
+        assertThat(session.chatHistory.getLatestStoryEntries(50))
+                .noneMatch(entry -> entry.statement().equals("wie spät ist es?"));
+    }
+
+    /**
+     * A question changes nothing, so it can complete nothing: the chapter must not tick over while
+     * the player is merely getting their bearings – only a real turn may do that.
+     */
+    @Test
+    void aQuestionToTheGameMasterDoesNotAdvanceTheChapter() {
+        Session session = startedSession();
+        // Everything chapter 1 needs to be over is in place.
+        session.sessionFlags.raiseFlagValue(UUID.fromString(AUFTRAG_ERHALTEN));
+        session.sessionFlags.raiseFlagValue(UUID.fromString(BEDROHUNG_BEKANNT));
+
+        stubVerdict(gameMasterQuestion());
+        engine.handleUserInput("wo bin ich?", session);
+
+        assertThat(session.getCurrentChapter().name()).isEqualTo("Probleme in Buchenwald");
+
+        // The very next real turn does end the chapter, so it was the question that was held back
+        // and not the condition that failed to hold.
+        stubVerdict(new Verdict("Der Spieler sieht sich um.", TaskType.INVESTIGATE,
+                "Buchenhain Dorfplatz", DORFPLATZ));
+        engine.handleUserInput("sieh dich um", session);
+
+        assertThat(session.getCurrentChapter().name()).isEqualTo("Ursache der Probleme");
+    }
+
+    private static Verdict gameMasterQuestion() {
+        return new Verdict("Der Spieler fragt den Spielleiter.", TaskType.ASK_GAME_MASTER,
+                "", Verdict.UNKNOWN, "", Verdict.UNKNOWN, GameMasterFacet.WHAT_TIME_IS_IT);
     }
 }

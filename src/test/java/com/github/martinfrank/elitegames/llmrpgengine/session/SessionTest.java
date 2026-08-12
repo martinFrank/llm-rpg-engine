@@ -4,6 +4,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Knowledge;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
@@ -21,11 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SessionTest {
 
+    private static final UUID DORFPLATZ = UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee");
     private static final UUID SCHMIEDE = UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3");
     private static final UUID WIRTSHAUS = UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f");
     private static final UUID HAUS_DES_DORFVORSTEHERS = UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2");
     private static final UUID ULF_STETTEN = UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4");
     private static final UUID RANGOLF_KLINGBEIL = UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636");
+    private static final UUID AUFTRAG_ERHALTEN = UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b");
+    private static final UUID SCHLUESSEL_GEFUNDEN = UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831");
 
     private final Buchenhain adventure = new Buchenhain();
 
@@ -89,5 +93,55 @@ class SessionTest {
                 .containsExactly("Ulf Stetten");
         assertThat(session.getCurrentPersons(location(SCHMIEDE))).extracting(Person::name)
                 .containsExactly("Rangolf Klingbeil");
+    }
+
+    /**
+     * A destination the current chapter does not carry is not a way out: the Dorfplatz points at the
+     * Blumental, but chapter 1 has no such location, so it may not be offered as reachable.
+     */
+    @Test
+    void reachableLocationsSkipWhatTheChapterDoesNotCarry() {
+        Session session = startedSession();
+
+        assertThat(session.getReachableLocations(location(DORFPLATZ))).extracting(Location::name)
+                .containsExactly("Haus des Dorfvorstehers", "Die Dorf Schmiede",
+                        "Wirtshaus zum kleinen Adler", "Der Dorfladen");
+    }
+
+    @Test
+    void reachableLocationsFollowTheTimeOfDay() {
+        Session session = startedSession();
+
+        session.setCurrentTime(GameTime.AT_NIGHT);
+
+        assertThat(session.getReachableLocations(location(DORFPLATZ))).extracting(Location::name)
+                .containsExactly("Wirtshaus zum kleinen Adler");
+    }
+
+    /**
+     * The knowledge has to be read back through the session's flags. An authored
+     * {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.KnowledgeFlag} reports
+     * {@code isRaised() == false} forever, so asking the adventure's flags directly would report
+     * that the player knows nothing no matter how far they have come.
+     */
+    @Test
+    void knownKnowledgeGrowsWithTheRaisedFlags() {
+        Session session = startedSession();
+        assertThat(session.getKnownKnowledge()).isEmpty();
+
+        session.sessionFlags.raiseFlagValue(AUFTRAG_ERHALTEN);
+
+        assertThat(session.getKnownKnowledge()).extracting(Knowledge::name)
+                .containsExactly("Auftrag des Ortsvorstehers");
+    }
+
+    /** Item and location flags are no journal entries, so only knowledge may show up. */
+    @Test
+    void knownKnowledgeIgnoresFlagsThatCarryNoKnowledge() {
+        Session session = startedSession();
+
+        session.sessionFlags.raiseFlagValue(SCHLUESSEL_GEFUNDEN);
+
+        assertThat(session.getKnownKnowledge()).isEmpty();
     }
 }

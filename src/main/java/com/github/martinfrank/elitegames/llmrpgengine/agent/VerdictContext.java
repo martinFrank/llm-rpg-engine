@@ -64,7 +64,7 @@ public record VerdictContext (String chapterSummary,
     }
 
     private static String extractChatHistory(Session session) {
-        return session.chatHistory.getLatestEntries(5).stream()
+        return session.chatHistory.getLatestStoryEntries(5).stream()
                 .map(ChatEntry::toString)
                 .collect(Collectors.joining("\n"));
     }
