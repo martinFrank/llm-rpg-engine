@@ -80,15 +80,27 @@ public class AskGameMasterTaskHandler implements TaskHandler {
         return narration;
     }
 
-    /** What the player wants to know, for the Narrator's AUFGABE field. */
+    /**
+     * What the player wants to know, for the Narrator's AUFGABE field.
+     * <p>
+     * The demand to name every item is repeated here on purpose, although the system prompt already
+     * says it. The first live run answered "wohin kann ich gehen" with "von hier führen mehrere Wege
+     * fort" and named none of the four – the system prompt's rule against telling the player what
+     * they could do won over the instruction to be complete. The AUFGABE is the one field the
+     * Narrator is told to answer exactly, so the demand belongs where the question is.
+     */
     private String question(GameMasterFacet facet) {
         String asked = switch (facet) {
             case WHERE_AM_I -> "wo er sich gerade befindet";
-            case WHERE_CAN_I_GO -> "welche Wege von hier fortführen";
-            case WHO_IS_HERE -> "wer sich gerade bei ihm aufhält";
+            case WHERE_CAN_I_GO -> "welche Wege von hier fortführen. Nenne ihm jeden einzelnen "
+                    + "Ort aus der AUSKUNFT mit seinem Namen, auch wenn es vier oder mehr sind";
+            case WHO_IS_HERE -> "wer sich gerade bei ihm aufhält. Nenne ihm jede Person aus der "
+                    + "AUSKUNFT mit ihrem Namen";
             case WHAT_TIME_IS_IT -> "welche Tageszeit gerade herrscht";
-            case WHAT_DO_I_KNOW -> "was sein Auftrag ist und was er bisher herausgefunden hat";
-            case UNSPECIFIED -> "wie seine Lage gerade steht";
+            case WHAT_DO_I_KNOW -> "was sein Auftrag ist und was er bisher herausgefunden hat. "
+                    + "Lasse keinen Punkt aus der AUSKUNFT weg";
+            case UNSPECIFIED -> "wie seine Lage gerade steht. Gehe auf jede Angabe aus der "
+                    + "AUSKUNFT ein";
         };
         return "der Spieler hat dich gefragt, " + asked
                 + ". Erinnere ihn daran, ohne die Spielwelt zu verlassen.";
