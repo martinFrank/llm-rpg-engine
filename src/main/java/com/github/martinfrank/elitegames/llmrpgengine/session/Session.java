@@ -43,6 +43,11 @@ public class Session {
         setCurrentTime(currentChapter.intro().startTime());
     }
 
+    /** Which adventure is being played – its title and who wrote it. */
+    public Metadata getMetadata() {
+        return adventure.getMetadata();
+    }
+
     public Location getCurrentLocation() {
         return currentLocation;
     }

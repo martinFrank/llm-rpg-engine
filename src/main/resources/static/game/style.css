@@ -1,0 +1,247 @@
+/*
+ * The playing surface. Same palette as the editor, different shape: the editor is a workbench with
+ * a navigation, this is a log you read and a line you type into.
+ */
+
+:root {
+    --bg: #fbfaf8;
+    --panel: #ffffff;
+    --sunk: #f6f4f0;
+    --ink: #1c1a17;
+    --muted: #6b665e;
+    --line: #e2ded7;
+    --accent: #7a4b2a;
+    --accent-soft: #f3ece5;
+    --warn: #8a6d1f;
+    --warn-soft: #fbf4dd;
+    --error: #a32f2f;
+    --error-soft: #fbe9e9;
+    --radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #17161a;
+        --panel: #201f24;
+        --sunk: #1a191e;
+        --ink: #e9e6e1;
+        --muted: #9b958c;
+        --line: #322f38;
+        --accent: #d3a179;
+        --accent-soft: #2b2530;
+        --warn: #d8bf76;
+        --warn-soft: #2c2718;
+        --error: #e58b8b;
+        --error-soft: #2f1e1e;
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- the game column ---------- */
+
+#game {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+}
+
+#header h1 { font-size: 16px; margin: 0; }
+#header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+#log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 28px 8px;
+    scroll-behavior: smooth;
+}
+
+.turn { max-width: 74ch; margin: 0 auto 18px; }
+.turn .actor {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+}
+.turn .text { white-space: pre-wrap; }
+
+/* The player's own turns sit apart from the prose, so the log reads as a back and forth. */
+.turn.player .text {
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+}
+.turn.player .actor { color: var(--accent); }
+
+/* An npc speaking is a voice, not narration - hence the quote mark down the side. */
+.turn.npc .text {
+    border-left: 2px solid var(--line);
+    padding-left: 12px;
+    font-style: italic;
+}
+.turn.npc .actor { color: var(--accent); }
+
+/* Asides between player and game master: readable, but visibly outside the story. */
+.turn.meta { opacity: .82; }
+.turn.meta .text {
+    background: var(--sunk);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.turn.pending .text { color: var(--muted); font-style: italic; }
+.turn.failed .text {
+    background: var(--error-soft);
+    color: var(--error);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+}
+
+/* ---------- the line you type into ---------- */
+
+#input-form {
+    display: flex;
+    gap: 8px;
+    padding: 14px 28px 18px;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+}
+
+#input-form > * { max-width: none; }
+#input { flex: 1; }
+
+input {
+    font: inherit;
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--sunk);
+    color: var(--ink);
+}
+
+input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+input:disabled { opacity: .55; }
+
+button {
+    font: inherit;
+    font-size: 13.5px;
+    padding: 5px 13px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.link { border: none; background: none; color: var(--accent); text-decoration: underline; padding: 0; }
+
+/* ---------- what is in view ---------- */
+
+#side {
+    width: 290px;
+    flex: 0 0 290px;
+    border-left: 1px solid var(--line);
+    background: var(--panel);
+    padding: 20px 20px 40px;
+    overflow-y: auto;
+}
+
+#side h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 22px 0 7px;
+}
+
+#side h2:first-child { margin-top: 0; }
+#side .place { font-weight: 600; }
+#side .desc { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+#side .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+#side .note { font-size: 13px; margin-bottom: 9px; }
+#side .note b { display: block; font-weight: 600; }
+#side .note span { color: var(--muted); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* A suggestion, not a menu: clicking one writes the sentence into the input, and the player is
+   free to change it before sending. The game is played in prose either way. */
+.chips button { text-align: left; font-size: 13px; padding: 4px 9px; }
+.chips button .sub { color: var(--muted); font-size: 11.5px; }
+
+/* ---------- start screen ---------- */
+
+/* Explicitly, because the `display: flex` below would otherwise win over the browser's own rule
+   for [hidden] and the start screen would never go away. */
+.overlay[hidden] { display: none; }
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .45);
+    padding: 20px;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.card h2 { margin: 0 0 6px; font-size: 19px; }
+.card label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 16px 0 4px;
+}
+.card button { margin-top: 16px; }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+
+.msg { border-radius: var(--radius); padding: 9px 13px; margin-top: 12px; font-size: 13.5px; }
+.msg.error { background: var(--error-soft); color: var(--error); }
+
+@media (max-width: 820px) {
+    body { flex-direction: column; overflow: auto; height: auto; }
+    #side { width: auto; flex: none; border-left: none; border-top: 1px solid var(--line); }
+    #log { max-height: none; }
+}

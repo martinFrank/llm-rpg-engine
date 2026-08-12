@@ -416,7 +416,7 @@ chapters:
     Die Helden können auch noch beim Laden und  beim Schmied Ausrüstung kaufen. Wenn die sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das nächste Kapitel.
   intro:
     intro: |
-      Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später einen Besuch abstatten werdet. Danach verlässt er den Platz.
+      Bei eurer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später einen Besuch abstatten werdet. Danach verlässt er den Platz.
     startLocation: location.dorfplatz
     startTime: AFTERNOON
   locationConditions:
