@@ -14,7 +14,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,12 +28,12 @@ import static org.mockito.Mockito.when;
  */
 class GameEngineTest {
 
-    private static final String DORFPLATZ = "0a5df08a-2094-4fbf-a94f-ce6fd74ddfee";
-    private static final String WIRTSHAUS = "603696b5-e1be-4f85-a0e1-1209147b8a3f";
-    private static final String KALGERIA = "4bdd45a1-33d0-4ea4-91af-86a53e53dc61";
-    private static final String DIALOG_UEBER_MONSTER = "7975bb9c-72f0-4038-a5f7-591241275826";
-    private static final String AUFTRAG_ERHALTEN = "8d824f02-f2ef-4ee2-93f7-89b7e69fef7b";
-    private static final String BEDROHUNG_BEKANNT = "9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f";
+    private static final String DORFPLATZ = "location.dorfplatz";
+    private static final String WIRTSHAUS = "location.wirtshaus-zum-adler";
+    private static final String KALGERIA = "person.kalgeria-mondlaeufer";
+    private static final String DIALOG_UEBER_MONSTER = "dialog.gefahr-fuer-das-dorf";
+    private static final Id AUFTRAG_ERHALTEN = Id.of("flag.auftrag-erhalten");
+    private static final Id BEDROHUNG_BEKANNT = Id.of("flag.kennt-bedrohung");
 
     /** Records the verdict its task was dispatched with, instead of playing it out. */
     private static final class RecordingHandler implements TaskHandler {
@@ -64,7 +64,7 @@ class GameEngineTest {
             List.of(talk, investigate, unknown, askGameMaster));
 
     private Session startedSession() {
-        Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+        Session session = new Session(new Buchenhain().build(), new Player("Thorsten"));
         session.start();
         return session;
     }
@@ -108,7 +108,7 @@ class GameEngineTest {
     @Test
     void talkToAPresentPersonIsPassedThroughUntouched() {
         Session session = startedSession();
-        session.setCurrentLocation(session.getLocation(UUID.fromString(WIRTSHAUS)));
+        session.setCurrentLocation(session.getLocation(Id.of(WIRTSHAUS)));
         stubVerdict(new Verdict("Der Spieler fragt die Wirtin nach den Monstern.", TaskType.TALK,
                 "Kalgeria Mondläufer", KALGERIA, "Die Monster", DIALOG_UEBER_MONSTER));
 
@@ -172,8 +172,8 @@ class GameEngineTest {
     void aQuestionToTheGameMasterDoesNotAdvanceTheChapter() {
         Session session = startedSession();
         // Everything chapter 1 needs to be over is in place.
-        session.sessionFlags.raiseFlagValue(UUID.fromString(AUFTRAG_ERHALTEN));
-        session.sessionFlags.raiseFlagValue(UUID.fromString(BEDROHUNG_BEKANNT));
+        session.sessionFlags.raiseFlagValue(AUFTRAG_ERHALTEN);
+        session.sessionFlags.raiseFlagValue(BEDROHUNG_BEKANNT);
 
         stubVerdict(gameMasterQuestion());
         engine.handleUserInput("wo bin ich?", session);

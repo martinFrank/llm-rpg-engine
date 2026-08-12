@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 import java.util.stream.Collectors;
 
 /**
  * Handles the player addressing and communicating with the person resolved from
- * {@link Verdict#targetUuid()} (an id from the available-persons list). If the verdict
+ * {@link Verdict#resolvedTargetId()} (an id from the available-persons list). If the verdict
  * carries no resolvable person id, nothing happens.
  * <p>
- * The conversation topic is taken from {@link Verdict#dialogUuid()}: if it resolves to a
+ * The conversation topic is taken from {@link Verdict#resolvedDialogId()}: if it resolves to a
  * known {@link Dialog}, the player talks about that scripted dialog; otherwise the player
  * only makes small talk (gossip). Either way the {@link TalkAgent} produces the person's
  * in-character reply, which is recorded in the talk- and chat-history.
@@ -49,10 +49,16 @@ public class TalkTaskHandler implements TaskHandler {
 
     /**
      * How far a reported trigger id may be (in edit distance) from a real dialog trigger id and
-     * still be accepted as that trigger. Ids (UUIDs) are far apart, so a small threshold recovers
-     * LLM typos without risking a wrong match.
+     * still be accepted as that trigger.
+     * <p>
+     * This is one half of a matched pair with
+     * {@code AdventureValidator.MIN_ID_DISTANCE}, which keeps every id of an adventure at least 3
+     * apart. Recovery is only unambiguous while {@code MIN_ID_DISTANCE >= 2 * this + 1}: at a
+     * threshold of 1, an id within reach of one candidate is provably out of reach of every other.
+     * Raising this to 2 would need ids 5 apart, so raise the validator's minimum with it or the
+     * guarantee is gone.
      */
-    private static final int MAX_TRIGGER_ID_DISTANCE = 2;
+    private static final int MAX_TRIGGER_ID_DISTANCE = 1;
 
     /** Whereabouts of a person no chapter condition currently places anywhere. */
     private static final String UNKNOWN_WHEREABOUTS = "unbekannt";
@@ -84,7 +90,7 @@ public class TalkTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> personId = verdict.targetUuid();
+        Optional<Id> personId = verdict.resolvedTargetId();
         if (personId.isEmpty()) {
             LOGGER.info("No known conversation partner for TALK: '{}' (id: {})", verdict.target(), verdict.targetId());
             return;
@@ -114,7 +120,7 @@ public class TalkTaskHandler implements TaskHandler {
      * another person's dialog) falls back to gossip instead of using a foreign dialog.
      */
     private Dialog resolveDialog(Verdict verdict, Session session, Person person) {
-        Optional<UUID> dialogId = verdict.dialogUuid();
+        Optional<Id> dialogId = verdict.resolvedDialogId();
         if (dialogId.isEmpty()) {
             return null;
         }
@@ -186,8 +192,9 @@ public class TalkTaskHandler implements TaskHandler {
      * Guardrail 3: maps the triggers the agent reported onto the real {@link Trigger}s of
      * the dialog. Instead of rigorously discarding an id that does not match exactly, the closest
      * dialog trigger by {@link Levenshtein} distance wins, as long as it is within
-     * {@link #MAX_TRIGGER_ID_DISTANCE}. This recovers ids the model got slightly wrong (a mangled
-     * UUID) while still rejecting invented ones (which are far from every candidate).
+     * {@link #MAX_TRIGGER_ID_DISTANCE} and no other candidate is equally close. This recovers ids
+     * the model got slightly wrong while still rejecting invented ones (which are far from every
+     * candidate).
      */
     private List<Trigger> resolveTriggers(Dialog dialog, TalkResponse response) {
         if (dialog == null || response.triggeredTriggers().isEmpty()) {
@@ -207,6 +214,15 @@ public class TalkTaskHandler implements TaskHandler {
         return resolved;
     }
 
+    /**
+     * The nearest candidate, but only when it is nearer than every other one. A reported id that
+     * two candidates have an equal claim to is not recovered but dropped: guessing between them
+     * would fire the wrong trigger, and firing nothing merely means the player asks again.
+     * <p>
+     * With ids validated to be at least 3 apart this tie cannot arise. It is checked anyway,
+     * because the cost is one comparison and the alternative is silently granting the player the
+     * wrong knowledge.
+     */
     private static Trigger closestTrigger(String reportedId, List<Trigger> candidates) {
         if (reportedId == null || reportedId.isBlank()) {
             return null;
@@ -214,14 +230,21 @@ public class TalkTaskHandler implements TaskHandler {
         String needle = reportedId.strip();
         Trigger best = null;
         int bestDistance = Integer.MAX_VALUE;
+        int runnerUpDistance = Integer.MAX_VALUE;
         for (Trigger candidate : candidates) {
-            int distance = Levenshtein.distance(needle, candidate.id().toString());
+            int distance = Levenshtein.distance(needle, candidate.id().value());
             if (distance < bestDistance) {
+                runnerUpDistance = bestDistance;
                 bestDistance = distance;
                 best = candidate;
+            } else if (distance < runnerUpDistance) {
+                runnerUpDistance = distance;
             }
         }
-        return bestDistance <= MAX_TRIGGER_ID_DISTANCE ? best : null;
+        if (bestDistance > MAX_TRIGGER_ID_DISTANCE || runnerUpDistance == bestDistance) {
+            return null;
+        }
+        return best;
     }
 
     private TalkContext buildContext(Session session, Person person, Dialog dialog, String statement) {

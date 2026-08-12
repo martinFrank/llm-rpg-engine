@@ -1,12 +1,11 @@
 package com.github.martinfrank.elitegames.llmrpgengine.adventure;
 
 import java.util.Objects;
-import java.util.UUID;
 
-public record Person (UUID id, String name, String description, String role, String appearance, String background, String personality) implements Identifiable {
+public record Person (Id id, String name, String description, String role, String appearance, String background, String personality) implements Identifiable {
 
     public static class Builder {
-        private UUID id = UUID.randomUUID();
+        private Id id = null;
         private String name;
         private String description;
         private String role;
@@ -15,11 +14,18 @@ public record Person (UUID id, String name, String description, String role, Str
         private String personality;
 
         public Person build() {
+            if (id == null) {
+                throw new IllegalStateException("person id cannot be null (name: " + name + ")");
+            }
             return new Person(id, name, description, role, appearance, background, personality);
         }
-        public Builder id(UUID id) {
+        public Builder id(Id id) {
             this.id = id;
             return this;
+        }
+
+        public Builder id(String id) {
+            return id(Id.of(id));
         }
 
         public Builder name(String name) {

@@ -36,7 +36,7 @@ class FullGameTest {
 
     @Test
     void testFullGame(){
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
@@ -71,7 +71,7 @@ class FullGameTest {
                 .run(args)) {
 
             GameEngine engine = context.getBean(GameEngine.class);
-            Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+            Session session = new Session(new Buchenhain().build(), new Player("Thorsten"));
 
             session.start();
 

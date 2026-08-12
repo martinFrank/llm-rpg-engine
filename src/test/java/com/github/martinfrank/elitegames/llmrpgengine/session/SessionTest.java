@@ -1,5 +1,6 @@
 package com.github.martinfrank.elitegames.llmrpgengine.session;
 
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
@@ -11,7 +12,7 @@ import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,16 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SessionTest {
 
-    private static final UUID DORFPLATZ = UUID.fromString("0a5df08a-2094-4fbf-a94f-ce6fd74ddfee");
-    private static final UUID SCHMIEDE = UUID.fromString("2badab9d-825c-4561-815c-80afcb774ad3");
-    private static final UUID WIRTSHAUS = UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f");
-    private static final UUID HAUS_DES_DORFVORSTEHERS = UUID.fromString("b8d0d64b-1d64-4707-86c5-b63b0ce7d5e2");
-    private static final UUID ULF_STETTEN = UUID.fromString("3037dd8d-62d6-42b3-88b0-800fb0e3ccd4");
-    private static final UUID RANGOLF_KLINGBEIL = UUID.fromString("dcd181fb-3bc9-4941-92d4-4edc3aa68636");
-    private static final UUID AUFTRAG_ERHALTEN = UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b");
-    private static final UUID SCHLUESSEL_GEFUNDEN = UUID.fromString("67b9fbe4-dbc9-4e57-94b6-3a4d7f803831");
+    private static final Id DORFPLATZ = Id.of("location.dorfplatz");
+    private static final Id SCHMIEDE = Id.of("location.dorfschmiede");
+    private static final Id WIRTSHAUS = Id.of("location.wirtshaus-zum-adler");
+    private static final Id HAUS_DES_DORFVORSTEHERS = Id.of("location.haus-des-dorfvorstehers");
+    private static final Id ULF_STETTEN = Id.of("person.ulf-stetten");
+    private static final Id RANGOLF_KLINGBEIL = Id.of("person.rangolf-klingbeil");
+    private static final Id AUFTRAG_ERHALTEN = Id.of("flag.auftrag-erhalten");
+    private static final Id SCHLUESSEL_GEFUNDEN = Id.of("flag.schluessel-gefunden");
 
-    private final Buchenhain adventure = new Buchenhain();
+    private final Adventure adventure = new Buchenhain().build();
 
     private Session startedSession() {
         Session session = new Session(adventure, new Player("Thorsten"));
@@ -40,7 +41,7 @@ class SessionTest {
     }
 
     /** Straight from the adventure, so a location can be looked up regardless of its condition. */
-    private Location location(UUID id) {
+    private Location location(Id id) {
         return adventure.getLocation(id);
     }
 

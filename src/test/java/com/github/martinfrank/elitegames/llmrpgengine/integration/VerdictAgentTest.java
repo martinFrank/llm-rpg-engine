@@ -44,7 +44,7 @@ class VerdictAgentTest {
 
     @Test
     void testWalkToInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
 
@@ -54,7 +54,7 @@ class VerdictAgentTest {
 
     @Test
     void testInvestigateInput() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();
@@ -68,7 +68,7 @@ class VerdictAgentTest {
      */
     @Test
     void testQuestionAboutTheSurroundings() {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Player player = new Player("Thorsten");
         Session session = new Session(adventure, player);
         session.start();
@@ -90,7 +90,7 @@ class VerdictAgentTest {
             "was war eigentlich meine aufgabe?, WHAT_DO_I_KNOW",
     })
     void testQuestionAboutTheStateOfTheGame(String input, GameMasterFacet expectedFacet) {
-        Adventure adventure = new Buchenhain();
+        Adventure adventure = new Buchenhain().build();
         Session session = new Session(adventure, new Player("Thorsten"));
         session.start();
 

@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 import java.util.function.DoubleSupplier;
 
 /**
- * Resolves what the player wants to investigate from {@link Verdict#targetUuid()} against
+ * Resolves what the player wants to investigate from {@link Verdict#resolvedTargetId()} against
  * the session: first a location, then a person. The resolved subject is what the Narrator
  * later describes to the player.
  * <p>
@@ -75,7 +75,7 @@ public class InvestigateTaskHandler implements TaskHandler {
 
     @Override
     public void execute(Verdict verdict, Session session) {
-        Optional<UUID> targetId = verdict.targetUuid();
+        Optional<Id> targetId = verdict.resolvedTargetId();
 
         if (targetId.isPresent()) {
             Location location = session.getLocation(targetId.get());

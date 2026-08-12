@@ -2,6 +2,14 @@ spring:
   application:
     name: llm-rpg-engine
 
+  web:
+    resources:
+      # The source tree first, so an edit to the editor's html/css/js is live on the next reload
+      # instead of after a rebuild - static resources otherwise come from target/classes, which is
+      # a copy made at build time. The classpath entry is what a built jar uses; a location that
+      # does not exist is skipped, so the same setting works in both cases.
+      static-locations: file:src/main/resources/static/,classpath:/static/
+
   ai:
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://192.168.0.251:11434}
@@ -13,6 +21,15 @@ spring:
 # Application-specific tuning for the three agents.
 # Available models on the server can be listed via: GET {base-url}/api/tags
 rpg:
+  adventure:
+    # The file the editor reads and writes. Unset means the packaged adventure below is opened
+    # read only - which is what a built jar gets, since a resource inside it cannot be written.
+    # While writing an adventure, point this at the file in the source tree, so that a save lands
+    # in the working copy and goes through git like any other change:
+    #   file: src/main/resources/adventures/buchenhain.yaml
+    file: ${ADVENTURE_FILE:src/main/resources/adventures/buchenhain.yaml}
+    resource: ${ADVENTURE_RESOURCE:adventures/buchenhain.yaml}
+
   # Context window (num_ctx), covering prompt AND generated response. When it runs out
   # mid-answer the response is simply cut off, which for the structured agents means
   # unparseable JSON ("expected close marker for Object").

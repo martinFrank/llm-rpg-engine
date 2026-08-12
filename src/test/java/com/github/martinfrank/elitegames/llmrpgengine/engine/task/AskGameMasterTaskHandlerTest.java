@@ -2,6 +2,7 @@ package com.github.martinfrank.elitegames.llmrpgengine.engine.task;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Id;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.GameMasterFacet;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
@@ -9,8 +10,6 @@ import com.github.martinfrank.elitegames.llmrpgengine.session.ChatEntry;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
 import com.github.martinfrank.elitegames.llmrpgengine.user.Player;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,14 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class AskGameMasterTaskHandlerTest {
 
-    private static final UUID WIRTSHAUS = UUID.fromString("603696b5-e1be-4f85-a0e1-1209147b8a3f");
-    private static final UUID AUFTRAG_DES_ORTSVORSTEHERS = UUID.fromString("8d824f02-f2ef-4ee2-93f7-89b7e69fef7b");
-    private static final UUID WISSEN_UEBER_DIE_BEDROHUNG = UUID.fromString("9eaeccb2-5fa6-4780-8e4f-1820c07b0b6f");
+    private static final Id WIRTSHAUS = Id.of("location.wirtshaus-zum-adler");
+    private static final Id AUFTRAG_DES_ORTSVORSTEHERS = Id.of("flag.auftrag-erhalten");
+    private static final Id WISSEN_UEBER_DIE_BEDROHUNG = Id.of("flag.kennt-bedrohung");
 
     private final AskGameMasterTaskHandler handler = new AskGameMasterTaskHandler();
 
     private Session startedSession() {
-        Session session = new Session(new Buchenhain(), new Player("Thorsten"));
+        Session session = new Session(new Buchenhain().build(), new Player("Thorsten"));
         session.start();
         return session;
     }

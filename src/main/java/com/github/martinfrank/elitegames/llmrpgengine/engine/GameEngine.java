@@ -84,11 +84,11 @@ public class GameEngine {
         if (verdict.task() != TaskType.TALK) {
             return verdict;
         }
-        boolean pointsToPerson = verdict.targetUuid().map(session::getPerson).isPresent();
+        boolean pointsToPerson = verdict.resolvedTargetId().map(session::getPerson).isPresent();
         if (pointsToPerson) {
             return verdict;
         }
-        Location location = verdict.targetUuid()
+        Location location = verdict.resolvedTargetId()
                 .map(session::getLocation)
                 .orElseGet(session::getCurrentLocation);
         LOGGER.info("Guardrail: TALK without a present person (target='{}', id={}) -> INVESTIGATE '{}'",

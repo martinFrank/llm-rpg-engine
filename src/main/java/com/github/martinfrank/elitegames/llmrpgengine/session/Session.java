@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class Session {
 
@@ -77,7 +76,7 @@ public class Session {
         return result;
     }
 
-    public Location getLocation(UUID id) {
+    public Location getLocation(Id id) {
         for(LocationCondition locationCondition: currentChapter.locationConditions() ){
             if (locationCondition.location().id().equals(id)) {
                 boolean evaluated = evaluate(locationCondition.condition());
@@ -92,14 +91,14 @@ public class Session {
     /**
      * The places that can be reached from the given location right now.
      * <p>
-     * Guardrail: every destination is resolved through {@link #getLocation(UUID)}, so a place the
+     * Guardrail: every destination is resolved through {@link #getLocation(Id)}, so a place the
      * current chapter does not carry – or whose condition does not hold, e.g. a shop that is closed
      * at night – is silently left out instead of being offered as a way that then refuses to be
      * walked. This is what makes the list safe to show the player.
      */
     public List<Location> getReachableLocations(Location from) {
         List<Location> reachable = new ArrayList<>();
-        for (UUID destinationId : from.destinationIds()) {
+        for (Id destinationId : from.destinationIds()) {
             Location destination = getLocation(destinationId);
             if (destination != null) {
                 reachable.add(destination);
@@ -127,7 +126,7 @@ public class Session {
         return known;
     }
 
-    public Person getPerson(UUID id) {
+    public Person getPerson(Id id) {
         List<Person> personsHere = getCurrentPersons(currentLocation);
         Optional<Person> desiredPerson = personsHere.stream()
                 .filter(person -> person.id().equals(id))

@@ -5,7 +5,8 @@ package com.github.martinfrank.elitegames.llmrpgengine.util;
  * or substitutions to turn one string into another.
  * <p>
  * Used to recover LLM-mangled ids: an id that is off by one or two characters can still be
- * resolved to the intended one, because ids (UUIDs) are far apart from each other.
+ * resolved to the intended one, as long as the ids of an adventure are far enough apart from
+ * each other for the nearest one to be unambiguous.
  */
 public final class Levenshtein {
 
