@@ -22,6 +22,9 @@ public class AdventureTest {
         Person ulf = buchenhain.getPerson(Id.of("person.ulf-stetten"));
         Person rangolf = buchenhain.getPerson(Id.of("person.rangolf-klingbeil"));
         Person kalgeria = buchenhain.getPerson(Id.of("person.kalgeria-mondlaeufer"));
+        // The shopkeeper spends his evenings at the inn as well (chapter 1 of buchenhain.yaml),
+        // so the inn holds four figures at night, not the three it did before he existed.
+        Person alastair = buchenhain.getPerson(Id.of("person.alastair-fiegler"));
 
         //when
 //        session.setFlag(Flag.GAME_TIME_FLAG.id(), GameTime.IN_THE_EVENING);
@@ -29,10 +32,11 @@ public class AdventureTest {
 
         //then
         List<Person> persons = session.getCurrentPersons(gasthaus);
-        Assertions.assertEquals(3, persons.size());
+        Assertions.assertEquals(4, persons.size());
         Assertions.assertTrue(persons.contains(ulf));
         Assertions.assertTrue(persons.contains(rangolf));
         Assertions.assertTrue(persons.contains(kalgeria));
+        Assertions.assertTrue(persons.contains(alastair));
     }
 
 

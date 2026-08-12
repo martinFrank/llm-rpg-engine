@@ -4,6 +4,8 @@ import com.github.martinfrank.elitegames.llmrpgengine.adventure.Knowledge;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Location;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Person;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.GameMasterFacet;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorAgent;
+import com.github.martinfrank.elitegames.llmrpgengine.agent.NarratorContext;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.TaskType;
 import com.github.martinfrank.elitegames.llmrpgengine.agent.Verdict;
 import com.github.martinfrank.elitegames.llmrpgengine.session.Session;
@@ -18,10 +20,17 @@ import java.util.List;
  * Answers a question the player put to the game master instead of acting in the fiction: where
  * they are, where they can go, who is here, what time it is, what they know.
  * <p>
- * The answer is assembled from the session, not narrated. That is the whole point of this handler:
- * these questions have exactly one correct answer, and it is already in the game state. Handing
- * them to an agent would buy nothing but a chance to invent a path that does not exist or an hour
- * of the day the world has no concept of – and it would cost a model call per question.
+ * The answer is worked out twice over, and the split is what matters here. <em>What</em> is true is
+ * assembled from the session ({@link #facts}), because each of these questions has exactly one
+ * correct answer and it is already in the game state. <em>How</em> it is told is the
+ * {@link NarratorAgent}'s job, so an answer sounds like the story the player is in and not like a
+ * readout. Letting the agent work out the content as well would let it name a way that does not
+ * exist or invent an hour of the day for a world that only knows times of day.
+ * <p>
+ * Guardrail: if the agent delivers nothing usable – a local model running out of context mid-reply
+ * is a normal operating condition, see {@link TalkTaskHandler} – the assembled facts are shown as
+ * they are. A plainly worded answer is still a correct answer; a question about the time of day
+ * must never end in a technical error.
  * <p>
  * Nothing here changes the session. A question is not a move: no flags are raised, no trigger
  * fires, no time passes, and the engine does not advance the chapter over it.
@@ -30,6 +39,12 @@ import java.util.List;
 public class AskGameMasterTaskHandler implements TaskHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AskGameMasterTaskHandler.class);
+
+    private final NarratorAgent narratorAgent;
+
+    public AskGameMasterTaskHandler(NarratorAgent narratorAgent) {
+        this.narratorAgent = narratorAgent;
+    }
 
     @Override
     public TaskType type() {
@@ -40,10 +55,47 @@ public class AskGameMasterTaskHandler implements TaskHandler {
     public void execute(Verdict verdict, Session session) {
         GameMasterFacet facet = verdict.facetOrUnspecified();
         LOGGER.debug("Question to the game master ({}): '{}'", facet, verdict.interpretation());
-        session.chatHistory.gameMaster(answer(facet, session));
+        String facts = facts(facet, session);
+        session.chatHistory.gameMaster(narrate(facet, facts, session));
     }
 
-    private String answer(GameMasterFacet facet, Session session) {
+    /** The facts put into words by the Narrator, or the facts themselves if that fails. */
+    private String narrate(GameMasterFacet facet, String facts, Session session) {
+        NarratorContext context = NarratorContext.generateGameMasterAnswerContext(
+                session, question(facet), facts);
+        long now = System.currentTimeMillis();
+        String narration;
+        try {
+            narration = narratorAgent.narrate(context);
+        } catch (RuntimeException e) {
+            LOGGER.warn("Narrator delivered no usable answer for {} -> answering plainly: {}",
+                    facet, e.toString());
+            return facts;
+        }
+        LOGGER.info("Duration narration evaluation: {} ms", System.currentTimeMillis() - now);
+        if (narration == null || narration.isBlank()) {
+            LOGGER.warn("Narrator delivered an empty answer for {} -> answering plainly", facet);
+            return facts;
+        }
+        return narration;
+    }
+
+    /** What the player wants to know, for the Narrator's AUFGABE field. */
+    private String question(GameMasterFacet facet) {
+        String asked = switch (facet) {
+            case WHERE_AM_I -> "wo er sich gerade befindet";
+            case WHERE_CAN_I_GO -> "welche Wege von hier fortführen";
+            case WHO_IS_HERE -> "wer sich gerade bei ihm aufhält";
+            case WHAT_TIME_IS_IT -> "welche Tageszeit gerade herrscht";
+            case WHAT_DO_I_KNOW -> "was sein Auftrag ist und was er bisher herausgefunden hat";
+            case UNSPECIFIED -> "wie seine Lage gerade steht";
+        };
+        return "der Spieler hat dich gefragt, " + asked
+                + ". Erinnere ihn daran, ohne die Spielwelt zu verlassen.";
+    }
+
+    /** The one correct answer, straight from the session. */
+    private String facts(GameMasterFacet facet, Session session) {
         return switch (facet) {
             case WHERE_AM_I -> whereAmI(session);
             case WHERE_CAN_I_GO -> whereCanIGo(session);
