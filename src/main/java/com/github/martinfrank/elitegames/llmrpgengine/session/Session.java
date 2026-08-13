@@ -35,8 +35,8 @@ public class Session {
     }
 
     public void start() {
-        chatHistory.narrator(adventure.getMetadata().title());
-        chatHistory.narrator(adventure.getMetadata().author());
+        chatHistory.credits(adventure.getMetadata().title());
+        chatHistory.credits(adventure.getMetadata().author());
         currentChapter = adventure.getChapters().getFirst();
         chatHistory.narrator(currentChapter.intro().intro());
         continueIn(currentChapter.intro());

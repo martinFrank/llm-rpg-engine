@@ -126,6 +126,22 @@ class SessionTest {
                 .containsExactly("Wirtshaus zum kleinen Adler");
     }
 
+    /**
+     * The author's name must not reach the agents as narration. It did, and the Narrator built
+     * "das Haus von Martin Frank" into Buchenhain – the intro is the story, the cover is not.
+     */
+    @Test
+    void theAdventuresCoverIsNoPartOfTheStoryHandedToTheAgents() {
+        Session session = startedSession();
+
+        assertThat(session.chatHistory.getLatestStoryEntries(5)).extracting(ChatEntry::statement)
+                .noneMatch(statement -> statement.contains(adventure.getMetadata().author()))
+                .hasSize(1);
+        // The player is still shown title and author.
+        assertThat(session.chatHistory.getLatestEntries(5)).extracting(ChatEntry::statement)
+                .contains(adventure.getMetadata().title(), adventure.getMetadata().author());
+    }
+
     /** A figure has no fixed address: where they are follows the time of day. */
     @Test
     void locationOfAPersonFollowsTheTimeOfDay() {
