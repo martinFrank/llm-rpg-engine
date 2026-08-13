@@ -28,6 +28,18 @@ public class ChatHistory {
         add(NARRATOR, statement, ChatEntry.Kind.STORY);
     }
 
+    /**
+     * Records the cover of the adventure: its title and who wrote it. The player reads it, but it is
+     * no part of the story and therefore {@link ChatEntry.Kind#META}.
+     * <p>
+     * As story lines these two travelled into the agents' context window attributed to the Narrator,
+     * i.e. as something the Narrator had just said about the world – and the Narrator duly picked the
+     * author up as a figure of the village and built him a house down the road.
+     */
+    public void credits(String statement) {
+        add(NARRATOR, statement, ChatEntry.Kind.META);
+    }
+
     public void player(String statement) {
         add(PLAYER, statement, ChatEntry.Kind.STORY);
     }

@@ -142,6 +142,14 @@ public final class AdventureValidator {
                 errors.add("chapter '" + chapter.id() + "' starts in '" + intro.startLocation().id()
                         + "', which the chapter does not open up");
             }
+            // A later chapter without a start location continues where the previous one ended,
+            // which is a perfectly ordinary way to write one. The first chapter has nothing to
+            // continue from, so there the same omission leaves the player nowhere.
+            if (intro != null && intro.startLocation() == null
+                    && chapter.id().equals(adventure.getChapters().getFirst().id())) {
+                errors.add("chapter '" + chapter.id() + "' is the first chapter and names no start"
+                        + " location - there is no previous chapter to continue from");
+            }
 
             for (PersonCondition personCondition : chapter.personConditions()) {
                 if (!here.contains(personCondition.location().id())) {

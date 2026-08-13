@@ -6,13 +6,13 @@ import java.util.List;
  * The smallest adventure that builds: everything empty. A test subclasses it and fills in only
  * the definitions its rule is about, so what the test is checking stays the only thing on screen.
  */
-class TinyAdventure extends BaseAdventure {
+public class TinyAdventure extends BaseAdventure {
 
-    static Location location(String id, String name) {
+    public static Location location(String id, String name) {
         return new Location.Builder().id(id).name(name).description(name).build();
     }
 
-    static Person person(String id, String name) {
+    public static Person person(String id, String name) {
         return new Person.Builder().id(id).name(name).description(name).build();
     }
 

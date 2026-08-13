@@ -372,11 +372,10 @@ conditions:
   - flag.kennt-bedrohung
 - type: AndCondition
   id: condition.kapitel-eins-abgeschlossen
-  description: |
-    Chapter 1 Finished Condition, muss den auftrag haben UND muss über Monster bescheid wissen
+  description: "Chapter 1 Finished Condition, muss den auftrag haben"
   consideredFlags:
-  - flag.kennt-bedrohung
   - flag.auftrag-erhalten
+  - flag.kennt-bedrohung
 - type: IsCondition
   id: condition.kennt-weg-zum-blumental
   description: prüft ob mit die spieler den Weg zum Blumental kennen
@@ -416,7 +415,7 @@ chapters:
     Die Helden können auch noch beim Laden und  beim Schmied Ausrüstung kaufen. Wenn die sich auf den Weg machen in den Wald machen, um die Ursache herauszufinden, beginnt das nächste Kapitel.
   intro:
     intro: |
-      Bei euerer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später einen Besuch abstatten werdet. Danach verlässt er den Platz.
+      Bei eurer Reise kommt ihr am kleinen Ort Buchenhain vorbei. Der Ort besteht nur aus ein paar wenigen Häusern, die von den Bauern bewohnt werden. Einer der Bauern hat auch einen kleinen Laden und einen Schmied gibt es auch. Als ihr den Dorfplatz betretet, werdet ihr vom Ortsvorsteher begrüsst. Sein Name ist Ulf Stetten und er bittet euch, später bei ihm im Rathaus vorbei zu kommen, um mit ihm ein heikles Thema zu besprechen. Ihr versichert ihm, dass ihr ihm später einen Besuch abstatten werdet. Danach verlässt er den Platz.
     startLocation: location.dorfplatz
     startTime: AFTERNOON
   locationConditions:
@@ -456,6 +455,9 @@ chapters:
   - person: person.ulf-stetten
     dialog: dialog.auftrag-des-ortsvorstehers
     condition: condition.immer-wahr
+  - person: person.ulf-stetten
+    dialog: dialog.gefahr-fuer-das-dorf
+    condition: condition.immer-wahr
   - person: person.kalgeria-mondlaeufer
     dialog: dialog.gefahr-fuer-das-dorf
     condition: condition.immer-wahr
@@ -472,9 +474,9 @@ chapters:
     Er erklärt den Helden, dass sie das Horn zurück bringen sollen. Danach müssen sie das Ritual der Erneuerung durchführen, das seinen Geist zur Ruhe bettet und den Schutzzauber erneuert.
   intro:
     intro: |
-      Nach diesem sehr aufschlussreichen Gespräch mit Ulf Stetten begebt ihr euch auf den Marktplatz um eure nächsten Schritte zu planen. Es ist bereits abends geworden. Ihr solltet heute Abend im Gasthaus übernachten. Morgen könnt ihr dann den Weg zum Buchenwald suchen.
-    startLocation: location.dorfplatz
-    startTime: IN_THE_EVENING
+      Kapitel 2; Die Suche nach der Ursache - Ihr habt also von Ulf Stetten den Auftrag erhalten, herauszufinden warum die wilden Tiere das Dorf bedrohen, und bestenfalls auch noch die Ursache zu unterbinden.
+    startLocation: null
+    startTime: null
   locationConditions:
   - location: location.dorfplatz
     condition: condition.immer-wahr
@@ -519,6 +521,12 @@ chapters:
     condition: condition.immer-wahr
   - person: person.rangolf-klingbeil
     dialog: dialog.weg-zum-buchenwald
+    condition: condition.immer-wahr
+  - person: person.kalgeria-mondlaeufer
+    dialog: dialog.gefahr-fuer-das-dorf
+    condition: condition.immer-wahr
+  - person: person.ulf-stetten
+    dialog: dialog.gefahr-fuer-das-dorf
     condition: condition.immer-wahr
   investigateConditions:
   - subject: location.dorfplatz

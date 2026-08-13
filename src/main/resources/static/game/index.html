@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Abenteuer spielen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="game">
+    <header id="header">
+        <div>
+            <h1 id="title">Abenteuer</h1>
+            <p id="chapter"></p>
+        </div>
+        <button id="quit" class="link" type="button" hidden>Spiel beenden</button>
+    </header>
+    <div id="log"></div>
+    <form id="input-form" autocomplete="off">
+        <input id="input" type="text" placeholder="Was tut ihr?" disabled>
+        <button id="send" class="primary" type="submit" disabled>Sagen</button>
+    </form>
+</main>
+<aside id="side"></aside>
+
+<div id="start" class="overlay" hidden>
+    <form id="start-form" class="card">
+        <h2>Ein Abenteuer spielen</h2>
+        <p class="hint" id="start-hint">Der Spielleiter, der Erzähler und die Figuren sind
+            Sprachmodelle. Ein Zug dauert darum ein paar Sekunden.</p>
+        <label for="player">Dein Name</label>
+        <input id="player" type="text" value="Thorsten">
+        <div id="start-error"></div>
+        <button class="primary" type="submit">Los geht's</button>
+    </form>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

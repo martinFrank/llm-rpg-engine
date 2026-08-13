@@ -2,7 +2,12 @@ package com.github.martinfrank.elitegames.llmrpgengine.session;
 
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Adventure;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Buchenhain;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Chapter;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Condition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Dialog;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.Intro;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.TinyAdventure;
+import com.github.martinfrank.elitegames.llmrpgengine.adventure.chapter.LocationCondition;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Flag;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.GameTime;
 import com.github.martinfrank.elitegames.llmrpgengine.adventure.Knowledge;
@@ -78,9 +83,11 @@ class SessionTest {
     void gossipIsAvailableForEveryPerson() {
         Session session = startedSession();
 
-        // Ulf Stetten has a scripted dialog in chapter 1, Rangolf Klingbeil has none.
+        // Ulf Stetten has scripted dialogs in chapter 1, Rangolf Klingbeil has none. What is
+        // asserted is that gossip stands beside them - not how many the adventure scripts for him,
+        // which grows as the content is written.
         assertThat(session.getAvailableDialogs(adventure.getPerson(ULF_STETTEN))).extracting(Dialog::topic)
-                .containsExactly(Dialog.GOSSIP.topic(), "Auftrag des Ortsvorstehers");
+                .contains(Dialog.GOSSIP.topic(), "Auftrag des Ortsvorstehers");
         assertThat(session.getAvailableDialogs(adventure.getPerson(RANGOLF_KLINGBEIL)))
                 .containsExactly(Dialog.GOSSIP);
     }
@@ -120,6 +127,75 @@ class SessionTest {
     }
 
     /**
+     * The author's name must not reach the agents as narration. It did, and the Narrator built
+     * "das Haus von Martin Frank" into Buchenhain – the intro is the story, the cover is not.
+     */
+    @Test
+    void theAdventuresCoverIsNoPartOfTheStoryHandedToTheAgents() {
+        Session session = startedSession();
+
+        assertThat(session.chatHistory.getLatestStoryEntries(5)).extracting(ChatEntry::statement)
+                .noneMatch(statement -> statement.contains(adventure.getMetadata().author()))
+                .hasSize(1);
+        // The player is still shown title and author.
+        assertThat(session.chatHistory.getLatestEntries(5)).extracting(ChatEntry::statement)
+                .contains(adventure.getMetadata().title(), adventure.getMetadata().author());
+    }
+
+    /** A figure has no fixed address: where they are follows the time of day. */
+    @Test
+    void locationOfAPersonFollowsTheTimeOfDay() {
+        Session session = startedSession();
+
+        assertThat(session.getLocationOf(ULF_STETTEN)).extracting(Location::name)
+                .isEqualTo("Haus des Dorfvorstehers");
+
+        session.setCurrentTime(GameTime.AT_NIGHT);
+
+        assertThat(session.getLocationOf(ULF_STETTEN)).extracting(Location::name)
+                .isEqualTo("Wirtshaus zum kleinen Adler");
+    }
+
+    @Test
+    void locationOfSomebodyWhoIsNoOneIsNull() {
+        Session session = startedSession();
+
+        assertThat(session.getLocationOf(Id.of("person.niemand"))).isNull();
+    }
+
+    /** Case-insensitive on purpose: this matches a name an agent reported back. */
+    @Test
+    void locationsAndPersonsAreFoundByNameRegardlessOfCase() {
+        Session session = startedSession();
+
+        assertThat(session.findLocationByName("haus des dorfvorstehers")).extracting(Location::name)
+                .isEqualTo("Haus des Dorfvorstehers");
+        assertThat(session.findPersonByName("ulf stetten")).extracting(Person::id)
+                .isEqualTo(ULF_STETTEN);
+    }
+
+    /** A place the chapter has closed right now is no match, just as with {@code getLocation}. */
+    @Test
+    void findLocationByNameRespectsTheChapterCondition() {
+        Session session = startedSession();
+
+        session.setCurrentTime(GameTime.AT_NIGHT);
+
+        assertThat(session.findLocationByName("Haus des Dorfvorstehers")).isNull();
+        assertThat(session.findLocationByName("Wirtshaus zum kleinen Adler")).isNotNull();
+    }
+
+    @Test
+    void findByNameAnswersNothingForANameThatIsNotInTheChapter() {
+        Session session = startedSession();
+
+        assertThat(session.findLocationByName("Mondbasis")).isNull();
+        assertThat(session.findLocationByName(" ")).isNull();
+        assertThat(session.findPersonByName("Zaphod Beeblebrox")).isNull();
+        assertThat(session.findPersonByName(null)).isNull();
+    }
+
+    /**
      * The knowledge has to be read back through the session's flags. An authored
      * {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.KnowledgeFlag} reports
      * {@code isRaised() == false} forever, so asking the adventure's flags directly would report
@@ -144,5 +220,55 @@ class SessionTest {
         session.sessionFlags.raiseFlagValue(SCHLUESSEL_GEFUNDEN);
 
         assertThat(session.getKnownKnowledge()).isEmpty();
+    }
+
+    /**
+     * A chapter that names no start location continues where the player is.
+     * <p>
+     * Copying the intro over unconditionally put them nowhere and the clock at no time, and every
+     * later read of the session then failed on a {@code null} that had nothing to do with where it
+     * surfaced – the page rendering the state, several turns after the chapter had turned over.
+     */
+    @Test
+    void aChapterWithoutAStartLocationContinuesWhereThePlayerIs() {
+        Session session = new Session(twoChapters(), new Player("Thorsten"));
+        session.start();
+        session.setCurrentTime(GameTime.IN_THE_EVENING);
+
+        session.moveToNextChapter();
+
+        assertThat(session.getCurrentChapter().name()).isEqualTo("Zweites Kapitel");
+        assertThat(session.getCurrentLocation()).isNotNull()
+                .extracting(Location::name).isEqualTo("Dorfplatz");
+        assertThat(session.getCurrentTime()).isEqualTo(GameTime.IN_THE_EVENING);
+    }
+
+    /** Two chapters over one place, the second of which does not say where or when it begins. */
+    private static Adventure twoChapters() {
+        Location dorfplatz = TinyAdventure.location("location.dorfplatz", "Dorfplatz");
+        return new TinyAdventure() {
+            @Override protected List<Location> defineLocations() {
+                return List.of(dorfplatz);
+            }
+
+            @Override protected List<Chapter> defineChapters() {
+                return List.of(
+                        chapter("chapter.eins", "Erstes Kapitel",
+                                new Intro("es geht los", dorfplatz, GameTime.AFTERNOON), dorfplatz),
+                        chapter("chapter.zwei", "Zweites Kapitel",
+                                new Intro("weiter geht es", null, null), dorfplatz));
+            }
+        }.build();
+    }
+
+    private static Chapter chapter(String id, String name, Intro intro, Location open) {
+        return new Chapter.Builder()
+                .id(id)
+                .name(name)
+                .summary("egal")
+                .intro(intro)
+                .locationConditions(List.of(new LocationCondition(open, Condition.ALWAYS_TRUE)))
+                .chapterFinishedCondition(Condition.ALWAYS_TRUE)
+                .build();
     }
 }

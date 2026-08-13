@@ -55,6 +55,56 @@ class AdventureValidatorTest {
         return AdventureValidator.validate(adventure.build());
     }
 
+    private static Chapter chapterNamed(String id, Location start, Location... open) {
+        return new Chapter.Builder()
+                .id(id)
+                .name(id)
+                .summary("egal")
+                .intro(new Intro("es geht los", start, GameTime.AFTERNOON))
+                .locationConditions(List.of(open).stream()
+                        .map(l -> new LocationCondition(l, Condition.ALWAYS_TRUE)).toList())
+                .chapterFinishedCondition(Condition.ALWAYS_TRUE)
+                .build();
+    }
+
+    /**
+     * The first chapter has nothing to continue from, so leaving its start location out puts the
+     * player nowhere – and the session only finds out several reads later.
+     */
+    @Test
+    void theFirstChapterMustSayWhereItBegins() {
+        BaseAdventure adventure = new TinyAdventure() {
+            @Override protected List<Location> defineLocations() {
+                return List.of(DORFPLATZ);
+            }
+
+            @Override protected List<Chapter> defineChapters() {
+                return List.of(chapterNamed("chapter.eins", null, DORFPLATZ));
+            }
+        };
+
+        assertThatThrownBy(adventure::build)
+                .hasMessageContaining("chapter.eins")
+                .hasMessageContaining("names no start location");
+    }
+
+    /** A later chapter may leave it out: it then continues where the previous one ended. */
+    @Test
+    void aLaterChapterMayContinueWhereTheLastOneEnded() {
+        BaseAdventure adventure = new TinyAdventure() {
+            @Override protected List<Location> defineLocations() {
+                return List.of(DORFPLATZ);
+            }
+
+            @Override protected List<Chapter> defineChapters() {
+                return List.of(chapterNamed("chapter.eins", DORFPLATZ, DORFPLATZ),
+                        chapterNamed("chapter.zwei", null, DORFPLATZ));
+            }
+        };
+
+        assertThat(validationOf(adventure).errors()).isEmpty();
+    }
+
     @Test
     void anIdInTheWrongNamespaceIsRejected() {
         BaseAdventure adventure = new TinyAdventure() {

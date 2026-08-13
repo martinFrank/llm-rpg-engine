@@ -23,6 +23,7 @@ class GoToTaskHandlerTest {
 
     private static final String DORFPLATZ = "location.dorfplatz";
     private static final String HAUS_DES_DORFVORSTEHERS = "location.haus-des-dorfvorstehers";
+    private static final String ULF_STETTEN = "person.ulf-stetten";
 
     /** A move narrates the arrival, so the handler needs an agent – stubbed, no LLM in a unit test. */
     private final NarratorAgent narratorAgent = mock(NarratorAgent.class);
@@ -82,6 +83,45 @@ class GoToTaskHandlerTest {
 
         assertThat(session.getCurrentLocation().name()).isEqualTo("Buchenhain Dorfplatz");
         verifyNoInteractions(narratorAgent);
+    }
+
+    /**
+     * "Ich gehe zu Ulf Stetten": the verdict agent reports the person, not the place. That is a
+     * move to where the person is, not an unknown destination.
+     */
+    @Test
+    void personIdMovesPlayerToWhereThatPersonIs() {
+        Session session = startedSession();
+        stubNarration("Ihr betretet das Haus des Dorfvorstehers.");
+
+        handler.execute(new Verdict("Die Spieler gehen zum Dorfvorsteher Ulf Stetten.", TaskType.GO_TO,
+                "Ulf Stetten", ULF_STETTEN), session);
+
+        assertThat(session.getCurrentLocation().name()).isEqualTo("Haus des Dorfvorstehers");
+    }
+
+    /** Same sentence, but the agent got no usable id at all – the name still names the person. */
+    @Test
+    void personNameMovesPlayerToWhereThatPersonIsWhenIdIsUnknown() {
+        Session session = startedSession();
+        stubNarration("Ihr betretet das Haus des Dorfvorstehers.");
+
+        handler.execute(new Verdict("Die Spieler gehen zu Ulf Stetten.", TaskType.GO_TO,
+                "Ulf Stetten", Verdict.UNKNOWN), session);
+
+        assertThat(session.getCurrentLocation().name()).isEqualTo("Haus des Dorfvorstehers");
+    }
+
+    /** A location named correctly but with an id that does not exist still gets walked. */
+    @Test
+    void locationNameResolvesWhenIdIsNotAKnownLocation() {
+        Session session = startedSession();
+        stubNarration("Ihr betretet das Haus des Dorfvorstehers.");
+
+        handler.execute(new Verdict("Zum Vorsteher.", TaskType.GO_TO,
+                "haus des dorfvorstehers", "location.vorsteherhaus"), session);
+
+        assertThat(session.getCurrentLocation().name()).isEqualTo("Haus des Dorfvorstehers");
     }
 
     @Test

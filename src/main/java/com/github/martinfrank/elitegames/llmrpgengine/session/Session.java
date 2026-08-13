@@ -35,12 +35,37 @@ public class Session {
     }
 
     public void start() {
-        chatHistory.narrator(adventure.getMetadata().title());
-        chatHistory.narrator(adventure.getMetadata().author());
+        chatHistory.credits(adventure.getMetadata().title());
+        chatHistory.credits(adventure.getMetadata().author());
         currentChapter = adventure.getChapters().getFirst();
         chatHistory.narrator(currentChapter.intro().intro());
-        currentLocation = currentChapter.intro().startLocation();
-        setCurrentTime(currentChapter.intro().startTime());
+        continueIn(currentChapter.intro());
+    }
+
+    /**
+     * Where a chapter picks the player up.
+     * <p>
+     * An intro only carries what it actually changes, so a chapter that names no start location –
+     * or no start time – continues where the previous one left off, which is the common case: a
+     * chapter usually turns on the same spot the last one ended on. Copying the intro over
+     * unconditionally instead put the player nowhere and the clock at no time, and every later read
+     * of the session then failed on a {@code null} that had nothing to do with where it surfaced.
+     * <p>
+     * The first chapter has nothing to continue from, so a missing start location there is an error
+     * of the adventure – see {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.AdventureValidator}.
+     */
+    private void continueIn(Intro intro) {
+        if (intro.startLocation() != null) {
+            currentLocation = intro.startLocation();
+        }
+        if (intro.startTime() != null) {
+            setCurrentTime(intro.startTime());
+        }
+    }
+
+    /** Which adventure is being played – its title and who wrote it. */
+    public Metadata getMetadata() {
+        return adventure.getMetadata();
     }
 
     public Location getCurrentLocation() {
@@ -83,6 +108,64 @@ public class Session {
                 if (evaluated) {
                     return locationCondition.location();
                 }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The place where the given person is right now, or {@code null} if nobody of that id is
+     * anywhere in this chapter at this moment.
+     * <p>
+     * A figure is not at a fixed address: the chapter places them per condition – Ulf Stetten is in
+     * his house by day and in the tavern at night. The place is resolved through
+     * {@link #getLocation(Id)} again, so a person standing in a place the chapter does not carry
+     * right now counts as not findable rather than as a destination that cannot be walked.
+     */
+    public Location getLocationOf(Id personId) {
+        for (PersonCondition personCondition : currentChapter.personConditions()) {
+            if (personCondition.person().id().equals(personId) && evaluate(personCondition.condition())) {
+                Location location = getLocation(personCondition.location().id());
+                if (location != null) {
+                    return location;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The place of the given name in this chapter whose condition holds, or {@code null}. Matched
+     * case-insensitively: this is a fallback for names an agent reported back, and there the
+     * spelling of the first letter is not something to rely on.
+     */
+    public Location findLocationByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        for (LocationCondition locationCondition : currentChapter.locationConditions()) {
+            if (name.strip().equalsIgnoreCase(locationCondition.location().name())) {
+                Location location = getLocation(locationCondition.location().id());
+                if (location != null) {
+                    return location;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The person of the given name appearing in this chapter, wherever they are – or {@code null}.
+     * Unlike {@link #getPerson(Id)} this does not require them to be present at the current
+     * location: it answers who is meant, not who can be addressed.
+     */
+    public Person findPersonByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        for (PersonCondition personCondition : currentChapter.personConditions()) {
+            if (name.strip().equalsIgnoreCase(personCondition.person().name())) {
+                return personCondition.person();
             }
         }
         return null;
@@ -190,8 +273,7 @@ public class Session {
         }
         currentChapter = adventure.getChapters().get(nextChapterIndex);
         chatHistory.narrator(currentChapter.intro().intro());
-        currentLocation = currentChapter.intro().startLocation();
-        setCurrentTime(currentChapter.intro().startTime());
+        continueIn(currentChapter.intro());
     }
 
     public List<Trigger> getTriggers() {

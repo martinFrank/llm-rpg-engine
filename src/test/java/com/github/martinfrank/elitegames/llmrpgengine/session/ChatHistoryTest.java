@@ -124,6 +124,24 @@ class ChatHistoryTest {
     }
 
     /**
+     * Title and author are the cover of the adventure, not a turn of the story. As story entries the
+     * author's name reached the agents as something the Narrator had said about the world, and the
+     * Narrator went on to place the man's house in the village.
+     */
+    @Test
+    void titleAndAuthorAreShownButAreNoPartOfTheStory() {
+        ChatHistory history = new ChatHistory();
+        history.credits("Abenteuer in Buchenwald");
+        history.credits("Martin Frank 2026");
+        history.narrator("Bei eurer Reise kommt ihr am kleinen Ort Buchenhain vorbei.");
+
+        assertThat(history.getLatestStoryEntries(5)).extracting(ChatEntry::statement)
+                .containsExactly("Bei eurer Reise kommt ihr am kleinen Ort Buchenhain vorbei.");
+        // The player still reads them.
+        assertThat(history.getLatestEntries(5)).hasSize(3);
+    }
+
+    /**
      * The game master's answers are assembled line by line by the engine, so they are the one
      * kind of entry that must not be run through the normalizer.
      */
