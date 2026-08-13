@@ -370,11 +370,12 @@ conditions:
   description: "prüft ob mit die spieler wissen, welche Gefahr das Dorf bedroht"
   consideredFlags:
   - flag.kennt-bedrohung
-- type: IsCondition
+- type: AndCondition
   id: condition.kapitel-eins-abgeschlossen
   description: "Chapter 1 Finished Condition, muss den auftrag haben"
   consideredFlags:
   - flag.auftrag-erhalten
+  - flag.kennt-bedrohung
 - type: IsCondition
   id: condition.kennt-weg-zum-blumental
   description: prüft ob mit die spieler den Weg zum Blumental kennen

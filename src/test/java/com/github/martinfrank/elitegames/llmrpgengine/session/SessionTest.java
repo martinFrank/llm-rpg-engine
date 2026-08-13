@@ -126,6 +126,59 @@ class SessionTest {
                 .containsExactly("Wirtshaus zum kleinen Adler");
     }
 
+    /** A figure has no fixed address: where they are follows the time of day. */
+    @Test
+    void locationOfAPersonFollowsTheTimeOfDay() {
+        Session session = startedSession();
+
+        assertThat(session.getLocationOf(ULF_STETTEN)).extracting(Location::name)
+                .isEqualTo("Haus des Dorfvorstehers");
+
+        session.setCurrentTime(GameTime.AT_NIGHT);
+
+        assertThat(session.getLocationOf(ULF_STETTEN)).extracting(Location::name)
+                .isEqualTo("Wirtshaus zum kleinen Adler");
+    }
+
+    @Test
+    void locationOfSomebodyWhoIsNoOneIsNull() {
+        Session session = startedSession();
+
+        assertThat(session.getLocationOf(Id.of("person.niemand"))).isNull();
+    }
+
+    /** Case-insensitive on purpose: this matches a name an agent reported back. */
+    @Test
+    void locationsAndPersonsAreFoundByNameRegardlessOfCase() {
+        Session session = startedSession();
+
+        assertThat(session.findLocationByName("haus des dorfvorstehers")).extracting(Location::name)
+                .isEqualTo("Haus des Dorfvorstehers");
+        assertThat(session.findPersonByName("ulf stetten")).extracting(Person::id)
+                .isEqualTo(ULF_STETTEN);
+    }
+
+    /** A place the chapter has closed right now is no match, just as with {@code getLocation}. */
+    @Test
+    void findLocationByNameRespectsTheChapterCondition() {
+        Session session = startedSession();
+
+        session.setCurrentTime(GameTime.AT_NIGHT);
+
+        assertThat(session.findLocationByName("Haus des Dorfvorstehers")).isNull();
+        assertThat(session.findLocationByName("Wirtshaus zum kleinen Adler")).isNotNull();
+    }
+
+    @Test
+    void findByNameAnswersNothingForANameThatIsNotInTheChapter() {
+        Session session = startedSession();
+
+        assertThat(session.findLocationByName("Mondbasis")).isNull();
+        assertThat(session.findLocationByName(" ")).isNull();
+        assertThat(session.findPersonByName("Zaphod Beeblebrox")).isNull();
+        assertThat(session.findPersonByName(null)).isNull();
+    }
+
     /**
      * The knowledge has to be read back through the session's flags. An authored
      * {@link com.github.martinfrank.elitegames.llmrpgengine.adventure.flags.KnowledgeFlag} reports

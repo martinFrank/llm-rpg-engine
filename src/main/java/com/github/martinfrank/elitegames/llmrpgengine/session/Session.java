@@ -114,6 +114,64 @@ public class Session {
     }
 
     /**
+     * The place where the given person is right now, or {@code null} if nobody of that id is
+     * anywhere in this chapter at this moment.
+     * <p>
+     * A figure is not at a fixed address: the chapter places them per condition – Ulf Stetten is in
+     * his house by day and in the tavern at night. The place is resolved through
+     * {@link #getLocation(Id)} again, so a person standing in a place the chapter does not carry
+     * right now counts as not findable rather than as a destination that cannot be walked.
+     */
+    public Location getLocationOf(Id personId) {
+        for (PersonCondition personCondition : currentChapter.personConditions()) {
+            if (personCondition.person().id().equals(personId) && evaluate(personCondition.condition())) {
+                Location location = getLocation(personCondition.location().id());
+                if (location != null) {
+                    return location;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The place of the given name in this chapter whose condition holds, or {@code null}. Matched
+     * case-insensitively: this is a fallback for names an agent reported back, and there the
+     * spelling of the first letter is not something to rely on.
+     */
+    public Location findLocationByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        for (LocationCondition locationCondition : currentChapter.locationConditions()) {
+            if (name.strip().equalsIgnoreCase(locationCondition.location().name())) {
+                Location location = getLocation(locationCondition.location().id());
+                if (location != null) {
+                    return location;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The person of the given name appearing in this chapter, wherever they are – or {@code null}.
+     * Unlike {@link #getPerson(Id)} this does not require them to be present at the current
+     * location: it answers who is meant, not who can be addressed.
+     */
+    public Person findPersonByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        for (PersonCondition personCondition : currentChapter.personConditions()) {
+            if (name.strip().equalsIgnoreCase(personCondition.person().name())) {
+                return personCondition.person();
+            }
+        }
+        return null;
+    }
+
+    /**
      * The places that can be reached from the given location right now.
      * <p>
      * Guardrail: every destination is resolved through {@link #getLocation(Id)}, so a place the

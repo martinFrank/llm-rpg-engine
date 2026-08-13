@@ -44,7 +44,8 @@ Deine Antwort besteht aus zwei Teilen:
   Liste. Wurde kein Trigger-Thema behandelt, gib eine leere Liste zurück. Erfinde
   niemals eine id und nimm nur ids aus MÖGLICHE TRIGGER-THEMEN.
   Eine id ist ein kurzer Name aus Art und Bezeichnung, getrennt durch einen Punkt,
-  zum Beispiel "trigger.weg-zum-buchenwald". Schreib sie Zeichen für Zeichen genau
+  zum Beispiel "trigger.beispielthema" (eine erfundene id, die es in diesem Spiel
+  nicht gibt). Schreib sie Zeichen für Zeichen genau
   so ab, wie sie in der Liste steht. Eine id mit auch nur einem falschen Zeichen wird
   verworfen, und der Spieler erfährt dann nicht, was er eigentlich erfahren sollte.
 
